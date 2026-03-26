@@ -4,9 +4,19 @@ import spinal.core._
 import spinal.lib._
 
 // ============================================================
-// Simplified 8b/10b Encoder
-// Encodes 8-bit data + 1-bit K-code flag into 10-bit symbol
-// Full table would have all 256 data + 12 K-codes
+// Simplified 8b/10b Encoder (PLACEHOLDER IMPLEMENTATION)
+// ============================================================
+// WARNING: This is a simplified placeholder that does NOT perform
+// real 8b/10b encoding. It simply passes 8-bit data as 10-bit output.
+//
+// For production use, you must replace this with:
+// 1. A full 8b/10b encoder with running disparity tracking, OR
+// 2. Native SerDes encoding (e.g., Xilinx GTX/GTH 8b/10b mode)
+//
+// Real 8b/10b encoding requirements:
+// - Full lookup tables for all 256 data bytes + 12 K-codes
+// - Running disparity (RD) tracking for DC-balance
+// - Control symbol generation (K28.5, K27.7, etc.)
 // ============================================================
 class Encoder8b10b extends Component {
   val io = new Bundle {
@@ -16,14 +26,27 @@ class Encoder8b10b extends Component {
     val rdOut   = out Bool()   // Running disparity out
     val rdIn    = in  Bool()   // Running disparity in
   }
-  // Simplified: real implementation requires full 8b10b tables
-  // Here we just pass through with placeholder encoding
+  // PLACEHOLDER: Just pass through data without real encoding
+  // Real implementation would use lookup tables and RD tracking
   io.dataOut := io.dataIn.resize(10)
   io.rdOut   := io.rdIn ^ io.dataIn.xorR
 }
 
 // ============================================================
-// Simplified 8b/10b Decoder
+// Simplified 8b/10b Decoder (PLACEHOLDER IMPLEMENTATION)
+// ============================================================
+// WARNING: This is a simplified placeholder that does NOT perform
+// real 8b/10b decoding. It assumes data is already decoded.
+//
+// For production use, you must replace this with:
+// 1. A full 8b/10b decoder with disparity error detection, OR
+// 2. Native SerDes decoding (e.g., Xilinx GTX/GTH 8b/10b mode)
+//
+// Real 8b/10b decoding requirements:
+// - Full lookup tables for all valid 10-bit codes
+// - Running disparity checking
+// - Disparity error detection
+// - Code error detection for invalid symbols
 // ============================================================
 class Decoder8b10b extends Component {
   val io = new Bundle {
@@ -33,10 +56,11 @@ class Decoder8b10b extends Component {
     val codeErr  = out Bool()
     val rdErr    = out Bool()
   }
+  // PLACEHOLDER: Just extract lower 8 bits without real decoding
   io.dataOut := io.dataIn(7 downto 0)
   io.kCode   := io.dataIn(9) & io.dataIn(8)
-  io.codeErr := False
-  io.rdErr   := False
+  io.codeErr := False  // Would detect invalid symbols in real impl
+  io.rdErr   := False  // Would detect disparity errors in real impl
 }
 
 // ============================================================
@@ -263,12 +287,27 @@ class PhysicalLayer extends Component {
   val enc   = new Encoder8b10b()
   val dec   = new Decoder8b10b()
 
-  // LTSSM inputs (would come from actual SerDes in real design)
-  ltssm.io.rxDetected   := True  // Placeholder
-  ltssm.io.rxElecIdle   := False
-  ltssm.io.rxValid      := True
-  ltssm.io.ts1Rcvd      := True
-  ltssm.io.ts2Rcvd      := True
+  // ============================================================
+  // LTSSM Inputs (PLACEHOLDER - requires SerDes integration)
+  // ============================================================
+  // WARNING: These inputs are hardcoded placeholders for simulation.
+  // In a real design, these must come from the SerDes PHY:
+  // - rxDetected: Receiver detection from PHY
+  // - rxElecIdle: Electrical idle detection
+  // - rxValid: Valid symbol alignment
+  // - ts1Rcvd/ts2Rcvd: Training sequence detection
+  //
+  // For production, implement:
+  // 1. TS1/TS2 ordered set detection and parsing
+  // 2. Symbol alignment logic
+  // 3. Link number and lane negotiation
+  // 4. Speed change handshake
+  // ============================================================
+  ltssm.io.rxDetected   := True  // PLACEHOLDER: Should come from PHY
+  ltssm.io.rxElecIdle   := False // PLACEHOLDER: Should come from PHY
+  ltssm.io.rxValid      := True  // PLACEHOLDER: Should come from PHY
+  ltssm.io.ts1Rcvd      := True  // PLACEHOLDER: Detect K28.5 + TS1 data
+  ltssm.io.ts2Rcvd      := True  // PLACEHOLDER: Detect K28.5 + TS2 data
   ltssm.io.linkResetReq := False
   ltssm.io.pmReq        := False
 

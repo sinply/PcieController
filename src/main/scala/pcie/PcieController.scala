@@ -102,7 +102,22 @@ class PcieController(cfg: PcieControllerConfig = PcieControllerConfig()) extends
     rxEngine.io.tlpIn << dlRx.io.tlpOut
 
     // ============================================================
-    // Flow Control Manager
+    // Flow Control Manager (PARTIAL IMPLEMENTATION)
+    // ============================================================
+    // NOTE: Flow control update processing is not fully implemented.
+    // In PCIe, FC credits are consumed when sending TLPs and restored
+    // when receiving FC update DLLPs from the link partner.
+    //
+    // Current limitations:
+    // - FC update DLLPs are not processed (fcUpdateValid always False)
+    // - Credit consumption tracking is not connected
+    // - Credits will eventually run out in sustained traffic
+    //
+    // For production, implement:
+    // 1. FC DLLP reception in Data Link Layer
+    // 2. Parse FC credits from received DLLPs
+    // 3. Update fcMgr.io.fcUpdate with parsed credits
+    // 4. Track consumed credits from TLP TX
     // ============================================================
     fcMgr.io.init          := False
     fcMgr.io.phConsumed    := 0
@@ -155,7 +170,12 @@ class PcieController(cfg: PcieControllerConfig = PcieControllerConfig()) extends
     // Consume/drop inbound mem request
     inboundMemReq.ready := True
 
-    // I/O requests (simplified: just drop)
+    // I/O requests (NOT IMPLEMENTED)
+    // NOTE: I/O space requests are dropped without response.
+    // For production, implement:
+    // 1. I/O read/write handling
+    // 2. Completion generation for I/O reads
+    // 3. I/O address decoding
     rxEngine.io.ioReq.ready := True
 
     // ============================================================
