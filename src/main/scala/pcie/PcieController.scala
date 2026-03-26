@@ -168,7 +168,7 @@ class PcieController(cfg: PcieControllerConfig = PcieControllerConfig()) extends
   // Config requests → Config Space Controller
   cfgSpace.io.cfgReq  << rxEngine.io.cfgReq
   cfgSpace.io.busDevFunc := myBdf
-  cfgSpace.io.barCheckAddr := rxEngine.io.memReq.payload.addr
+  cfgSpace.io.barCheckAddr := rxEngine.io.memReq.valid ? rxEngine.io.memReq.payload.addr | U(0, 64 bits)
 
   // Config completions → TX Engine
   txEngine.io.cplIn   << cfgSpace.io.cfgResp

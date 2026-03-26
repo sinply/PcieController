@@ -10,51 +10,53 @@ import spinal.lib._
 
 // ============================================================
 // 8b/10b Encoder with Running Disparity Tracking
+// Use def methods instead of val to avoid "OLD NETLIST RE-USED" errors
+// Each call creates fresh hardware instances for SpinalHDL elaboration
 // ============================================================
 object Encoder8b10bTables {
-  // 5b/6b encoding tables
+  // 5b/6b encoding tables - returns fresh Vec each call
   // Index: 5-bit data
-  // Output: (RD- encoding, RD+ encoding)
-  val data5b6b = Vec(
-    // D0-D31: (RD- , RD+)
-    B"10'b011011_0100",  // D0  (D0.0)
-    B"10'b100011_1001",  // D1
-    B"10'b010011_0101",  // D2
-    B"10'b110010_1100",  // D3
-    B"10'b001011_0010",  // D4
-    B"10'b101010_1011",  // D5
-    B"10'b011010_0110",  // D6
-    B"10'b000111_0001",  // D7 (controls disparity)
-    B"10'b000111_0001",  // D8 (same as D7, controls disparity)
-    B"10'b100110_1001",  // D9
-    B"10'b010110_0101",  // D10
-    B"10'b110100_1100",  // D11
-    B"10'b001110_0010",  // D12
-    B"10'b101100_1011",  // D13
-    B"10'b011100_0110",  // D14
-    B"10'b101000_1010",  // D15
-    B"10'b100101_1001",  // D16
-    B"10'b100011_1001",  // D17
-    B"10'b010101_0101",  // D18
-    B"10'b110100_1100",  // D19
-    B"10'b001101_0010",  // D20
-    B"10'b101100_1011",  // D21
-    B"10'b011100_0110",  // D22
-    B"10'b101000_1010",  // D23
-    B"10'b100101_1001",  // D24
-    B"10'b010011_0101",  // D25
-    B"10'b110010_1100",  // D26
-    B"10'b001011_0010",  // D27
-    B"10'b101010_1011",  // D28
-    B"10'b011010_0110",  // D29
-    B"10'b111010_1110",  // D30
-    B"10'b110101_1101"   // D31
+  // Output: 12 bits = (RD- encoding [11:6], RD+ encoding [5:0])
+  def data5b6b: Vec[Bits] = Vec(
+    // D0-D31: (RD- [11:6], RD+ [5:0])
+    B"12'b011011_100100",  // D0  (D0.0)
+    B"12'b100011_011100",  // D1
+    B"12'b010011_101100",  // D2
+    B"12'b110010_001101",  // D3
+    B"12'b001011_110100",  // D4
+    B"12'b101010_010101",  // D5
+    B"12'b011010_100101",  // D6
+    B"12'b000111_111000",  // D7 (controls disparity)
+    B"12'b000111_111000",  // D8 (same as D7, controls disparity)
+    B"12'b100110_011001",  // D9
+    B"12'b010110_101001",  // D10
+    B"12'b110100_001011",  // D11
+    B"12'b001110_110001",  // D12
+    B"12'b101100_010011",  // D13
+    B"12'b011100_100011",  // D14
+    B"12'b101000_010111",  // D15
+    B"12'b100101_011010",  // D16
+    B"12'b100011_011100",  // D17
+    B"12'b010101_101010",  // D18
+    B"12'b110100_001011",  // D19
+    B"12'b001101_110010",  // D20
+    B"12'b101100_010011",  // D21
+    B"12'b011100_100011",  // D22
+    B"12'b101000_010111",  // D23
+    B"12'b100101_011010",  // D24
+    B"12'b010011_101100",  // D25
+    B"12'b110010_001101",  // D26
+    B"12'b001011_110100",  // D27
+    B"12'b101010_010101",  // D28
+    B"12'b011010_100101",  // D29
+    B"12'b111010_000101",  // D30
+    B"12'b110101_001010"   // D31
   )
 
-  // 3b/4b encoding tables
+  // 3b/4b encoding tables - returns fresh Vec each call
   // Index: 3-bit data
-  val data3b4b = Vec(
-    // (RD- , RD+)
+  // Output: 8 bits = (RD- [7:4], RD+ [3:0])
+  def data3b4b: Vec[Bits] = Vec(
     B"8'b0100_1011",  // .0
     B"8'b1001_0110",  // .1
     B"8'b0101_1010",  // .2
@@ -65,18 +67,20 @@ object Encoder8b10bTables {
     B"8'b0001_0111"   // .7 (controls disparity for D.x.A7)
   )
 
-  // K-code 5b/6b encoding
-  val kCode5b6b = Vec(
-    B"10'b110111_111000",  // K28.0 - comma character
-    B"10'b011011_100100",  // K23
-    B"10'b101011_010100",  // K27
-    B"10'b110011_001100",  // K28
-    B"10'b111001_000110",  // K29
-    B"10'b101101_010010"   // K30
+  // K-code 5b/6b encoding - returns fresh Vec each call
+  // 6 bits RD- and 6 bits RD+ = 12 bits total
+  def kCode5b6b: Vec[Bits] = Vec(
+    B"12'b001000_110111",  // K28.0 - comma character (RD+, RD-)
+    B"12'b100100_011011",  // K23
+    B"12'b010100_101011",  // K27
+    B"12'b001100_110011",  // K28
+    B"12'b000110_111001",  // K29
+    B"12'b010010_101101"   // K30
   )
 
-  // K-code 3b/4b encoding (same as data for .0-.7)
-  val kCode3b4b = Vec(
+  // K-code 3b/4b encoding - returns fresh Vec each call
+  // Same format as data for .0-.7
+  def kCode3b4b: Vec[Bits] = Vec(
     B"8'b0100_1011",  // K28.0
     B"8'b1001_0110",  // K28.1
     B"8'b0101_1010",  // K28.2
@@ -128,11 +132,12 @@ class Encoder8b10b extends Component {
     val k28x = (data5b === 28)
     when(k28x) {
       // K28.x codes - index 3 in kCode5b6b table
-      encoded6b := Mux(rd, Encoder8b10bTables.kCode5b6b(U(3, 2 bits))(5 downto 0),
-                            Encoder8b10bTables.kCode5b6b(U(3, 2 bits))(11 downto 6))
+      encoded6b := Mux(rd, Encoder8b10bTables.kCode5b6b(U(3, 3 bits))(5 downto 0),
+                            Encoder8b10bTables.kCode5b6b(U(3, 3 bits))(11 downto 6))
     } otherwise {
       // Other K codes (K23, K27, K29, K30)
-      val kIdx = data5b(1 downto 0).asUInt
+      // Map: K23->0, K27->1, K29->2, K30->3, K28->4, K28.0->5
+      val kIdx = data5b(1 downto 0).asUInt.resize(3)
       encoded6b := Mux(rd, Encoder8b10bTables.kCode5b6b(kIdx)(5 downto 0),
                             Encoder8b10bTables.kCode5b6b(kIdx)(11 downto 6))
     }

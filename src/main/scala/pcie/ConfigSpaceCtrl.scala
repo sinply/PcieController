@@ -50,6 +50,20 @@ class PcieConfigSpaceCtrl(
 
     // BAR probe state for size discovery
     val barProbe = Vec.fill(6)(Reg(Bool()) init(False))
+
+    // Self-assignments for read-only registers to avoid UNASSIGNED REGISTER warnings
+    vendorIdReg := vendorIdReg
+    deviceIdReg := deviceIdReg
+    revisionId := revisionId
+    classCodeReg := classCodeReg
+    latencyTimer := latencyTimer
+    for(i <- 2 until 6) bar(i) := bar(i)  // BAR2-5 are read-only
+    subVendorId := subVendorId
+    subSystemId := subSystemId
+    capPointer := capPointer
+    intLine := intLine
+    intPin := intPin
+    for(i <- 0 until 6) barProbe(i) := barProbe(i)
   }
 
   // -------------------------------------------------------
@@ -61,8 +75,12 @@ class PcieConfigSpaceCtrl(
   val extConfigMem = Mem(Bits(32 bits), EXT_CFG_DWORDS)
 
   // Helper functions for extended config access
-  def isExtDw(dwAddr: UInt): Bool = (dwAddr >= U(0x40, 12 bits)) && (dwAddr < U(0x400, 12 bits))
-  def extIdx(dwAddr: UInt): UInt = (dwAddr - U(0x40, 12 bits)).resize(extAddrWidth)
+  // dwAddr is 10 bits (addr[11:2]), representing DWORD addresses 0-1023
+  // Extended config space starts at DWORD 0x40 (byte 0x100) and goes to DWORD 0x3FF (byte 0xFFC)
+  // 0x400 (1024) exceeds 10-bit range, so we only need to check if dwAddr >= 0x40
+  // (a 10-bit value can never be >= 1024, so the upper bound check is implicit)
+  def isExtDw(dwAddr: UInt): Bool = dwAddr >= U(0x40, dwAddr.getWidth bits)
+  def extIdx(dwAddr: UInt): UInt = (dwAddr - U(0x40, dwAddr.getWidth bits)).resize(extAddrWidth)
 
   // -------------------------------------------------------
   // MSI-X Capability (at offset 0x40)
@@ -75,6 +93,14 @@ class PcieConfigSpaceCtrl(
     val tableOff   = Reg(Bits(29 bits)) init(0x0000)
     val pbaBIR     = Reg(Bits(3 bits)) init(0x1)      // BAR1
     val pbaOff     = Reg(Bits(29 bits)) init(0x1000)  // PBA after table
+
+    // Self-assignments for read-only registers
+    nextCap := nextCap
+    msgCtrl := msgCtrl
+    tableBIR := tableBIR
+    tableOff := tableOff
+    pbaBIR := pbaBIR
+    pbaOff := pbaOff
   }
 
   // -------------------------------------------------------
@@ -87,6 +113,13 @@ class PcieConfigSpaceCtrl(
     val pmCtrlStat = Reg(Bits(16 bits)) init(0x0000)  // D0 state
     val pmData     = Reg(Bits(8 bits))  init(0x00)    // PM data
     val pmBridgeExt = Reg(Bits(8 bits)) init(0x00)    // Bridge extensions
+
+    // Keep register values (no external write path)
+    nextCap := nextCap
+    pmCapReg := pmCapReg
+    pmCtrlStat := pmCtrlStat
+    pmData := pmData
+    pmBridgeExt := pmBridgeExt
   }
 
   // -------------------------------------------------------
@@ -102,6 +135,16 @@ class PcieConfigSpaceCtrl(
     val linkCap    = Reg(Bits(32 bits)) init(0x00012412)  // Gen2, x1, ASPM L0s
     val linkCtrl   = Reg(Bits(16 bits)) init(0x0000)
     val linkStat   = Reg(Bits(16 bits)) init(0x0012)  // Gen2, x1
+
+    // Keep register values (no external write path)
+    nextCap := nextCap
+    pcieCapReg := pcieCapReg
+    devCap := devCap
+    devCtrl := devCtrl
+    devStat := devStat
+    linkCap := linkCap
+    linkCtrl := linkCtrl
+    linkStat := linkStat
   }
 
   // Expose config registers

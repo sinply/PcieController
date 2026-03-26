@@ -120,7 +120,10 @@ class TlpRxEngine(maxPayloadBytes: Int = 256) extends Component {
         pkt.tc       := dw(22 downto 20).asUInt
         pkt.attr     := dw(13 downto 12)
         pkt.dataValid := 0
-        for(i <- 0 until 4) pkt.data(i) := 0
+        pkt.data(0) := B(0, 32 bits)
+        pkt.data(1) := B(0, 32 bits)
+        pkt.data(2) := B(0, 32 bits)
+        pkt.data(3) := B(0, 32 bits)
 
         parseErrR := False
         overflowR := False
@@ -330,6 +333,19 @@ class IoRequestHandler extends Component {
   val state = Reg(IoState()) init(IoState.IDLE)
   val reqPkt = Reg(TlpStreamPacket())
   val respPkt = Reg(TlpStreamPacket())
+
+  // Initialize respPkt fields to avoid UNASSIGNED REGISTER warnings
+  respPkt.tlpType := TlpType.CPL
+  respPkt.reqId := 0
+  respPkt.tag := 0
+  respPkt.addr := 0
+  respPkt.length := 0
+  respPkt.firstBe := 0
+  respPkt.lastBe := 0
+  respPkt.tc := 0
+  respPkt.attr := 0
+  for (i <- 0 until 4) respPkt.data(i) := 0
+  respPkt.dataValid := 0
 
   // Default outputs
   io.regAddr := 0

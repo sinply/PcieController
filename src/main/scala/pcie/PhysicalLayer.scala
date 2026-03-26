@@ -529,6 +529,9 @@ class PhysicalLayer extends Component {
   ltssm.io.tsLaneNum    := tsDet.io.laneNum
   ltssm.io.linkResetReq := False  // From external control
   ltssm.io.pmReq        := False  // From power management
+  ltssm.io.pmState      := PmState.D0  // Default power state
+  ltssm.io.wakeReq      := False  // Wake request
+  ltssm.io.laneReversal := False  // Lane reversal detection
 
   // ============================================================
   // TX Path: Encoder -> SerDes
@@ -542,6 +545,9 @@ class PhysicalLayer extends Component {
   encoder.io.rdIn   := False
   encoder.io.kCode  := txKCode
   encoder.io.dataIn := 0
+
+  // Default txData.ready to avoid latch
+  io.txData.ready := False
 
   // Generate training sequences when requested by LTSSM
   when(ltssm.io.txTs1) {

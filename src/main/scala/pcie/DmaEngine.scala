@@ -218,8 +218,12 @@ class DmaEngine(maxPayload: Int = 256, maxDescriptors: Int = 256) extends Compon
   val maxPayloadDw = U(maxPayload / 4, 32 bits)
 
   // 4KB boundary calculation for reads
+  // Only lower 12 bits matter for 4KB boundary calculation
   val srcAddrFull = (srcAddrHi ## srcAddrLo).asUInt
-  val bytesTo4k = U(4096, 32 bits) - ((srcAddrFull + offset) & U(4095, 32 bits))
+  val offsetExtended = offset.resize(64 bits)
+  // Get lower 32 bits of address for 4KB boundary calculation
+  val addrLower32 = (srcAddrFull + offsetExtended)(31 downto 0)
+  val bytesTo4k = U(4096, 32 bits) - (addrLower32 & U(4095, 32 bits))
   val boundaryDw = (bytesTo4k >> 2).resized
 
   // Read chunk size: min(MRRS, 4KB boundary, remaining)
