@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>PCIe Controller Architecture</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f1117; color: #e2e8f0; font-family: 'Consolas', 'Monaco', monospace; padding: 24px; }
+  h1 { text-align: center; color: #63b3ed; font-size: 22px; margin-bottom: 6px; letter-spacing: 2px; }
+  .subtitle { text-align: center; color: #718096; font-size: 12px; margin-bottom: 24px; }
+
+  .diagram { display: flex; flex-direction: column; gap: 6px; max-width: 1100px; margin: 0 auto; }
+
+  /* Layers */
+  .layer { border-radius: 8px; padding: 12px 16px; position: relative; }
+  .layer-app  { background: #1a2035; border: 1.5px solid #4299e1; }
+  .layer-tl   { background: #1a2535; border: 1.5px solid #48bb78; }
+  .layer-dl   { background: #1a2530; border: 1.5px solid #ed8936; }
+  .layer-phy  { background: #201a35; border: 1.5px solid #9f7aea; }
+
+  .layer-title {
+    font-size: 11px; font-weight: bold; letter-spacing: 1.5px;
+    text-transform: uppercase; margin-bottom: 10px;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .lt-app  { background: #4299e1; color: #0f1117; }
+  .lt-tl   { background: #48bb78; color: #0f1117; }
+  .lt-dl   { background: #ed8936; color: #0f1117; }
+  .lt-phy  { background: #9f7aea; color: #0f1117; }
+
+  /* Module boxes */
+  .modules { display: flex; gap: 10px; flex-wrap: wrap; align-items: stretch; }
+  .mod {
+    border-radius: 6px; padding: 10px 14px;
+    font-size: 12px; flex: 1; min-width: 120px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .mod-title { font-weight: bold; font-size: 11px; margin-bottom: 4px; }
+  .mod-item  { font-size: 10px; color: #a0aec0; padding-left: 8px; }
+  .mod-item::before { content: "▸ "; color: #718096; }
+
+  .m-blue   { background: #1e3a5f; border: 1px solid #4299e1; }
+  .m-green  { background: #1a3a2a; border: 1px solid #48bb78; }
+  .m-orange { background: #3a2a1a; border: 1px solid #ed8936; }
+  .m-purple { background: #2a1a3a; border: 1px solid #9f7aea; }
+  .m-red    { background: #3a1a1a; border: 1px solid #fc8181; }
+  .m-teal   { background: #1a3a3a; border: 1px solid #4fd1c5; }
+  .m-yellow { background: #3a3a1a; border: 1px solid #f6e05e; }
+
+  /* Arrows between layers */
+  .arrow-row {
+    display: flex; justify-content: center; gap: 80px;
+    height: 28px; align-items: center;
+  }
+  .arrow {
+    display: flex; flex-direction: column; align-items: center;
+    font-size: 10px; color: #718096;
+  }
+  .arr-line { width: 2px; background: #4a5568; flex: 1; }
+  .arr-head { font-size: 14px; }
+  .arr-label { font-size: 9px; color: #a0aec0; white-space: nowrap; }
+  .arr-both { font-size: 14px; color: #4a5568; }
+
+  /* PHY interface bar */
+  .phy-bar {
+    background: #2d1f4e; border: 1.5px solid #9f7aea;
+    border-radius: 8px; padding: 12px 20px; text-align: center;
+    font-size: 12px; color: #d6bcfa; letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  /* Signal flow legend */
+  .legend { display: flex; gap: 20px; margin-top: 20px; justify-content: center; flex-wrap: wrap; }
+  .leg-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #a0aec0; }
+  .leg-color { width: 24px; height: 3px; border-radius: 2px; }
+
+  /* Data flow diagram */
+  .flow-section { margin-top: 28px; }
+  .flow-title { color: #63b3ed; font-size: 14px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #2d3748; }
+  .flows { display: flex; gap: 16px; flex-wrap: wrap; }
+  .flow-box {
+    background: #161b2e; border: 1px solid #2d3748; border-radius: 8px;
+    padding: 14px; flex: 1; min-width: 240px;
+  }
+  .flow-box h3 { font-size: 11px; font-weight: bold; margin-bottom: 10px; }
+  .flow-step {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 10px; color: #a0aec0; margin-bottom: 6px;
+  }
+  .step-num {
+    background: #2d3748; color: #63b3ed; width: 18px; height: 18px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 9px; flex-shrink: 0;
+  }
+  .flow-arrow { color: #4a5568; }
+
+  /* File list */
+  .files { margin-top: 28px; }
+  .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+  .file-item {
+    background: #161b2e; border: 1px solid #2d3748; border-radius: 6px;
+    padding: 10px 12px; font-size: 11px;
+  }
+  .file-name { color: #68d391; font-weight: bold; margin-bottom: 4px; }
+  .file-desc { color: #718096; font-size: 10px; }
+</style>
+</head>
+<body>
+
+<h1>⚡ PCIe Controller Architecture</h1>
+<p class="subtitle">SpinalHDL Implementation · PCIe Gen2 x1 · 250 MHz</p>
+
+<div class="diagram">
+
+  <!-- Application Layer -->
+  <div class="layer layer-app">
+    <div class="layer-title lt-app">Application Layer</div>
+    <div class="modules">
+      <div class="mod m-blue">
+        <div class="mod-title">🔄 DMA Engine</div>
+        <div class="mod-item">H2D: PCIe→Local Mem</div>
+        <div class="mod-item">D2H: Local Mem→PCIe</div>
+        <div class="mod-item">AXI4-Lite CSR</div>
+        <div class="mod-item">Max 256B Payload</div>
+      </div>
+      <div class="mod m-teal">
+        <div class="mod-title">🔔 MSI-X Controller</div>
+        <div class="mod-item">32 Interrupt Vectors</div>
+        <div class="mod-item">MSI-X Table (BAR1)</div>
+        <div class="mod-item">Pending Bit Array</div>
+        <div class="mod-item">Message TLP Gen</div>
+      </div>
+      <div class="mod m-yellow">
+        <div class="mod-title">🗂 Config Space</div>
+        <div class="mod-item">Vendor/Device ID</div>
+        <div class="mod-item">6× BAR Registers</div>
+        <div class="mod-item">Command/Status</div>
+        <div class="mod-item">Cap Pointer</div>
+      </div>
+      <div class="mod m-green" style="flex:0.6">
+        <div class="mod-title">🔗 AXI4 I/F</div>
+        <div class="mod-item">AXI4 Master</div>
+        <div class="mod-item">AXI4-Lite Slave</div>
+        <div class="mod-item">Local Memory</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow-row">
+    <div class="arrow">
+      <div class="arr-label">TlpStreamPacket</div>
+      <div class="arr-both">⇅</div>
+    </div>
+    <div class="arrow">
+      <div class="arr-label">CfgRd/CfgWr</div>
+      <div class="arr-both">⇅</div>
+    </div>
+    <div class="arrow">
+      <div class="arr-label">MsgTLP (MSI-X)</div>
+      <div class="arr-both">↓</div>
+    </div>
+  </div>
+
+  <!-- Transaction Layer -->
+  <div class="layer layer-tl">
+    <div class="layer-title lt-tl">Transaction Layer (TL)</div>
+    <div class="modules">
+      <div class="mod m-green">
+        <div class="mod-title">📤 TLP TX Engine</div>
+        <div class="mod-item">3DW / 4DW Headers</div>
+        <div class="mod-item">MemWr / MemRd TLP</div>
+        <div class="mod-item">Completion TLP</div>
+        <div class="mod-item">Round-Robin Arbiter</div>
+        <div class="mod-item">Per-channel FIFOs</div>
+      </div>
+      <div class="mod m-green">
+        <div class="mod-title">📥 TLP RX Engine</div>
+        <div class="mod-item">Header Parsing</div>
+        <div class="mod-item">TLP Classification</div>
+        <div class="mod-item">Mem/Cfg/Cpl Routing</div>
+        <div class="mod-item">4DW addr support</div>
+        <div class="mod-item">Parse Error Flag</div>
+      </div>
+      <div class="mod m-teal">
+        <div class="mod-title">🏦 Flow Control</div>
+        <div class="mod-item">Posted Credits (PH/PD)</div>
+        <div class="mod-item">Non-Posted (NPH/NPD)</div>
+        <div class="mod-item">Completion (CplH/D)</div>
+        <div class="mod-item">Credit Updates</div>
+      </div>
+      <div class="mod m-yellow">
+        <div class="mod-title">🏷 Tag Manager</div>
+        <div class="mod-item">8-bit Tag Space</div>
+        <div class="mod-item">Outstanding Requests</div>
+        <div class="mod-item">Completion Matching</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow-row">
+    <div class="arrow">
+      <div class="arr-label">32-bit DWORD stream</div>
+      <div class="arr-both">⇅</div>
+    </div>
+    <div class="arrow">
+      <div class="arr-label">SeqNum / ACK/NAK</div>
+      <div class="arr-both">⇅</div>
+    </div>
+  </div>
+
+  <!-- Data Link Layer -->
+  <div class="layer layer-dl">
+    <div class="layer-title lt-dl">Data Link Layer (DL)</div>
+    <div class="modules">
+      <div class="mod m-orange">
+        <div class="mod-title">📦 TX Framer</div>
+        <div class="mod-item">Sequence Number Gen</div>
+        <div class="mod-item">LCRC-32 Generation</div>
+        <div class="mod-item">Frame Encapsulation</div>
+        <div class="mod-item">Replay Buffer (256)</div>
+      </div>
+      <div class="mod m-orange">
+        <div class="mod-title">📬 RX Deframer</div>
+        <div class="mod-item">Sequence Checking</div>
+        <div class="mod-item">LCRC-32 Verification</div>
+        <div class="mod-item">ACK / NAK Generation</div>
+        <div class="mod-item">CRC Error Flag</div>
+      </div>
+      <div class="mod m-red" style="flex:0.7">
+        <div class="mod-title">⚠️ Error Handler</div>
+        <div class="mod-item">CRC Error Recovery</div>
+        <div class="mod-item">NAK → Retransmit</div>
+        <div class="mod-item">Timeout Monitor</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow-row">
+    <div class="arrow">
+      <div class="arr-label">Framed DWORDs</div>
+      <div class="arr-both">⇅</div>
+    </div>
+    <div class="arrow">
+      <div class="arr-label">10-bit Symbols</div>
+      <div class="arr-both">⇅</div>
+    </div>
+  </div>
+
+  <!-- Physical Layer -->
+  <div class="layer layer-phy">
+    <div class="layer-title lt-phy">Physical Layer (PHY)</div>
+    <div class="modules">
+      <div class="mod m-purple">
+        <div class="mod-title">🔃 LTSSM</div>
+        <div class="mod-item">Detect → Polling</div>
+        <div class="mod-item">Config → L0</div>
+        <div class="mod-item">Recovery / L1 / L2</div>
+        <div class="mod-item">Hot Reset</div>
+      </div>
+      <div class="mod m-purple">
+        <div class="mod-title">🔢 8b/10b Encoder</div>
+        <div class="mod-item">Running Disparity</div>
+        <div class="mod-item">K-code Symbols</div>
+        <div class="mod-item">Scrambler (LFSR)</div>
+      </div>
+      <div class="mod m-purple">
+        <div class="mod-title">🔡 8b/10b Decoder</div>
+        <div class="mod-item">Symbol Alignment</div>
+        <div class="mod-item">Disparity Check</div>
+        <div class="mod-item">Elastic Buffer</div>
+      </div>
+      <div class="mod m-red" style="flex:0.7">
+        <div class="mod-title">📡 SerDes I/F</div>
+        <div class="mod-item">5 GT/s (Gen2)</div>
+        <div class="mod-item">x1 Lane</div>
+        <div class="mod-item">Diff Pair TX/RX</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHY pins -->
+  <div class="phy-bar">
+    ⬤ txSymbols[9:0] &nbsp;&nbsp;|&nbsp;&nbsp; ⬤ rxSymbols[9:0]
+    &nbsp;&nbsp;&nbsp;&nbsp;PCIe Serial Differential Pair (TX+/TX− · RX+/RX−)
+  </div>
+
+</div>
+
+<!-- Data Flow Section -->
+<div class="flow-section" style="max-width:1100px;margin:28px auto 0">
+  <div class="flow-title">📊 典型事务流程</div>
+  <div class="flows">
+
+    <div class="flow-box">
+      <h3 style="color:#48bb78">✏️ Memory Write (D2H DMA)</h3>
+      <div class="flow-step"><div class="step-num">1</div>User writes DMA descriptor via AXI4-Lite</div>
+      <div class="flow-step"><div class="step-num">2</div>DMA Engine reads local memory (AXI4)</div>
+      <div class="flow-step"><div class="step-num">3</div>DMA generates MWr TlpStreamPacket</div>
+      <div class="flow-step"><div class="step-num">4</div>TLP TX Engine serializes to 32-bit DWORDs</div>
+      <div class="flow-step"><div class="step-num">5</div>DL Framer adds SeqNum + LCRC</div>
+      <div class="flow-step"><div class="step-num">6</div>PHY 8b/10b encodes → SerDes TX</div>
+      <div class="flow-step"><div class="step-num">7</div>Root Complex ACKs → D2H Done flag</div>
+    </div>
+
+    <div class="flow-box">
+      <h3 style="color:#4299e1">📖 Memory Read (H2D DMA)</h3>
+      <div class="flow-step"><div class="step-num">1</div>DMA issues MRd TLP (tag assigned)</div>
+      <div class="flow-step"><div class="step-num">2</div>TLP TX → DL → PHY → Root Complex</div>
+      <div class="flow-step"><div class="step-num">3</div>Root Complex returns CplD TLP</div>
+      <div class="flow-step"><div class="step-num">4</div>PHY RX → DL deframes + verifies LCRC</div>
+      <div class="flow-step"><div class="step-num">5</div>TLP RX Engine parses, matches tag</div>
+      <div class="flow-step"><div class="step-num">6</div>Completion data sent to DMA Engine</div>
+      <div class="flow-step"><div class="step-num">7</div>DMA writes data to local AXI memory</div>
+    </div>
+
+    <div class="flow-box">
+      <h3 style="color:#f6e05e">⚙️ Config Read (Enumeration)</h3>
+      <div class="flow-step"><div class="step-num">1</div>Root Complex sends CfgRd0 TLP</div>
+      <div class="flow-step"><div class="step-num">2</div>RX Engine routes to Config Space Ctrl</div>
+      <div class="flow-step"><div class="step-num">3</div>Decode DWORD address (0x00=VID/DID…)</div>
+      <div class="flow-step"><div class="step-num">4</div>Config Space generates CplD TLP</div>
+      <div class="flow-step"><div class="step-num">5</div>TX Engine → DL → PHY → Root Complex</div>
+    </div>
+
+    <div class="flow-box">
+      <h3 style="color:#fc8181">🔔 MSI-X Interrupt</h3>
+      <div class="flow-step"><div class="step-num">1</div>User asserts intReq[n]</div>
+      <div class="flow-step"><div class="step-num">2</div>MSI-X Ctrl scans pending bits</div>
+      <div class="flow-step"><div class="step-num">3</div>Read vector address/data from MSI-X table</div>
+      <div class="flow-step"><div class="step-num">4</div>Generate Msg TLP (MsgD format)</div>
+      <div class="flow-step"><div class="step-num">5</div>TX Engine → DL → PHY → Root Complex</div>
+      <div class="flow-step"><div class="step-num">6</div>intAck[n] asserted, pending bit cleared</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Source Files -->
+<div class="files" style="max-width:1100px;margin:28px auto 0">
+  <div class="flow-title">📁 SpinalHDL 源文件</div>
+  <div class="file-grid">
+    <div class="file-item">
+      <div class="file-name">PcieTypes.scala</div>
+      <div class="file-desc">TLP 数据结构、枚举类型、配置寄存器、DMA 描述符</div>
+    </div>
+    <div class="file-item">
+      <div class="file-name">PcieController.scala</div>
+      <div class="file-desc">顶层集成模块、Verilog 生成、仿真测试台</div>
+    </div>
+    <div class="file-item">
+      <div class="file-name">ConfigSpaceCtrl.scala</div>
+      <div class="file-desc">Type 0 配置空间控制器，CfgRd/CfgWr 处理</div>
+    </div>
+    <div class="file-item">
+      <div class="file-name">TlpTxEngine.scala</div>
+      <div class="file-desc">TLP 发送引擎，3DW/4DW 头部序列化，优先级仲裁</div>
+    </div>
+    <div class="file-item">
+      <div class="file-name">TlpRxEngine.scala</div>
+      <div class="file-desc">TLP 接收引擎，包解析，按类型路由到各处理器</div>
+    </div>
+    <div class="file-item">
+      <div class="file-name">DataLinkLayer.scala</div>
+      <div class="file-desc">DL TX/RX、LCRC-32、序列号、ACK/NAK、流控</div>
+    </div>
+    <div class="file-item">
+      <div class="file-name">DmaEngine.scala</div>
+      <div class="file-desc">Scatter-Gather DMA，H2D/D2H，AXI4-Lite CSR</div>
+    </div>
+    <div class="file-item">
+      <div class="file-name">MsixController.scala</div>
+      <div class="file-desc">MSI-X 中断控制器，32 向量，PBA，表 MMIO</div>
+    </div>
+    <div class="file-item">
+      <div class="file-name">PhysicalLayer.scala</div>
+      <div class="file-desc">LTSSM 状态机，8b/10b 编解码，SerDes 接口</div>
+    </div>
+    <div class="file-item">
+      <div class="file-name">build.sbt</div>
+      <div class="file-desc">SBT 构建配置，SpinalHDL 1.9.4 依赖</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

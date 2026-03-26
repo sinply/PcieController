@@ -1,0 +1,19 @@
+# Build
+target/
+tmp/
+
+# IDE
+.idea/
+.bsp/
+.vscode/
+
+# Simulation
+simWorkspace/
+
+# Build artifacts
+*.jar
+*.class
+*.log
+
+# Generated RTL (optional - uncomment if you don't want to track)
+# rtl/
