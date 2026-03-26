@@ -1,19 +1,34 @@
-# Build
+# SBT
 target/
+project/target/
+project/project/
+.bloop/
+.bsp/
+.metals/
+metals.sbt
+
+# Build
 tmp/
+*.class
+*.jar
+*.log
+*.bak
 
 # IDE
 .idea/
-.bsp/
 .vscode/
+*.iml
+
+# Scala
+*.tasty
+*.semanticdb
 
 # Simulation
 simWorkspace/
 
-# Build artifacts
-*.jar
-*.class
-*.log
+# OS
+.DS_Store
+Thumbs.db
 
 # Generated RTL (optional - uncomment if you don't want to track)
 # rtl/
