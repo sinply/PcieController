@@ -154,19 +154,40 @@ class DlRxDeframer extends Component {
 }
 
 // ============================================================
-// Flow Control Manager
+// Flow Control Manager with Full Credit Tracking
 // ============================================================
 class FlowControlMgr extends Component {
   val io = new Bundle {
+    // Initialization
     val init          = in  Bool()
-    val phConsumed    = in  UInt(4 bits)
-    val nphConsumed   = in  UInt(4 bits)
-    val cplhConsumed  = in  UInt(4 bits)
+    val linkUp        = in  Bool()
+
+    // Credit consumption from TLP TX
+    val phConsumed    = in  UInt(8 bits)
+    val pdConsumed    = in  UInt(12 bits)
+    val nphConsumed   = in  UInt(8 bits)
+    val npdConsumed   = in  UInt(12 bits)
+    val cplhConsumed  = in  UInt(8 bits)
+    val cpldConsumed  = in  UInt(12 bits)
+
+    // FC update from received DLLPs
     val fcUpdateValid = in  Bool()
     val fcUpdate      = in(FlowControlCredits())
+
+    // FC Init from FCP DLLPs (during link training)
+    val fcInitValid   = in  Bool()
+    val fcInit        = in(FlowControlCredits())
+
+    // Available credits for TX
     val available     = out(FlowControlCredits())
+
+    // Credit status for monitoring
+    val phExhausted   = out Bool()
+    val nphExhausted  = out Bool()
+    val cplhExhausted = out Bool()
   }
 
+  // Credit counters
   val ph   = Reg(UInt(8  bits)) init(16)
   val nph  = Reg(UInt(8  bits)) init(16)
   val cplh = Reg(UInt(8  bits)) init(16)
@@ -174,25 +195,173 @@ class FlowControlMgr extends Component {
   val npd  = Reg(UInt(12 bits)) init(512)
   val cpld = Reg(UInt(12 bits)) init(512)
 
-  when(io.init) { ph := 0; nph := 0; cplh := 0; pd := 0; npd := 0; cpld := 0 }
+  // Infinite credits for completion (we always accept completions)
+  val cplhInfinite = Reg(Bool()) init(False)
+  val cpldInfinite = Reg(Bool()) init(False)
 
-  when(io.fcUpdateValid) {
-    ph   := io.fcUpdate.phCredits
-    nph  := io.fcUpdate.nphCredits
-    cplh := io.fcUpdate.cplhCredits
-    pd   := io.fcUpdate.pdCredits
-    npd  := io.fcUpdate.npdCredits
-    cpld := io.fcUpdate.cpldCredits
+  // Initialize credits (reset or link down)
+  when(io.init || !io.linkUp) {
+    ph := 0; nph := 0; cplh := 0
+    pd := 0; npd := 0; cpld := 0
+    cplhInfinite := False
+    cpldInfinite := False
   }
 
-  when(io.phConsumed   > 0) { ph   := Mux(ph   >= io.phConsumed.resized,   ph   - io.phConsumed.resized,   U(0, 8 bits)) }
-  when(io.nphConsumed  > 0) { nph  := Mux(nph  >= io.nphConsumed.resized,  nph  - io.nphConsumed.resized,  U(0, 8 bits)) }
-  when(io.cplhConsumed > 0) { cplh := Mux(cplh >= io.cplhConsumed.resized, cplh - io.cplhConsumed.resized, U(0, 8 bits)) }
+  // FC Init from FCP DLLPs (Initial FC values during link training)
+  when(io.fcInitValid) {
+    ph := io.fcInit.phCredits
+    nph := io.fcInit.nphCredits
+    cplh := io.fcInit.cplhCredits
+    pd := io.fcInit.pdCredits
+    npd := io.fcInit.npdCredits
+    cpld := io.fcInit.cpldCredits
+    // Check for infinite credits (0x80 means infinite for headers, 0x800 for data)
+    cplhInfinite := io.fcInit.cplhCredits(7)
+    cpldInfinite := io.fcInit.cpldCredits(11)
+  }
 
+  // FC Update from UpdateFC DLLPs
+  when(io.fcUpdateValid) {
+    when(!cplhInfinite) {
+      ph := ph + io.fcUpdate.phCredits
+      nph := nph + io.fcUpdate.nphCredits
+      cplh := cplh + io.fcUpdate.cplhCredits
+    }
+    when(!cpldInfinite) {
+      pd := pd + io.fcUpdate.pdCredits
+      npd := npd + io.fcUpdate.npdCredits
+      cpld := cpld + io.fcUpdate.cpldCredits
+    }
+  }
+
+  // Credit consumption from TLP transmission
+  when(io.phConsumed > 0) {
+    ph := Mux(ph >= io.phConsumed, ph - io.phConsumed, U(0, 8 bits))
+  }
+  when(io.pdConsumed > 0) {
+    pd := Mux(pd >= io.pdConsumed, pd - io.pdConsumed, U(0, 12 bits))
+  }
+  when(io.nphConsumed > 0) {
+    nph := Mux(nph >= io.nphConsumed, nph - io.nphConsumed, U(0, 8 bits))
+  }
+  when(io.npdConsumed > 0) {
+    npd := Mux(npd >= io.npdConsumed, npd - io.npdConsumed, U(0, 12 bits))
+  }
+  when(io.cplhConsumed > 0 && !cplhInfinite) {
+    cplh := Mux(cplh >= io.cplhConsumed, cplh - io.cplhConsumed, U(0, 8 bits))
+  }
+  when(io.cpldConsumed > 0 && !cpldInfinite) {
+    cpld := Mux(cpld >= io.cpldConsumed, cpld - io.cpldConsumed, U(0, 12 bits))
+  }
+
+  // Output available credits
   io.available.phCredits   := ph
   io.available.nphCredits  := nph
-  io.available.cplhCredits := cplh
+  io.available.cplhCredits := Mux(cplhInfinite, U(0xFF, 8 bits), cplh)
   io.available.pdCredits   := pd
   io.available.npdCredits  := npd
-  io.available.cpldCredits := cpld
+  io.available.cpldCredits := Mux(cpldInfinite, U(0xFFF, 12 bits), cpld)
+
+  // Exhausted flags for backpressure
+  io.phExhausted   := (ph === 0)
+  io.nphExhausted  := (nph === 0)
+  io.cplhExhausted := (cplh === 0) && !cplhInfinite
+}
+
+// ============================================================
+// DLLP (Data Link Layer Packet) Handler
+// Handles ACK, NAK, and FC DLLPs
+// ============================================================
+object DllpType extends SpinalEnum(binaryOneHot) {
+  val ACK, NAK, PM_ENTER_L1, PM_REQ_ACK,
+      FC_P, FC_NP, FC_CPL, FC_P_RESERVED = newElement()
+}
+
+class DllpHandler extends Component {
+  val io = new Bundle {
+    // From RX path
+    val dllpIn    = slave  Stream(Bits(32 bits))
+    val dllpValid = in  Bool()
+
+    // To TX path
+    val ackSeq    = out UInt(12 bits)
+    val ackValid  = out Bool()
+    val nakSeq    = out UInt(12 bits)
+    val nakValid  = out Bool()
+
+    // To Flow Control Manager
+    val fcInitValid = out Bool()
+    val fcInit      = out(FlowControlCredits())
+    val fcUpdateValid = out Bool()
+    val fcUpdate    = out(FlowControlCredits())
+
+    // To Power Management
+    val pmEnterL1  = out Bool()
+  }
+
+  // DLLP format: [Type(4)][Data(24)][CRC(4)]
+  val dllpType = io.dllpIn.payload(31 downto 28)
+  val dllpData = io.dllpIn.payload(27 downto 4)
+
+  io.ackValid := False
+  io.nakValid := False
+  io.ackSeq := 0
+  io.nakSeq := 0
+  io.fcInitValid := False
+  io.fcUpdateValid := False
+  io.pmEnterL1 := False
+
+  // Default outputs
+  io.fcInit.phCredits := 0
+  io.fcInit.nphCredits := 0
+  io.fcInit.cplhCredits := 0
+  io.fcInit.pdCredits := 0
+  io.fcInit.npdCredits := 0
+  io.fcInit.cpldCredits := 0
+  io.fcUpdate := io.fcInit
+
+  when(io.dllpValid && io.dllpIn.fire) {
+    switch(dllpType) {
+      // ACK DLLP
+      is(B"4'h0") {
+        io.ackSeq := dllpData(11 downto 0).asUInt
+        io.ackValid := True
+      }
+      // NAK DLLP
+      is(B"4'h1") {
+        io.nakSeq := dllpData(11 downto 0).asUInt
+        io.nakValid := True
+      }
+      // PM_Enter_L1 DLLP
+      is(B"4'h2") {
+        io.pmEnterL1 := True
+      }
+      // FC_P (Posted) Init
+      is(B"4'hB") {
+        io.fcInitValid := True
+        io.fcInit.phCredits := dllpData(3 downto 0).asUInt.resize(8) ## dllpData(7 downto 4)
+        io.fcInit.pdCredits := dllpData(19 downto 8).asUInt
+      }
+      // FC_NP (Non-Posted) Init
+      is(B"4'hC") {
+        io.fcInitValid := True
+        io.fcInit.nphCredits := dllpData(3 downto 0).asUInt.resize(8) ## dllpData(7 downto 4)
+        io.fcInit.npdCredits := dllpData(19 downto 8).asUInt
+      }
+      // FC_CPL (Completion) Init
+      is(B"4'hD") {
+        io.fcInitValid := True
+        io.fcInit.cplhCredits := dllpData(3 downto 0).asUInt.resize(8) ## dllpData(7 downto 4)
+        io.fcInit.cpldCredits := dllpData(19 downto 8).asUInt
+      }
+      // UpdateFC DLLPs (similar format, different type codes)
+      is(B"4'hE") {
+        io.fcUpdateValid := True
+        io.fcUpdate.phCredits := dllpData(3 downto 0).asUInt.resize(8)
+        io.fcUpdate.pdCredits := dllpData(15 downto 4).asUInt
+      }
+    }
+  }
+
+  io.dllpIn.ready := True
 }

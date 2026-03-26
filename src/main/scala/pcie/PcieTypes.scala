@@ -68,6 +68,7 @@ case class TlpCplHeader() extends Bundle {
 
 // ============================================================
 // TLP Stream Packet (serialized to 32-bit DWORDS)
+// Supports streaming data path with configurable inline data
 // ============================================================
 case class TlpStreamPacket() extends Bundle {
   val tlpType  = TlpType()
@@ -79,8 +80,38 @@ case class TlpStreamPacket() extends Bundle {
   val lastBe   = Bits(4 bits)
   val tc       = UInt(3 bits)
   val attr     = Bits(2 bits)
-  val data     = Vec(Bits(32 bits), 4)  // up to 4 DWORDs inline
-  val dataValid = UInt(3 bits)          // how many data DWORDs valid
+  val data     = Vec(Bits(32 bits), 4)  // Inline data for small payloads (up to 16 bytes)
+  val dataValid = UInt(3 bits)          // How many inline data DWORDs valid
+}
+
+// ============================================================
+// Extended TLP Stream Packet with larger buffer for streaming
+// Supports max payload size (up to 256 bytes = 64 DWORDs)
+// ============================================================
+case class TlpStreamPacketExtended() extends Bundle {
+  val tlpType  = TlpType()
+  val reqId    = UInt(16 bits)
+  val tag      = UInt(8 bits)
+  val addr     = UInt(64 bits)
+  val length   = UInt(10 bits)
+  val firstBe  = Bits(4 bits)
+  val lastBe   = Bits(4 bits)
+  val tc       = UInt(3 bits)
+  val attr     = Bits(2 bits)
+  val data     = Vec(Bits(32 bits), 64) // Full max payload support
+  val dataValid = UInt(7 bits)          // How many data DWORDs valid (0-64)
+  val dataLast  = Bool()                // Last beat of data
+}
+
+// ============================================================
+// Streaming TLP Data Interface
+// For large payloads, data is streamed rather than buffered
+// ============================================================
+case class TlpDataStream() extends Bundle {
+  val data     = Bits(32 bits)
+  val valid    = Bool()
+  val last     = Bool()
+  val byteEn   = Bits(4 bits)
 }
 
 // ============================================================

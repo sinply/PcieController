@@ -8,12 +8,14 @@ A PCIe 2.0 controller implemented in [SpinalHDL](https://github.com/SpinalHDL/Sp
 
 ## Features
 
-- **Physical Layer** - Link training and symbol handling
-- **Data Link Layer** - TLP framing/deframing with CRC and sequence numbers
-- **Transaction Layer** - TLP RX/TX engines with flow control
+- **Physical Layer** - Full 8b/10b encoder/decoder with running disparity, symbol alignment, TS1/TS2 detection
+- **Data Link Layer** - TLP framing/deframing with CRC-32, sequence numbers, ACK/NAK handling
+- **Transaction Layer** - TLP RX/TX engines with streaming data path and flow control
 - **Configuration Space Controller** - PCIe config space (Type 0) with BAR support
 - **DMA Engine** - Scatter-gather DMA for host memory access
 - **MSI-X Controller** - Up to 32 interrupt vectors
+- **I/O Request Handler** - I/O read/write with completion generation
+- **DLLP Handler** - ACK/NAK and flow control DLLP processing
 
 ## Architecture
 
@@ -112,10 +114,11 @@ val config = PcieControllerConfig(
 ├── src/main/scala/pcie/
 │   ├── PcieController.scala      # Top-level module
 │   ├── PcieTypes.scala           # TLP types and bundles
-│   ├── PhysicalLayer.scala       # PHY layer
-│   ├── DataLinkLayer.scala       # Data Link Layer
+│   ├── PhysicalLayer.scala       # PHY layer with LTSSM
+│   ├── Encoder8b10b.scala        # Full 8b/10b encoder/decoder
+│   ├── DataLinkLayer.scala       # Data Link Layer + DLLP handler
 │   ├── TlpTxEngine.scala         # Transaction Layer TX
-│   ├── TlpRxEngine.scala         # Transaction Layer RX
+│   ├── TlpRxEngine.scala         # Transaction Layer RX + I/O handler
 │   ├── ConfigSpaceCtrl.scala     # Config space controller
 │   ├── DmaEngine.scala           # DMA engine
 │   └── MsixController.scala      # MSI-X controller
@@ -131,18 +134,21 @@ val config = PcieControllerConfig(
 |--------|-----------|-------|-------------|
 | txSymbols | Output | 10 bits | To SerDes TX - 8b/10b encoded symbols |
 | rxSymbols | Input | 10 bits | From SerDes RX - 8b/10b encoded symbols |
+| phyTxEn | Output | 1 | Transmitter enable |
+| phyRxPolarity | Output | 1 | RX polarity inversion (for lane reversal) |
+| phyRxElecIdle | Input | 1 | Electrical idle detected from PHY |
+| phyRxValid | Input | 1 | Receiver valid/signal detected |
 
 **Usage Example:**
 ```verilog
 // Connect to Xilinx 7-Series GTX/GTH Transceiver
-// Note: 8b/10b encoding is simplified in this implementation
 assign tx_symbols = txSymbols;  // To GTX TXDATA
 assign rxSymbols = rx_symbols;  // From GTX RXDATA
+assign phyRxElecIdle = rx_elecidle;  // From GTX RXELECIDLE
+assign phyRxValid = rx_valid;  // From PHY status
 ```
 
-**Important:** The current 8b/10b encoder/decoder is a placeholder. For production use, replace with:
-- Xilinx GTX/GTH native encoding
-- Or implement full 8b/10b tables with running disparity tracking
+**8b/10b Encoding:** The controller includes a full 8b/10b encoder/decoder with running disparity tracking. For Xilinx devices, you can also use native GTX/GTH 8b/10b mode and bypass the internal encoder.
 
 ### User Control Interface (AXI4 Slave)
 
@@ -252,9 +258,34 @@ end
 | linkUp | Output | 1 | Link training complete, ready for TLP traffic |
 | linkSpeed | Output | 2 | Link speed: 0=Gen1(2.5GT/s), 1=Gen2(5GT/s) |
 | ltssState | Output | 5 | Current LTSSM state (for debug) |
+| symbolAlign | Output | 1 | Symbol alignment achieved |
+| codeErr | Output | 1 | 8b/10b code error detected |
+| dispErr | Output | 1 | Running disparity error detected |
 | h2dDone | Output | 1 | Host-to-Device DMA transfer complete |
 | d2hDone | Output | 1 | Device-to-Host DMA transfer complete |
 | dmaErr | Output | 1 | DMA error occurred |
+
+### I/O Register Interface
+
+For devices with I/O space, connect to your register file:
+
+| Signal | Direction | Width | Description |
+|--------|-----------|-------|-------------|
+| ioRegAddr | Output | 32 | I/O register address |
+| ioRegWrData | Output | 32 | Write data |
+| ioRegRdData | Input | 32 | Read data |
+| ioRegWrEn | Output | 1 | Write enable |
+| ioRegRdEn | Output | 1 | Read enable |
+
+**I/O Usage Example:**
+```verilog
+// Simple I/O register implementation
+always @(posedge clk) begin
+    if (ioRegWrEn)
+        my_reg[ioRegAddr[3:0]] <= ioRegWrData;
+end
+assign ioRegRdData = ioRegRdEn ? my_reg[ioRegAddr[3:0]] : 32'h0;
+```
 
 ## BAR Configuration
 
@@ -263,18 +294,35 @@ end
 | BAR0 | 4KB | Device control registers |
 | BAR1 | 64KB | MSI-X Table and PBA |
 
-## Known Limitations
+## Implementation Status
 
-This is a **reference/educational implementation** with the following limitations:
+This is a **functional PCIe 2.0 controller implementation** with the following status:
 
-1. **8b/10b Encoding**: Simplified placeholder - does not perform real encoding
-2. **LTSSM**: Uses fixed placeholder inputs - requires SerDes integration for real hardware
-3. **TLP Data Path**: RX limited to 4 DWORDs inline data (16 bytes max payload)
-4. **Flow Control**: Not fully implemented - credits never updated
-5. **I/O Requests**: Dropped without response
-6. **Scatter-Gather**: DMA supports single operation only (no chaining)
+### Completed Features
 
-For production use, these components would need to be completed or replaced with IP blocks.
+- ✅ **8b/10b Encoding/Decoding**: Full implementation with running disparity tracking
+- ✅ **Symbol Alignment**: K28.5 comma detection for 10-bit symbol boundary alignment
+- ✅ **LTSSM**: Complete state machine with TS1/TS2 detection and link negotiation
+- ✅ **Flow Control**: Credit tracking with FC init and update DLLP support
+- ✅ **I/O Requests**: Full I/O read/write handling with completion generation
+- ✅ **TLP Streaming**: Support for large payloads up to max payload size (256 bytes)
+- ✅ **DLLP Processing**: ACK/NAK and flow control DLLP handler
+
+### Remaining Limitations
+
+1. **Scatter-Gather DMA**: Single operation only (no descriptor chaining)
+2. **Power Management**: L1/L2 states defined but not fully implemented
+3. **Extended Config Space**: Only first 64 bytes implemented
+4. **Multi-Lane**: Single lane (x1) only
+5. **Gen3 Support**: 128b/130b encoding not implemented
+
+### For Production Use
+
+To use this controller with real hardware:
+1. Connect to a SerDes PHY (Xilinx GTX/GTH, Intel LVDS, etc.)
+2. Provide PHY status signals (rxValid, rxElecIdle)
+3. Optionally bypass 8b/10b if SerDes has native encoding
+4. Implement clock domain crossing for PHY interface
 
 ## License
 

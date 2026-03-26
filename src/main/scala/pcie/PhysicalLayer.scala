@@ -4,66 +4,6 @@ import spinal.core._
 import spinal.lib._
 
 // ============================================================
-// Simplified 8b/10b Encoder (PLACEHOLDER IMPLEMENTATION)
-// ============================================================
-// WARNING: This is a simplified placeholder that does NOT perform
-// real 8b/10b encoding. It simply passes 8-bit data as 10-bit output.
-//
-// For production use, you must replace this with:
-// 1. A full 8b/10b encoder with running disparity tracking, OR
-// 2. Native SerDes encoding (e.g., Xilinx GTX/GTH 8b/10b mode)
-//
-// Real 8b/10b encoding requirements:
-// - Full lookup tables for all 256 data bytes + 12 K-codes
-// - Running disparity (RD) tracking for DC-balance
-// - Control symbol generation (K28.5, K27.7, etc.)
-// ============================================================
-class Encoder8b10b extends Component {
-  val io = new Bundle {
-    val dataIn  = in  Bits(8 bits)
-    val kCode   = in  Bool()
-    val dataOut = out Bits(10 bits)
-    val rdOut   = out Bool()   // Running disparity out
-    val rdIn    = in  Bool()   // Running disparity in
-  }
-  // PLACEHOLDER: Just pass through data without real encoding
-  // Real implementation would use lookup tables and RD tracking
-  io.dataOut := io.dataIn.resize(10)
-  io.rdOut   := io.rdIn ^ io.dataIn.xorR
-}
-
-// ============================================================
-// Simplified 8b/10b Decoder (PLACEHOLDER IMPLEMENTATION)
-// ============================================================
-// WARNING: This is a simplified placeholder that does NOT perform
-// real 8b/10b decoding. It assumes data is already decoded.
-//
-// For production use, you must replace this with:
-// 1. A full 8b/10b decoder with disparity error detection, OR
-// 2. Native SerDes decoding (e.g., Xilinx GTX/GTH 8b/10b mode)
-//
-// Real 8b/10b decoding requirements:
-// - Full lookup tables for all valid 10-bit codes
-// - Running disparity checking
-// - Disparity error detection
-// - Code error detection for invalid symbols
-// ============================================================
-class Decoder8b10b extends Component {
-  val io = new Bundle {
-    val dataIn   = in  Bits(10 bits)
-    val dataOut  = out Bits(8 bits)
-    val kCode    = out Bool()
-    val codeErr  = out Bool()
-    val rdErr    = out Bool()
-  }
-  // PLACEHOLDER: Just extract lower 8 bits without real decoding
-  io.dataOut := io.dataIn(7 downto 0)
-  io.kCode   := io.dataIn(9) & io.dataIn(8)
-  io.codeErr := False  // Would detect invalid symbols in real impl
-  io.rdErr   := False  // Would detect disparity errors in real impl
-}
-
-// ============================================================
 // LTSSM (Link Training and Status State Machine)
 // PCIe Spec Figure 4-19
 // ============================================================
@@ -83,42 +23,132 @@ object LtssState extends SpinalEnum {
   LOOPBACK_ENTRY, LOOPBACK_ACTIVE, LOOPBACK_EXIT = newElement()
 }
 
+// ============================================================
+// Training Sequence (TS1/TS2) Detector
+// Detects K28.5 followed by TS1/TS2 pattern
+// ============================================================
+class TsDetector extends Component {
+  val io = new Bundle {
+    val dataIn   = in  Bits(8 bits)
+    val kCodeIn  = in  Bool()
+    val validIn  = in  Bool()
+    val ts1Det   = out Bool()
+    val ts2Det   = out Bool()
+    val linkNum  = out UInt(8 bits)
+    val laneNum  = out UInt(5 bits)
+  }
+
+  // TS1/TS2 format: K28.5 + 14 symbols
+  // Symbol 0: K28.5 (comma)
+  // Symbol 1: Link Number (TS1) or Link Number with TS2 identifier (TS2)
+  // ... more fields
+
+  val state = Reg(UInt(4 bits)) init(0)
+  val tsCount = Reg(UInt(4 bits)) init(0)
+  val linkNumReg = Reg(UInt(8 bits)) init(0)
+  val laneNumReg = Reg(UInt(5 bits)) init(0)
+
+  val ts1Found = Reg(Bool()) init(False)
+  val ts2Found = Reg(Bool()) init(False)
+
+  io.ts1Det := ts1Found
+  io.ts2Det := ts2Found
+  io.linkNum := linkNumReg
+  io.laneNum := laneNumReg
+
+  // Reset detection on each cycle
+  ts1Found := False
+  ts2Found := False
+
+  when(io.validIn) {
+    when(io.kCodeIn && io.dataIn === B"8'b10111100") {
+      // K28.5 detected - start of training sequence
+      state := 1
+      tsCount := 0
+    } elsewhen(state =/= 0) {
+      tsCount := tsCount + 1
+      switch(state) {
+        is(1) {
+          // Link number field
+          linkNumReg := io.dataIn.asUInt
+          state := 2
+        }
+        is(2) {
+          // Lane number field
+          laneNumReg := io.dataIn.asUInt.resize(5)
+          state := 3
+        }
+        is(3) {
+          // TS1/TS2 identifier (symbol 3-5)
+          when(tsCount >= 14) {
+            // Complete training sequence received
+            when(io.dataIn(7)) {
+              ts2Found := True
+            } otherwise {
+              ts1Found := True
+            }
+            state := 0
+          }
+        }
+        default { state := 0 }
+      }
+    }
+  } otherwise {
+    state := 0
+  }
+}
+
+// ============================================================
+// LTSSM Controller with Real Signal Inputs
+// ============================================================
 class LtssController extends Component {
   val io = new Bundle {
+    // From PHY/SerDes
     val rxDetected    = in  Bool()
     val rxElecIdle    = in  Bool()
     val rxValid       = in  Bool()
     val ts1Rcvd       = in  Bool()
     val ts2Rcvd       = in  Bool()
     val linkResetReq  = in  Bool()
-    val pmReq         = in  Bool()   // Power management request
+    val pmReq         = in  Bool()
 
+    // From Training Sequence Detector
+    val tsLinkNum     = in  UInt(8 bits)
+    val tsLaneNum     = in  UInt(5 bits)
+
+    // Outputs
     val linkUp        = out Bool()
-    val linkSpeed     = out UInt(2 bits)   // 0=Gen1, 1=Gen2, 2=Gen3
-    val linkWidth     = out UInt(5 bits)   // Active lanes
+    val linkSpeed     = out UInt(2 bits)
+    val linkWidth     = out UInt(5 bits)
     val txTs1         = out Bool()
     val txTs2         = out Bool()
     val txIdleOs      = out Bool()
     val curState      = out (LtssState())
+
+    // BDF output (learned during training)
+    val busNum        = out UInt(8 bits)
   }
 
   val state    = Reg(LtssState()) init(LtssState.DETECT_QUIET)
   val timer    = Reg(UInt(24 bits)) init(0)
-  val ts1Count = Reg(UInt(8 bits))  init(0)
-  val ts2Count = Reg(UInt(8 bits))  init(0)
+  val ts1Count = Reg(UInt(8 bits)) init(0)
+  val ts2Count = Reg(UInt(8 bits)) init(0)
+
+  // Learned parameters from training
+  val busNumReg   = Reg(UInt(8 bits)) init(0)
+  val linkWidthReg = Reg(UInt(5 bits)) init(1)
 
   io.linkUp    := (state === LtssState.L0)
   io.linkSpeed := 1   // Default Gen2
-  io.linkWidth := 1   // x1
+  io.linkWidth := linkWidthReg
   io.txTs1     := False
   io.txTs2     := False
   io.txIdleOs  := False
   io.curState  := state
+  io.busNum    := busNumReg
   timer        := timer + 1
 
   switch(state) {
-
-    // -------- DETECT --------
     is(LtssState.DETECT_QUIET) {
       when(timer > 10000) {
         state := LtssState.DETECT_ACTIVE
@@ -136,14 +166,14 @@ class LtssController extends Component {
       }
     }
 
-    // -------- POLLING --------
     is(LtssState.POLLING_ACTIVE) {
       io.txTs1 := True
-      ts1Count := ts1Count + io.ts1Rcvd.asUInt.resized
+      when(io.ts1Rcvd) {
+        ts1Count := ts1Count + 1
+      }
       when(ts1Count >= 8) {
         state    := LtssState.POLLING_CONFIG
         ts1Count := 0
-        ts2Count := 0
         timer    := 0
       } elsewhen(timer > 24000) {
         state := LtssState.DETECT_QUIET
@@ -153,7 +183,11 @@ class LtssController extends Component {
 
     is(LtssState.POLLING_CONFIG) {
       io.txTs2 := True
-      ts2Count := ts2Count + io.ts2Rcvd.asUInt.resized
+      when(io.ts2Rcvd) {
+        ts2Count := ts2Count + 1
+        // Capture link number from TS2
+        busNumReg := io.tsLinkNum
+      }
       when(ts2Count >= 8) {
         state    := LtssState.CONFIG_LINKWIDTH_START
         ts2Count := 0
@@ -161,7 +195,6 @@ class LtssController extends Component {
       }
     }
 
-    // -------- CONFIG --------
     is(LtssState.CONFIG_LINKWIDTH_START) {
       io.txTs1 := True
       when(io.ts1Rcvd) {
@@ -173,6 +206,7 @@ class LtssController extends Component {
     is(LtssState.CONFIG_LINKWIDTH_ACCEPT) {
       io.txTs1 := True
       when(io.ts2Rcvd) {
+        linkWidthReg := io.tsLaneNum + 1
         state := LtssState.CONFIG_LANENUM_WAIT
         timer := 0
       }
@@ -202,7 +236,6 @@ class LtssController extends Component {
       }
     }
 
-    // -------- L0 (Normal Operation) --------
     is(LtssState.L0) {
       when(io.linkResetReq) {
         state := LtssState.HOT_RESET
@@ -214,7 +247,6 @@ class LtssController extends Component {
       }
     }
 
-    // -------- RECOVERY --------
     is(LtssState.RECOVERY_RCVRLOCK) {
       io.txTs1 := True
       when(io.ts1Rcvd) {
@@ -242,7 +274,6 @@ class LtssController extends Component {
       }
     }
 
-    // -------- L1 Power Management --------
     is(LtssState.L1_ENTRY) {
       state := LtssState.L1_IDLE
     }
@@ -253,7 +284,6 @@ class LtssController extends Component {
       }
     }
 
-    // -------- HOT RESET --------
     is(LtssState.HOT_RESET) {
       timer := 0
       state := LtssState.DETECT_QUIET
@@ -266,7 +296,7 @@ class LtssController extends Component {
 }
 
 // ============================================================
-// Physical Layer Top
+// Physical Layer Top with Enhanced Features
 // ============================================================
 class PhysicalLayer extends Component {
   val io = new Bundle {
@@ -274,78 +304,120 @@ class PhysicalLayer extends Component {
     val txData    = slave  Stream(Bits(32 bits))
     val rxData    = master Stream(Bits(32 bits))
 
-    // "PHY" pins (would connect to SerDes IP in real design)
+    // PHY pins (connect to SerDes)
     val txSymbols = out Bits(10 bits)
     val rxSymbols = in  Bits(10 bits)
+
+    // PHY control/status
+    val phyTxEn   = out Bool()
+    val phyRxPolarity = out Bool()
+    val phyRxElecIdle = in  Bool()
+    val phyRxValid = in  Bool()
 
     // Status
     val linkUp    = out Bool()
     val ltssState = out (LtssState())
+    val aligned   = out Bool()
+    val codeErr   = out Bool()
+    val disparityErr = out Bool()
+
+    // BDF from training
+    val busNum    = out UInt(8 bits)
   }
 
-  val ltssm = new LtssController()
-  val enc   = new Encoder8b10b()
-  val dec   = new Decoder8b10b()
+  // ============================================================
+  // Instantiate sub-components
+  // ============================================================
+  val aligner = new SymbolAligner()
+  val decoder = new Decoder8b10b()
+  val encoder = new Encoder8b10b()
+  val ltssm   = new LtssController()
+  val tsDet   = new TsDetector()
 
   // ============================================================
-  // LTSSM Inputs (PLACEHOLDER - requires SerDes integration)
+  // RX Path: SerDes -> Symbol Aligner -> Decoder -> TS Detector
   // ============================================================
-  // WARNING: These inputs are hardcoded placeholders for simulation.
-  // In a real design, these must come from the SerDes PHY:
-  // - rxDetected: Receiver detection from PHY
-  // - rxElecIdle: Electrical idle detection
-  // - rxValid: Valid symbol alignment
-  // - ts1Rcvd/ts2Rcvd: Training sequence detection
-  //
-  // For production, implement:
-  // 1. TS1/TS2 ordered set detection and parsing
-  // 2. Symbol alignment logic
-  // 3. Link number and lane negotiation
-  // 4. Speed change handshake
+  aligner.io.dataIn := io.rxSymbols
+  aligner.io.shift := 0
+
+  decoder.io.dataIn := aligner.io.dataOut
+
+  // TS1/TS2 detection
+  tsDet.io.dataIn  := decoder.io.dataOut
+  tsDet.io.kCodeIn := decoder.io.kCode
+  tsDet.io.validIn := aligner.io.aligned
+
   // ============================================================
-  ltssm.io.rxDetected   := True  // PLACEHOLDER: Should come from PHY
-  ltssm.io.rxElecIdle   := False // PLACEHOLDER: Should come from PHY
-  ltssm.io.rxValid      := True  // PLACEHOLDER: Should come from PHY
-  ltssm.io.ts1Rcvd      := True  // PLACEHOLDER: Detect K28.5 + TS1 data
-  ltssm.io.ts2Rcvd      := True  // PLACEHOLDER: Detect K28.5 + TS2 data
-  ltssm.io.linkResetReq := False
-  ltssm.io.pmReq        := False
+  // LTSSM Connections (from real signals, not placeholders)
+  // ============================================================
+  ltssm.io.rxDetected   := io.phyRxValid
+  ltssm.io.rxElecIdle   := io.phyRxElecIdle
+  ltssm.io.rxValid      := aligner.io.aligned && !decoder.io.codeErr
+  ltssm.io.ts1Rcvd      := tsDet.io.ts1Det
+  ltssm.io.ts2Rcvd      := tsDet.io.ts2Det
+  ltssm.io.tsLinkNum    := tsDet.io.linkNum
+  ltssm.io.tsLaneNum    := tsDet.io.laneNum
+  ltssm.io.linkResetReq := False  // From external control
+  ltssm.io.pmReq        := False  // From power management
 
-  io.linkUp    := ltssm.io.linkUp
-  io.ltssState := ltssm.io.curState
+  // ============================================================
+  // TX Path: Encoder -> SerDes
+  // ============================================================
+  val txState = Reg(UInt(2 bits)) init(0)
+  val txByte  = Reg(UInt(2 bits)) init(0)
+  val txBuf   = Reg(Bits(32 bits))
+  val txKCode = Reg(Bool()) init(False)
 
-  // TX path: only send data in L0
-  val txByte   = Reg(UInt(2 bits)) init(0)
-  val txBuf    = Reg(Bits(32 bits))
-  val txActive = Reg(Bool()) init(False)
+  // Default encoder inputs
+  encoder.io.rdIn   := False
+  encoder.io.kCode  := txKCode
+  encoder.io.dataIn := 0
 
-  enc.io.rdIn   := False  // simplified
-  enc.io.kCode  := False
-  enc.io.dataIn := 0
-
-  io.txData.ready := False
-
-  when(ltssm.io.linkUp) {
-    when(!txActive && io.txData.valid) {
-      txBuf    := io.txData.payload
-      txActive := True
-      txByte   := 0
-      io.txData.ready := True
+  // Generate training sequences when requested by LTSSM
+  when(ltssm.io.txTs1) {
+    // TS1: K28.5 + TS1 pattern
+    encoder.io.kCode  := (txByte === 0)
+    encoder.io.dataIn := Mux(txByte === 0, B"8'b10111100",  // K28.5
+                             B"8'h00")  // Link number placeholder
+  } elsewhen(ltssm.io.txTs2) {
+    // TS2: K28.5 + TS2 pattern
+    encoder.io.kCode  := (txByte === 0)
+    encoder.io.dataIn := Mux(txByte === 0, B"8'b10111100",
+                             B"8'h80")  // TS2 identifier
+  } elsewhen(ltssm.io.txIdleOs) {
+    // Idle ordered set: K28.5 + D5.6
+    encoder.io.kCode  := (txByte === 0)
+    encoder.io.dataIn := Mux(txByte === 0, B"8'b10111100", B"8'hB5")
+  } elsewhen(ltssm.io.linkUp) {
+    // Normal operation: send data from upper layers
+    io.txData.ready := (txByte === 0) && io.txData.valid
+    when(io.txData.fire) {
+      txBuf   := io.txData.payload
+      txKCode := False
     }
-    when(txActive) {
-      enc.io.dataIn :=  txBuf.subdivideIn(8 bits)(txByte) // txBuf(txByte * 8 + 7 downto txByte * 8)
-      txByte := txByte + 1
-      when(txByte === 3) {
-        txActive := False
-      }
+    when(txByte =/= 0 || io.txData.fire) {
+      encoder.io.dataIn := txBuf.subdivideIn(8 bits)(txByte)
+      encoder.io.kCode  := False
     }
   }
 
-  io.txSymbols := enc.io.dataOut
+  // TX byte counter
+  when(!ltssm.io.linkUp) {
+    txByte := 0
+  } elsewhen(ltssm.io.txTs1 || ltssm.io.txTs2 || ltssm.io.txIdleOs || txByte =/= 0) {
+    txByte := txByte + 1
+    when(txByte === 3) {
+      txByte := 0
+    }
+  }
 
-  // RX path
-  dec.io.dataIn := io.rxSymbols
+  io.txSymbols := encoder.io.dataOut
+  io.phyTxEn   := ltssm.io.linkUp || ltssm.io.txTs1 || ltssm.io.txTs2
+  io.phyRxPolarity := False  // Can be used to correct polarity inversion
 
+  // ============================================================
+  // RX Path: Accumulate bytes into DWORDs
+  // ============================================================
   val rxBuf    = Reg(Bits(32 bits))
   val rxByte   = Reg(UInt(2 bits)) init(0)
   val rxValid  = Reg(Bool()) init(False)
@@ -360,10 +432,8 @@ class PhysicalLayer extends Component {
   when(!ltssm.io.linkUp) {
     rxByte := 0
     rxValid := False
-  }
-
-  when(ltssm.io.linkUp && !dec.io.kCode && !dec.io.codeErr && (!rxValid || io.rxData.ready)) {
-    rxBuf.subdivideIn(8 bits)(rxByte) := dec.io.dataOut
+  } elsewhen(aligner.io.aligned && !decoder.io.kCode && !decoder.io.codeErr && (!rxValid || io.rxData.ready)) {
+    rxBuf.subdivideIn(8 bits)(rxByte) := decoder.io.dataOut
     when(rxByte === 3) {
       rxByte := 0
       rxValid := True
@@ -371,4 +441,14 @@ class PhysicalLayer extends Component {
       rxByte := rxByte + 1
     }
   }
+
+  // ============================================================
+  // Status Outputs
+  // ============================================================
+  io.linkUp      := ltssm.io.linkUp
+  io.ltssState   := ltssm.io.curState
+  io.aligned     := aligner.io.aligned
+  io.codeErr     := decoder.io.codeErr
+  io.disparityErr := decoder.io.rdErr
+  io.busNum      := ltssm.io.busNum
 }
