@@ -339,19 +339,19 @@ class DllpHandler extends Component {
       // FC_P (Posted) Init
       is(B"4'hB") {
         io.fcInitValid := True
-        io.fcInit.phCredits := dllpData(3 downto 0).asUInt.resize(8) ## dllpData(7 downto 4)
+        io.fcInit.phCredits := (dllpData(3 downto 0) ## dllpData(7 downto 4)).asUInt.resize(8)
         io.fcInit.pdCredits := dllpData(19 downto 8).asUInt
       }
       // FC_NP (Non-Posted) Init
       is(B"4'hC") {
         io.fcInitValid := True
-        io.fcInit.nphCredits := dllpData(3 downto 0).asUInt.resize(8) ## dllpData(7 downto 4)
+        io.fcInit.nphCredits := (dllpData(3 downto 0) ## dllpData(7 downto 4)).asUInt.resize(8)
         io.fcInit.npdCredits := dllpData(19 downto 8).asUInt
       }
       // FC_CPL (Completion) Init
       is(B"4'hD") {
         io.fcInitValid := True
-        io.fcInit.cplhCredits := dllpData(3 downto 0).asUInt.resize(8) ## dllpData(7 downto 4)
+        io.fcInit.cplhCredits := (dllpData(3 downto 0) ## dllpData(7 downto 4)).asUInt.resize(8)
         io.fcInit.cpldCredits := dllpData(19 downto 8).asUInt
       }
       // UpdateFC DLLPs (similar format, different type codes)

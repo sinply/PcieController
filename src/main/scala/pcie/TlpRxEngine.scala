@@ -65,7 +65,6 @@ class TlpRxEngine(maxPayloadBytes: Int = 256) extends Component {
 
   io.memDataOut.valid := streamValid
   io.memDataOut.data  := streamData
-  io.memDataOut.valid := streamValid
   io.memDataOut.last  := streamLast
   io.memDataOut.byteEn := 0xF
   io.memDataStart := False
@@ -150,17 +149,31 @@ class TlpRxEngine(maxPayloadBytes: Int = 256) extends Component {
             parseErrR   := True
           }
         }
-        state := RxState.HDR2
+
+        // Check for invalid length (would overflow dataIdx)
+        when(pkt.length > 64 && hasData) {
+          overflowR := True
+        }
+
+        // On parse error or overflow, go to DISCARD state
+        when(parseErrR || overflowR) {
+          state := RxState.DISCARD
+        } otherwise {
+          state := RxState.HDR2
+        }
       }
     }
 
     is(RxState.HDR2) {
       when(io.tlpIn.fire) {
-        val dw = io.tlpIn.payload
-        pkt.reqId   := dw(31 downto 16).asUInt
-        pkt.tag     := dw(15 downto  8).asUInt
-        pkt.lastBe  := dw( 7 downto  4)
-        pkt.firstBe := dw( 3 downto  0)
+        // Skip processing if in error state
+        when(!parseErrR && !overflowR) {
+          val dw = io.tlpIn.payload
+          pkt.reqId   := dw(31 downto 16).asUInt
+          pkt.tag     := dw(15 downto  8).asUInt
+          pkt.lastBe  := dw( 7 downto  4)
+          pkt.firstBe := dw( 3 downto  0)
+        }
         state       := RxState.HDR3
       }
     }
@@ -257,9 +270,18 @@ class TlpRxEngine(maxPayloadBytes: Int = 256) extends Component {
     }
 
     is(RxState.DISCARD) {
+      // Accept all remaining DWORDs of the errored packet
       io.tlpIn.ready := True
       streamValid := False
-      state := RxState.IDLE
+      // Wait until we've consumed all data or packet ends
+      when(io.tlpIn.fire) {
+        when(!hasData || dataIdx >= pkt.length - 1) {
+          state := RxState.IDLE
+          dataIdx := 0
+        } otherwise {
+          dataIdx := dataIdx + 1
+        }
+      }
     }
   }
 

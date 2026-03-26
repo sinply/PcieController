@@ -66,7 +66,7 @@ class PcieController(cfg: PcieControllerConfig = PcieControllerConfig()) extends
     // ---- Status ----
     val linkUp      = out Bool()
     val linkSpeed   = out UInt(2 bits)
-    val ltssState   = out (LtssState())
+    val ltssState   = out(LtssState())
     val symbolAlign = out Bool()
     val codeErr     = out Bool()
     val dispErr     = out Bool()

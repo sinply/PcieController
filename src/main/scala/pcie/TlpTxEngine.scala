@@ -27,11 +27,31 @@ class TlpTxEngine extends Component {
 
   val arbState   = Reg(ArbState()) init(ArbState.IDLE)
   val activeReq  = Reg(TlpStreamPacket())
-  val granted    = Reg(TlpType.craft())
+  val granted    = Reg(TlpType())
 
-  // Grant priority: Completion > MemWr > MemRd
-  val canSendCpl   = io.cplReq.valid   && io.fcCredits.cplhCredits > 0
-  val canSendMemWr = io.memWrReq.valid && io.fcCredits.phCredits > 0
+  // Round-robin pointer to prevent starvation
+  val rrPtr = Reg(UInt(2 bits)) init(0)  // 0=CPL, 1=MemWr, 2=MemRd
+
+  // Credit checks including data credits for packets with payload
+  def hasDataCredits(pkt: TlpStreamPacket): Bool = {
+    val dwCount = Mux(pkt.dataValid === 0, U(1, 10 bits), pkt.dataValid.resize(10))
+    // Check appropriate data credits based on packet type
+    val result = Bool()
+    when(pkt.tlpType === TlpType.CPL_D) {
+      result := io.fcCredits.cpldCredits >= dwCount
+    } otherwise {
+      result := io.fcCredits.pdCredits >= dwCount
+    }
+    result
+  }
+
+  // Grant with credit checking (including data credits for writes)
+  val cplDataCredits = Mux(io.cplReq.payload.dataValid === 0, U(1, 10 bits), io.cplReq.payload.dataValid.resize(10))
+  val memWrDataCredits = Mux(io.memWrReq.payload.dataValid === 0, U(1, 10 bits), io.memWrReq.payload.dataValid.resize(10))
+  val canSendCpl   = io.cplReq.valid   && io.fcCredits.cplhCredits > 0 &&
+                     (io.cplReq.payload.dataValid === 0 || io.fcCredits.cpldCredits >= cplDataCredits)
+  val canSendMemWr = io.memWrReq.valid && io.fcCredits.phCredits > 0 &&
+                     io.fcCredits.pdCredits >= memWrDataCredits
   val canSendMemRd = io.memRdReq.valid && io.fcCredits.nphCredits > 0
 
   // -------------------------------------------------------
@@ -42,7 +62,7 @@ class TlpTxEngine extends Component {
   }
 
   val state    = Reg(TxState()) init(TxState.IDLE)
-  val dataIdx  = Reg(UInt(4 bits)) init(0)
+  val dataIdx  = Reg(UInt(10 bits)) init(0)  // 10 bits for up to 1024 DWORDs
   val needData = Reg(Bool()) init(False)
   val is4DW    = Reg(Bool()) init(False)  // 64-bit address
 
@@ -92,20 +112,8 @@ class TlpTxEngine extends Component {
     hdr
   }
 
-  def packetHasData(pkt: TlpStreamPacket): Bool = {
-    val hasData = Bool()
-    hasData := pkt.dataValid =/= 0
-    when(pkt.tlpType === TlpType.MEM_WR ||
-         pkt.tlpType === TlpType.IO_WR  ||
-         pkt.tlpType === TlpType.CFG_WR0 ||
-         pkt.tlpType === TlpType.CFG_WR1 ||
-         pkt.tlpType === TlpType.CPL_D ||
-         pkt.tlpType === TlpType.MSG   ||
-         pkt.tlpType === TlpType.MSG_D) {
-      hasData := True
-    }
-    hasData
-  }
+  // Simple data presence check - dataValid indicates actual data
+  def packetHasData(pkt: TlpStreamPacket): Bool = pkt.dataValid =/= 0
 
   def packetUses4Dw(pkt: TlpStreamPacket): Bool = {
     val use4Dw = Bool()
@@ -135,24 +143,53 @@ class TlpTxEngine extends Component {
   switch(state) {
 
     is(TxState.IDLE) {
-      when(canSendCpl) {
+      // Round-robin arbitration to prevent starvation
+      // Priority based on rrPtr: start from last granted source + 1
+      when(rrPtr === 0 && canSendCpl) {
         activeReq  := io.cplReq.payload
         needData   := packetHasData(io.cplReq.payload)
         is4DW      := packetUses4Dw(io.cplReq.payload)
         state      := TxState.HDR1
         io.cplReq.ready := True
-      } elsewhen(canSendMemWr) {
+        rrPtr := 1
+      } elsewhen(rrPtr === 1 && canSendMemWr) {
         activeReq  := io.memWrReq.payload
         needData   := packetHasData(io.memWrReq.payload)
         is4DW      := packetUses4Dw(io.memWrReq.payload)
         state      := TxState.HDR1
         io.memWrReq.ready := True
-      } elsewhen(canSendMemRd) {
+        rrPtr := 2
+      } elsewhen(rrPtr === 2 && canSendMemRd) {
         activeReq  := io.memRdReq.payload
         needData   := packetHasData(io.memRdReq.payload)
         is4DW      := packetUses4Dw(io.memRdReq.payload)
         state      := TxState.HDR1
         io.memRdReq.ready := True
+        rrPtr := 0
+      } otherwise {
+        // Fallback to priority order if rrPtr source not available
+        when(canSendCpl) {
+          activeReq  := io.cplReq.payload
+          needData   := packetHasData(io.cplReq.payload)
+          is4DW      := packetUses4Dw(io.cplReq.payload)
+          state      := TxState.HDR1
+          io.cplReq.ready := True
+          rrPtr := 1
+        } elsewhen(canSendMemWr) {
+          activeReq  := io.memWrReq.payload
+          needData   := packetHasData(io.memWrReq.payload)
+          is4DW      := packetUses4Dw(io.memWrReq.payload)
+          state      := TxState.HDR1
+          io.memWrReq.ready := True
+          rrPtr := 2
+        } elsewhen(canSendMemRd) {
+          activeReq  := io.memRdReq.payload
+          needData   := packetHasData(io.memRdReq.payload)
+          is4DW      := packetUses4Dw(io.memRdReq.payload)
+          state      := TxState.HDR1
+          io.memRdReq.ready := True
+          rrPtr := 0
+        }
       }
     }
 

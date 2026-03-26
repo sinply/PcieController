@@ -127,12 +127,14 @@ class Encoder8b10b extends Component {
     // K-code encoding
     val k28x = (data5b === 28)
     when(k28x) {
-      // K28.x codes
-      encoded6b := Mux(rd, kCode5b6b(3)(5 downto 0), kCode5b6b(3)(11 downto 6))
+      // K28.x codes - index 3 in kCode5b6b table
+      encoded6b := Mux(rd, Encoder8b10bTables.kCode5b6b(U(3, 2 bits))(5 downto 0),
+                            Encoder8b10bTables.kCode5b6b(U(3, 2 bits))(11 downto 6))
     } otherwise {
       // Other K codes (K23, K27, K29, K30)
       val kIdx = data5b(1 downto 0).asUInt
-      encoded6b := Mux(rd, kCode5b6b(kIdx)(5 downto 0), kCode5b6b(kIdx)(11 downto 6))
+      encoded6b := Mux(rd, Encoder8b10bTables.kCode5b6b(kIdx)(5 downto 0),
+                            Encoder8b10bTables.kCode5b6b(kIdx)(11 downto 6))
     }
   } otherwise {
     // Data encoding - simplified lookup
@@ -374,7 +376,8 @@ class SymbolAligner extends Component {
 
   // Output aligned data
   val shiftedData = Bits(10 bits)
-  shiftedData := buffer(alignState + 9 downto alignState)
+  // Use dynamic bit extraction via shift
+  shiftedData := (buffer >> alignState).resize(10 bits)
   io.dataOut := shiftedData
   io.aligned := alignedReg
 }

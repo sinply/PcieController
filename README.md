@@ -60,7 +60,7 @@ A PCIe 2.0 controller implemented in [SpinalHDL](https://github.com/SpinalHDL/Sp
 
 - Scala 2.11.12
 - SpinalHDL 1.9.4
-- sbt 1.x
+- sbt 1.8.0
 
 ## Quick Start
 

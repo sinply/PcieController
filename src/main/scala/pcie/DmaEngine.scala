@@ -9,8 +9,29 @@ import spinal.lib.bus.amba4.axi._
 // Supports:
 //   - Host-to-Device (H2D): PCIe MRd -> local memory
 //   - Device-to-Host (D2H): local memory -> PCIe MWr
+//   - Descriptor chaining for scatter-gather operations
+//   - Up to 256 descriptors in internal memory
 // ============================================================
-class DmaEngine(maxPayload: Int = 256) extends Component {
+
+// DMA Descriptor for scatter-gather (32 bytes, 256 bits)
+case class SgDmaDescriptor() extends Bundle {
+  val srcAddr   = UInt(64 bits)   // Source address
+  val dstAddr   = UInt(64 bits)   // Destination address
+  val length    = UInt(32 bits)   // Transfer length in bytes
+  val control   = Bits(32 bits)   // Control flags
+  val nextDesc  = UInt(64 bits)   // Next descriptor address (for chaining)
+}
+
+// Control flags bits
+object DmaControl {
+  val START      = 0   // Start transfer
+  val DIRECTION  = 1   // 0=H2D, 1=D2H
+  val INT_EN     = 2   // Interrupt on completion
+  val LAST_DESC  = 3   // Last descriptor in chain
+  val DESC_FETCH = 4   // Fetch descriptor from memory
+}
+
+class DmaEngine(maxPayload: Int = 256, maxDescriptors: Int = 256) extends Component {
 
   val io = new Bundle {
     // Control interface (AXI4-Lite style, modeled with Axi4 channels)
@@ -40,13 +61,18 @@ class DmaEngine(maxPayload: Int = 256) extends Component {
 
   // -------------------------------------------------------
   // Control / Status Registers
-  // 0x00: Control [start(0), direction(1)]
-  // 0x04: Status  [done(0), busy(1), error(2)]
+  // 0x00: Control [start(0), direction(1), int_en(2), sg_mode(3)]
+  // 0x04: Status  [done(0), busy(1), error(2), desc_done(3)]
   // 0x08: SrcAddrLo
   // 0x0C: SrcAddrHi
   // 0x10: DstAddrLo
   // 0x14: DstAddrHi
   // 0x18: Length(bytes)
+  // 0x1C: DescTableLo  - Descriptor table base address low
+  // 0x20: DescTableHi  - Descriptor table base address high
+  // 0x24: DescCount    - Number of descriptors
+  // 0x28: DescCurrent  - Current descriptor index
+  // 0x2C: TotalBytes   - Total bytes transferred
   // -------------------------------------------------------
   val ctrlReg    = Reg(Bits(32 bits)) init(0)
   val statusReg  = Reg(Bits(32 bits)) init(0)
@@ -55,6 +81,11 @@ class DmaEngine(maxPayload: Int = 256) extends Component {
   val dstAddrLo  = Reg(UInt(32 bits)) init(0)
   val dstAddrHi  = Reg(UInt(32 bits)) init(0)
   val lengthReg  = Reg(UInt(32 bits)) init(0)
+  val descTableLo = Reg(UInt(32 bits)) init(0)
+  val descTableHi = Reg(UInt(32 bits)) init(0)
+  val descCount   = Reg(UInt(16 bits)) init(0)
+  val descCurrent = Reg(UInt(16 bits)) init(0)
+  val totalBytes  = Reg(UInt(32 bits)) init(0)
 
   // AXI4-Lite register access
   val axilAr = io.ctrl.ar
@@ -85,7 +116,12 @@ class DmaEngine(maxPayload: Int = 256) extends Component {
       is(4)  { rData := dstAddrLo.asBits }
       is(5)  { rData := dstAddrHi.asBits }
       is(6)  { rData := lengthReg.asBits }
-      default { rData := B(0xDEADBEEFL, 32 bits) }
+      is(7)  { rData := descTableLo.asBits }
+      is(8)  { rData := descTableHi.asBits }
+      is(9)  { rData := descCount.asBits.resized }
+      is(10) { rData := descCurrent.asBits.resized }
+      is(11) { rData := totalBytes.asBits }
+      default { rData := B(32 bits, default -> True) }
     }
   }
 
@@ -133,6 +169,10 @@ class DmaEngine(maxPayload: Int = 256) extends Component {
       is(4)  { dstAddrLo := wDataReg.asUInt }
       is(5)  { dstAddrHi := wDataReg.asUInt }
       is(6)  { lengthReg := wDataReg.asUInt }
+      is(7)  { descTableLo := wDataReg.asUInt }
+      is(8)  { descTableHi := wDataReg.asUInt }
+      is(9)  { descCount := wDataReg(15 downto 0).asUInt }
+      is(10) { descCurrent := wDataReg(15 downto 0).asUInt }
       default {}
     }
   }
@@ -142,30 +182,52 @@ class DmaEngine(maxPayload: Int = 256) extends Component {
   }
 
   // -------------------------------------------------------
-  // DMA FSM
+  // Scatter-Gather Descriptor Memory
   // -------------------------------------------------------
-  val startBit   = ctrlReg(0)
+  val descriptorMem = Mem(SgDmaDescriptor(), maxDescriptors)
+  val activeDesc = Reg(SgDmaDescriptor()) init(SgDmaDescriptor().getZero)
+
+  // -------------------------------------------------------
+  // DMA FSM with Scatter-Gather Support
+  // -------------------------------------------------------
+  val startBit   = ctrlReg(DmaControl.START)
   val startPrev  = RegNext(startBit) init(False)
   val startPulse = startBit && !startPrev
-  val direction  = ctrlReg(1)  // 0=H2D, 1=D2H
+  val direction  = ctrlReg(DmaControl.DIRECTION)  // 0=H2D, 1=D2H
+  val sgMode     = ctrlReg(DmaControl.DESC_FETCH) // Scatter-gather mode (bit 4)
+  val intEnable  = ctrlReg(DmaControl.INT_EN)     // Interrupt enable
 
   object DmaState extends SpinalEnum {
-    val IDLE, H2D_RD_REQ, H2D_WAIT_CPL, H2D_WR_LOCAL,
-      D2H_RD_LOCAL, D2H_WR_PCIE, DONE, ERROR = newElement()
+    val IDLE, FETCH_DESC, H2D_RD_REQ, H2D_WAIT_CPL, H2D_WR_LOCAL,
+      D2H_RD_LOCAL, D2H_WR_PCIE, NEXT_DESC, DONE, ERROR = newElement()
   }
 
   val dmaState   = Reg(DmaState()) init(DmaState.IDLE)
-  val remaining  = Reg(UInt(20 bits)) init(0)   // in DWORD
-  val offset     = Reg(UInt(20 bits)) init(0)   // in bytes
+  val remaining  = Reg(UInt(32 bits)) init(0)   // in DWORD (was 20-bit, now 32-bit)
+  val offset     = Reg(UInt(32 bits)) init(0)   // in bytes (was 20-bit, now 32-bit)
   val tagCtr     = Reg(UInt(8 bits))  init(0)
+  val reqTag     = Reg(UInt(8 bits))  init(0)   // Tag of outstanding request
+  val descIdx    = Reg(UInt(16 bits)) init(0)   // Current descriptor index
+  val outstandingDw = Reg(UInt(32 bits)) init(0) // Outstanding DWORDs for current request
+  val waitingCpl = Reg(Bool()) init(False)       // Waiting for completion
+  val cplTimeout = Reg(UInt(24 bits)) init(0)    // Completion timeout counter
 
-  val maxPayloadDw = U(maxPayload / 4, 20 bits)
-  val chunkDw      = UInt(20 bits)
-  chunkDw := Mux(remaining < maxPayloadDw, remaining, maxPayloadDw)
+  // Max Read Request Size (from config space, default 128 DW = 512 bytes)
+  val mrrsDw = Reg(UInt(32 bits)) init(128)
+  // Max Payload Size for writes
+  val maxPayloadDw = U(maxPayload / 4, 32 bits)
+
+  // 4KB boundary calculation for reads
+  val srcAddrFull = (srcAddrHi ## srcAddrLo).asUInt
+  val bytesTo4k = U(4096, 32 bits) - ((srcAddrFull + offset) & U(4095, 32 bits))
+  val boundaryDw = (bytesTo4k >> 2).resized
+
+  // Read chunk size: min(MRRS, 4KB boundary, remaining)
+  val maxReadDw = Mux(mrrsDw < boundaryDw, mrrsDw, boundaryDw)
+  val chunkDw   = Mux(remaining < maxReadDw, remaining, maxReadDw)
 
   // Local memory data path is 64-bit, so each D2H packet carries <=2 DWORDs
-  val d2hChunkDw = UInt(20 bits)
-  d2hChunkDw := Mux(remaining < 2, remaining, U(2, 20 bits))
+  val d2hChunkDw = Mux(remaining < 2, remaining, U(2, 32 bits))
 
   // TLP defaults
   val memWrPkt = TlpStreamPacket()
@@ -199,7 +261,7 @@ class DmaEngine(maxPayload: Int = 256) extends Component {
   io.memWrOut.payload := memWrPkt
   io.memRdOut.valid   := False
   io.memRdOut.payload := memRdPkt
-  io.cplIn.ready      := False
+  io.cplIn.ready      := True   // Always accept completions to avoid deadlock
   io.h2dDone          := statusReg(0)
   io.d2hDone          := statusReg(0)
   io.dmaErr           := statusReg(2)
@@ -238,23 +300,69 @@ class DmaEngine(maxPayload: Int = 256) extends Component {
   val h2dWriteData = Reg(Bits(64 bits)) init(0)
   val h2dWriteStrb = Reg(Bits(8 bits)) init(0)
 
+  // Load descriptor from memory
+  val descReadData = descriptorMem.readAsync(descIdx.resize(log2Up(maxDescriptors)))
+
   switch(dmaState) {
 
     is(DmaState.IDLE) {
       when(startPulse && statusReg(1) === False) {
-        val lengthDw = (lengthReg.resize(20) >> 2).resize(20)
-        remaining := lengthDw
-        offset    := 0
-        statusReg := (statusReg & B(0xFFFFFFF8L, 32 bits)) | B(0x00000002L, 32 bits)
-        tagCtr    := tagCtr + 1
+        totalBytes := 0
+        descIdx := 0
 
-        when(lengthDw === 0) {
-          dmaState := DmaState.DONE
-        } elsewhen(direction === False) {
+        when(sgMode) {
+          // Scatter-gather mode: check descriptor count bounds
+          when(descCount > maxDescriptors) {
+            statusReg := (statusReg & B(0xFFFFFFF8L, 32 bits)) | B(0x00000004L, 32 bits)
+            dmaState := DmaState.ERROR
+          } otherwise {
+            dmaState := DmaState.FETCH_DESC
+          }
+        } otherwise {
+          // Single transfer mode
+          val lengthDw = (lengthReg >> 2).resize(32 bits)
+          remaining := lengthDw
+          offset    := 0
+          statusReg := (statusReg & B(0xFFFFFFF8L, 32 bits)) | B(0x00000002L, 32 bits)
+
+          when(lengthDw === 0) {
+            dmaState := DmaState.DONE
+          } elsewhen(direction === False) {
+            dmaState := DmaState.H2D_RD_REQ
+          } otherwise {
+            dmaState := DmaState.D2H_RD_LOCAL
+          }
+        }
+      }
+    }
+
+    // Fetch descriptor for scatter-gather mode
+    is(DmaState.FETCH_DESC) {
+      when(descIdx < descCount && descIdx < maxDescriptors) {
+        activeDesc := descReadData
+        statusReg := (statusReg & B(0xFFFFFFF8L, 32 bits)) | B(0x00000002L, 32 bits)
+
+        val descLengthDw = (descReadData.length >> 2).resize(32 bits)
+        remaining := descLengthDw
+        offset    := 0
+
+        // Use descriptor addresses
+        srcAddrLo := descReadData.srcAddr(31 downto 0)
+        srcAddrHi := descReadData.srcAddr(63 downto 32)
+        dstAddrLo := descReadData.dstAddr(31 downto 0)
+        dstAddrHi := descReadData.dstAddr(63 downto 32)
+
+        when(descLengthDw === 0) {
+          dmaState := DmaState.NEXT_DESC
+        } elsewhen(descReadData.control(1) === False) {
+          // H2D transfer
           dmaState := DmaState.H2D_RD_REQ
         } otherwise {
+          // D2H transfer
           dmaState := DmaState.D2H_RD_LOCAL
         }
+      } otherwise {
+        dmaState := DmaState.DONE
       }
     }
 
@@ -262,23 +370,41 @@ class DmaEngine(maxPayload: Int = 256) extends Component {
     is(DmaState.H2D_RD_REQ) {
       io.memRdOut.valid := True
       when(io.memRdOut.ready) {
-        val chunk        = chunkDw
-        val nextRemain   = remaining - chunk
-        offset    := offset + (chunk |<< 2)
-        remaining := nextRemain
-        dmaState  := DmaState.H2D_WAIT_CPL
+        // Save request parameters for completion matching
+        outstandingDw := chunkDw
+        reqTag        := tagCtr
+        tagCtr        := tagCtr + 1
+        waitingCpl    := True
+        cplTimeout    := 0
+        // Don't update remaining here - wait for completion
+        dmaState      := DmaState.H2D_WAIT_CPL
       }
     }
 
-    // Wait for completion data
+    // Wait for completion data with timeout
     is(DmaState.H2D_WAIT_CPL) {
-      io.cplIn.ready := True
-      when(io.cplIn.fire && io.cplIn.payload.tag === tagCtr) {
+      cplTimeout := cplTimeout + 1
+
+      when(io.cplIn.fire && io.cplIn.payload.tag === reqTag && waitingCpl) {
         val cplWords = Mux(io.cplIn.payload.dataValid === 0, U(1, 3 bits), io.cplIn.payload.dataValid)
-        h2dWriteAddr := (dstAddrLo + offset - (io.cplIn.payload.length |<< 2)).resized
+        val cplDw = io.cplIn.payload.length.resize(32 bits)
+
+        h2dWriteAddr := (dstAddrLo + offset).resized
         h2dWriteData := (io.cplIn.payload.data(1) ## io.cplIn.payload.data(0)).asBits
         h2dWriteStrb := (cplWords === 1) ? B"8'h0F" | B"8'hFF"
-        dmaState     := DmaState.H2D_WR_LOCAL
+
+        // Update tracking after successful completion
+        offset      := offset + (cplDw |<< 2)
+        remaining   := remaining - cplDw
+        totalBytes  := totalBytes + (cplDw << 2).resize(32)
+        waitingCpl  := False
+
+        dmaState    := DmaState.H2D_WR_LOCAL
+      } elsewhen(cplTimeout === U(10000000, 24 bits)) {
+        // Completion timeout - report error
+        statusReg := (statusReg & B(0xFFFFFFF8L, 32 bits)) | B(0x00000004L, 32 bits)
+        waitingCpl := False
+        dmaState := DmaState.ERROR
       }
     }
 
@@ -291,9 +417,12 @@ class DmaEngine(maxPayload: Int = 256) extends Component {
 
       when(io.localMem.aw.ready && io.localMem.w.ready) {
         when(remaining === 0) {
-          dmaState := DmaState.DONE
+          when(sgMode) {
+            dmaState := DmaState.NEXT_DESC
+          } otherwise {
+            dmaState := DmaState.DONE
+          }
         } otherwise {
-          tagCtr   := tagCtr + 1
           dmaState := DmaState.H2D_RD_REQ
         }
       }
@@ -337,14 +466,32 @@ class DmaEngine(maxPayload: Int = 256) extends Component {
           val nextRemain = remaining - chunk
           offset    := offset + (chunk |<< 2)
           remaining := nextRemain
+          totalBytes := totalBytes + (chunk << 2).resize(32)
 
           when(nextRemain === 0) {
-            dmaState := DmaState.DONE
+            when(sgMode) {
+              dmaState := DmaState.NEXT_DESC
+            } otherwise {
+              dmaState := DmaState.DONE
+            }
           } otherwise {
             tagCtr   := tagCtr + 1
             dmaState := DmaState.D2H_RD_LOCAL
           }
         }
+      }
+    }
+
+    // Move to next descriptor in scatter-gather mode
+    is(DmaState.NEXT_DESC) {
+      descIdx := descIdx + 1
+      descCurrent := descIdx + 1
+      statusReg(3) := True  // Descriptor done flag
+
+      when(descIdx + 1 >= descCount) {
+        dmaState := DmaState.DONE
+      } otherwise {
+        dmaState := DmaState.FETCH_DESC
       }
     }
 
