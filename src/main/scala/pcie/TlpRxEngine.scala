@@ -67,6 +67,7 @@ class TlpRxEngine(maxPayloadBytes: Int = 256) extends Component {
   io.memDataOut.data  := streamData
   io.memDataOut.last  := streamLast
   io.memDataOut.byteEn := 0xF
+  io.memDataOut.payload.valid := True  // Data is always valid when streaming
   io.memDataStart := False
 
   // Default outputs: all invalid
