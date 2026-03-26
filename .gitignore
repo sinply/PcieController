@@ -18,6 +18,7 @@ tmp/
 .idea/
 .vscode/
 *.iml
+.claude/
 
 # Scala
 *.tasty
@@ -30,5 +31,5 @@ simWorkspace/
 .DS_Store
 Thumbs.db
 
-# Generated RTL (optional - uncomment if you don't want to track)
-# rtl/
+# Misc
+sbt-launch.jar

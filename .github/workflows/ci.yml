@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 8
+
+      - name: Setup SBT
+        uses: sbt/setup-sbt@v1
+
+      - name: Compile
+        run: sbt compile
+
+      - name: Generate Verilog
+        run: sbt "runMain pcie.PcieControllerGen"
+
+      - name: Upload RTL
+        uses: actions/upload-artifact@v4
+        with:
+          name: verilog
+          path: rtl/

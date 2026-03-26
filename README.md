@@ -1,5 +1,9 @@
 # PCIe Controller
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![SpinalHDL](https://img.shields.io/badge/SpinalHDL-1.9.4-blue.svg)](https://github.com/SpinalHDL/SpinalHDL)
+[![Scala](https://img.shields.io/badge/Scala-2.11-orange.svg)](https://www.scala-lang.org/)
+
 A PCIe 2.0 controller implemented in [SpinalHDL](https://github.com/SpinalHDL/SpinalHDL).
 
 ## Features
@@ -14,23 +18,57 @@ A PCIe 2.0 controller implemented in [SpinalHDL](https://github.com/SpinalHDL/Sp
 ## Architecture
 
 ```
-Application ──► DMA Engine ──► TLP TX/RX ──► DL Layer ──► PHY
-                MSI-X Ctrl ◄──┘              └─► Config Space
+┌─────────────────────────────────────────────────────────────────┐
+│                        Application                               │
+│    ┌──────────┐    ┌──────────┐    ┌──────────┐                 │
+│    │ User AXI │    │Local Mem │    │ Interrupt│                 │
+│    │  Control │    │   AXI    │    │  Inputs  │                 │
+│    └────┬─────┘    └────┬─────┘    └────┬─────┘                 │
+└─────────┼───────────────┼───────────────┼────────────────────────┘
+          │               │               │
+          ▼               ▼               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      PcieController                              │
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐      │
+│  │   DMA    │   │  MSI-X   │   │  Config  │   │   TLP    │      │
+│  │  Engine  │   │  Ctrl    │   │  Space   │   │ TX/RX    │      │
+│  └────┬─────┘   └────┬─────┘   └────┬─────┘   └────┬─────┘      │
+│       │              │              │              │             │
+│       └──────────────┴──────────────┴──────────────┘             │
+│                              │                                   │
+│                      ┌───────┴───────┐                          │
+│                      │  Data Link    │                          │
+│                      │    Layer      │                          │
+│                      └───────┬───────┘                          │
+│                              │                                   │
+│                      ┌───────┴───────┐                          │
+│                      │  Physical     │                          │
+│                      │    Layer      │                          │
+│                      └───────┬───────┘                          │
+└──────────────────────────────┼──────────────────────────────────┘
+                               │
+                               ▼
+                         ┌───────────┐
+                         │  SerDes   │
+                         │  (PHY)    │
+                         └───────────┘
 ```
 
 ## Requirements
 
 - Scala 2.11.12
 - SpinalHDL 1.9.4
-- sbt
+- sbt 1.x
 
-## Build
+## Quick Start
+
+### Build
 
 ```bash
 sbt compile
 ```
 
-## Generate RTL
+### Generate Verilog
 
 ```bash
 sbt "runMain pcie.PcieControllerGen"
@@ -38,7 +76,7 @@ sbt "runMain pcie.PcieControllerGen"
 
 Output: `rtl/PcieController.v`
 
-## Simulation
+### Run Simulation
 
 ```bash
 sbt "runMain pcie.PcieControllerSim"
@@ -46,31 +84,61 @@ sbt "runMain pcie.PcieControllerSim"
 
 ## Configuration
 
-Default PCIe device configuration (can be customized):
+Customize the controller via `PcieControllerConfig`:
 
-| Parameter | Default Value |
-|-----------|---------------|
-| Vendor ID | 0x10EE (Xilinx) |
-| Device ID | 0x7021 |
-| Class Code | 0x020000 (Network Controller) |
-| Max Payload | 256 bytes |
-| MSI-X Vectors | 32 |
+```scala
+val config = PcieControllerConfig(
+  vendorId   = 0x10EE,    // Xilinx
+  deviceId   = 0x7021,
+  classCode  = 0x020000,  // Network Controller
+  maxPayload = 256,       // bytes
+  numMsixVec = 32         // MSI-X vectors
+)
+```
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| vendorId | 0x10EE | PCI Vendor ID |
+| deviceId | 0x7021 | PCI Device ID |
+| classCode | 0x020000 | PCI Class Code |
+| maxPayload | 256 | Max payload size (bytes) |
+| numMsixVec | 32 | Number of MSI-X vectors |
 
 ## Directory Structure
 
 ```
-src/main/scala/pcie/
-├── PcieController.scala      # Top-level module
-├── PcieTypes.scala           # TLP types and bundles
-├── PhysicalLayer.scala       # PHY layer
-├── DataLinkLayer.scala       # Data Link Layer (TX/RX)
-├── TlpTxEngine.scala         # Transaction Layer TX
-├── TlpRxEngine.scala         # Transaction Layer RX
-├── ConfigSpaceCtrl.scala     # Config space controller
-├── DmaEngine.scala           # DMA engine
-└── MsixController.scala      # MSI-X controller
+.
+├── build.sbt              # SBT build configuration
+├── src/main/scala/pcie/
+│   ├── PcieController.scala      # Top-level module
+│   ├── PcieTypes.scala           # TLP types and bundles
+│   ├── PhysicalLayer.scala       # PHY layer
+│   ├── DataLinkLayer.scala       # Data Link Layer
+│   ├── TlpTxEngine.scala         # Transaction Layer TX
+│   ├── TlpRxEngine.scala         # Transaction Layer RX
+│   ├── ConfigSpaceCtrl.scala     # Config space controller
+│   ├── DmaEngine.scala           # DMA engine
+│   └── MsixController.scala      # MSI-X controller
+├── rtl/                   # Generated Verilog output
+└── project/               # SBT project files
 ```
+
+## Interfaces
+
+| Interface | Type | Description |
+|-----------|------|-------------|
+| txSymbols | Output (10-bit) | To SerDes TX |
+| rxSymbols | Input (10-bit) | From SerDes RX |
+| userCtrl | AXI4 Slave | DMA configuration registers |
+| localMem | AXI4 Master | Local memory access |
+| intReq | Input | Interrupt request lines |
+| intAck | Output | Interrupt acknowledge |
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [SpinalHDL](https://github.com/SpinalHDL/SpinalHDL) - Hardware description language
+- [PCI Express Base Specification 2.0](https://pcisig.com/)
