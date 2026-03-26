@@ -1,6 +1,6 @@
 // Generator : SpinalHDL v1.9.4    git head : 270018552577f3bb8e5339ee2583c9c22d324215
 // Component : PcieController
-// Git hash  : a9e5145dad1a9a8ed00383436c7bf408dcc561cd
+// Git hash  : 0699282e37b91ab3fdf47c5e5e35d10740a211d9
 
 `timescale 1ns/1ps
 
@@ -2487,7 +2487,7 @@ module DmaEngine (
   wire       [31:0]   _zz_offset_1;
   wire       [31:0]   _zz_totalBytes_3;
   wire       [33:0]   _zz_totalBytes_4;
-  wire       [15:0]   _zz_when_DmaEngine_l495;
+  wire       [15:0]   _zz_when_DmaEngine_l496;
   reg        [31:0]   ctrlReg;
   reg        [31:0]   statusReg;
   reg        [31:0]   srcAddrLo;
@@ -2538,7 +2538,7 @@ module DmaEngine (
   reg        [31:0]   outstandingDw;
   reg                 waitingCpl;
   reg        [23:0]   cplTimeout;
-  wire       [31:0]   mrrsDw;
+  reg        [31:0]   mrrsDw;
   wire       [31:0]   maxPayloadDw;
   wire       [63:0]   srcAddrFull;
   wire       [63:0]   offsetExtended;
@@ -2586,24 +2586,24 @@ module DmaEngine (
   wire       [31:0]   descReadData_control;
   wire       [63:0]   descReadData_nextDesc;
   wire       [255:0]  _zz_descReadData_srcAddr_1;
-  wire                when_DmaEngine_l313;
-  wire                when_DmaEngine_l319;
+  wire                when_DmaEngine_l314;
+  wire                when_DmaEngine_l320;
   wire       [31:0]   _zz_remaining;
-  wire                when_DmaEngine_l332;
-  wire                when_DmaEngine_l334;
-  wire                when_DmaEngine_l345;
+  wire                when_DmaEngine_l333;
+  wire                when_DmaEngine_l335;
+  wire                when_DmaEngine_l346;
   wire       [31:0]   _zz_remaining_1;
-  wire                when_DmaEngine_l359;
-  wire                when_DmaEngine_l361;
+  wire                when_DmaEngine_l360;
+  wire                when_DmaEngine_l362;
   wire                io_cplIn_fire;
-  wire                when_DmaEngine_l392;
+  wire                when_DmaEngine_l393;
   wire       [31:0]   _zz_totalBytes;
-  wire                when_DmaEngine_l407;
-  wire                when_DmaEngine_l422;
+  wire                when_DmaEngine_l408;
   wire                when_DmaEngine_l423;
+  wire                when_DmaEngine_l424;
   wire       [31:0]   _zz_remaining_2;
-  wire                when_DmaEngine_l475;
-  wire                when_DmaEngine_l495;
+  wire                when_DmaEngine_l476;
+  wire                when_DmaEngine_l496;
   `ifndef SYNTHESIS
   reg [55:0] io_memWrOut_payload_tlpType_string;
   reg [55:0] io_memRdOut_payload_tlpType_string;
@@ -2633,7 +2633,7 @@ module DmaEngine (
   assign _zz_offset_1 = (d2hChunkDw <<< 2);
   assign _zz_totalBytes_4 = ({2'd0,d2hChunkDw} <<< 2'd2);
   assign _zz_totalBytes_3 = _zz_totalBytes_4[31:0];
-  assign _zz_when_DmaEngine_l495 = (descIdx + 16'h0001);
+  assign _zz_when_DmaEngine_l496 = (descIdx + 16'h0001);
   assign _zz_descriptorMem_port0 = descriptorMem[_zz_descReadData_srcAddr];
   `ifndef SYNTHESIS
   always @(*) begin
@@ -2767,7 +2767,6 @@ module DmaEngine (
   assign direction = ctrlReg[1];
   assign sgMode = ctrlReg[4];
   assign intEnable = ctrlReg[2];
-  assign mrrsDw = 32'h00000080;
   assign maxPayloadDw = 32'h00000040;
   assign srcAddrFull = {srcAddrHi,srcAddrLo};
   assign offsetExtended = {32'd0, offset};
@@ -3528,24 +3527,24 @@ module DmaEngine (
   assign descReadData_length = _zz_descReadData_srcAddr_1[159 : 128];
   assign descReadData_control = _zz_descReadData_srcAddr_1[191 : 160];
   assign descReadData_nextDesc = _zz_descReadData_srcAddr_1[255 : 192];
-  assign when_DmaEngine_l313 = (startPulse && (statusReg[1] == 1'b0));
-  assign when_DmaEngine_l319 = (16'h0100 < descCount);
+  assign when_DmaEngine_l314 = (startPulse && (statusReg[1] == 1'b0));
+  assign when_DmaEngine_l320 = (16'h0100 < descCount);
   assign _zz_remaining = {2'd0, _zz__zz_remaining};
-  assign when_DmaEngine_l332 = (_zz_remaining == 32'h00000000);
-  assign when_DmaEngine_l334 = (direction == 1'b0);
-  assign when_DmaEngine_l345 = ((descIdx < descCount) && (descIdx < 16'h0100));
+  assign when_DmaEngine_l333 = (_zz_remaining == 32'h00000000);
+  assign when_DmaEngine_l335 = (direction == 1'b0);
+  assign when_DmaEngine_l346 = ((descIdx < descCount) && (descIdx < 16'h0100));
   assign _zz_remaining_1 = {2'd0, _zz__zz_remaining_1};
-  assign when_DmaEngine_l359 = (_zz_remaining_1 == 32'h00000000);
-  assign when_DmaEngine_l361 = (descReadData_control[1] == 1'b0);
+  assign when_DmaEngine_l360 = (_zz_remaining_1 == 32'h00000000);
+  assign when_DmaEngine_l362 = (descReadData_control[1] == 1'b0);
   assign io_cplIn_fire = (io_cplIn_valid && io_cplIn_ready);
-  assign when_DmaEngine_l392 = ((io_cplIn_fire && (io_cplIn_payload_tag == reqTag)) && waitingCpl);
+  assign when_DmaEngine_l393 = ((io_cplIn_fire && (io_cplIn_payload_tag == reqTag)) && waitingCpl);
   assign _zz_totalBytes = {22'd0, io_cplIn_payload_length};
-  assign when_DmaEngine_l407 = (cplTimeout == 24'h989680);
-  assign when_DmaEngine_l422 = (io_localMem_aw_ready && io_localMem_w_ready);
-  assign when_DmaEngine_l423 = (remaining == 32'h00000000);
+  assign when_DmaEngine_l408 = (cplTimeout == 24'h989680);
+  assign when_DmaEngine_l423 = (io_localMem_aw_ready && io_localMem_w_ready);
+  assign when_DmaEngine_l424 = (remaining == 32'h00000000);
   assign _zz_remaining_2 = (remaining - d2hChunkDw);
-  assign when_DmaEngine_l475 = (_zz_remaining_2 == 32'h00000000);
-  assign when_DmaEngine_l495 = (descCount <= _zz_when_DmaEngine_l495);
+  assign when_DmaEngine_l476 = (_zz_remaining_2 == 32'h00000000);
+  assign when_DmaEngine_l496 = (descCount <= _zz_when_DmaEngine_l496);
   always @(posedge clk or posedge reset) begin
     if(reset) begin
       ctrlReg <= 32'h00000000;
@@ -3585,6 +3584,7 @@ module DmaEngine (
       outstandingDw <= 32'h00000000;
       waitingCpl <= 1'b0;
       cplTimeout <= 24'h000000;
+      mrrsDw <= 32'h00000080;
       h2dWriteAddr <= 32'h00000000;
       h2dWriteData <= 64'h0000000000000000;
       h2dWriteStrb <= 8'h00;
@@ -3690,13 +3690,14 @@ module DmaEngine (
         bValid <= 1'b0;
       end
       startPrev <= startBit;
+      mrrsDw <= mrrsDw;
       case(dmaState_1)
         DmaState_IDLE : begin
-          if(when_DmaEngine_l313) begin
+          if(when_DmaEngine_l314) begin
             totalBytes <= 32'h00000000;
             descIdx <= 16'h0000;
             if(sgMode) begin
-              if(when_DmaEngine_l319) begin
+              if(when_DmaEngine_l320) begin
                 statusReg <= ((statusReg & 32'hfffffff8) | 32'h00000004);
                 dmaState_1 <= DmaState_ERROR;
               end else begin
@@ -3706,10 +3707,10 @@ module DmaEngine (
               remaining <= _zz_remaining;
               offset <= 32'h00000000;
               statusReg <= ((statusReg & 32'hfffffff8) | 32'h00000002);
-              if(when_DmaEngine_l332) begin
+              if(when_DmaEngine_l333) begin
                 dmaState_1 <= DmaState_DONE;
               end else begin
-                if(when_DmaEngine_l334) begin
+                if(when_DmaEngine_l335) begin
                   dmaState_1 <= DmaState_H2D_RD_REQ;
                 end else begin
                   dmaState_1 <= DmaState_D2H_RD_LOCAL;
@@ -3719,7 +3720,7 @@ module DmaEngine (
           end
         end
         DmaState_FETCH_DESC : begin
-          if(when_DmaEngine_l345) begin
+          if(when_DmaEngine_l346) begin
             activeDesc_srcAddr <= descReadData_srcAddr;
             activeDesc_dstAddr <= descReadData_dstAddr;
             activeDesc_length <= descReadData_length;
@@ -3732,10 +3733,10 @@ module DmaEngine (
             srcAddrHi <= descReadData_srcAddr[63 : 32];
             dstAddrLo <= descReadData_dstAddr[31 : 0];
             dstAddrHi <= descReadData_dstAddr[63 : 32];
-            if(when_DmaEngine_l359) begin
+            if(when_DmaEngine_l360) begin
               dmaState_1 <= DmaState_NEXT_DESC;
             end else begin
-              if(when_DmaEngine_l361) begin
+              if(when_DmaEngine_l362) begin
                 dmaState_1 <= DmaState_H2D_RD_REQ;
               end else begin
                 dmaState_1 <= DmaState_D2H_RD_LOCAL;
@@ -3757,7 +3758,7 @@ module DmaEngine (
         end
         DmaState_H2D_WAIT_CPL : begin
           cplTimeout <= (cplTimeout + 24'h000001);
-          if(when_DmaEngine_l392) begin
+          if(when_DmaEngine_l393) begin
             h2dWriteAddr <= (dstAddrLo + offset);
             h2dWriteData <= {io_cplIn_payload_data_1,io_cplIn_payload_data_0};
             h2dWriteStrb <= ((((io_cplIn_payload_dataValid == 3'b000) ? 3'b001 : io_cplIn_payload_dataValid) == 3'b001) ? 8'h0f : 8'hff);
@@ -3767,7 +3768,7 @@ module DmaEngine (
             waitingCpl <= 1'b0;
             dmaState_1 <= DmaState_H2D_WR_LOCAL;
           end else begin
-            if(when_DmaEngine_l407) begin
+            if(when_DmaEngine_l408) begin
               statusReg <= ((statusReg & 32'hfffffff8) | 32'h00000004);
               waitingCpl <= 1'b0;
               dmaState_1 <= DmaState_ERROR;
@@ -3775,8 +3776,8 @@ module DmaEngine (
           end
         end
         DmaState_H2D_WR_LOCAL : begin
-          if(when_DmaEngine_l422) begin
-            if(when_DmaEngine_l423) begin
+          if(when_DmaEngine_l423) begin
+            if(when_DmaEngine_l424) begin
               if(sgMode) begin
                 dmaState_1 <= DmaState_NEXT_DESC;
               end else begin
@@ -3798,7 +3799,7 @@ module DmaEngine (
               offset <= (offset + _zz_offset_1);
               remaining <= _zz_remaining_2;
               totalBytes <= (totalBytes + _zz_totalBytes_3);
-              if(when_DmaEngine_l475) begin
+              if(when_DmaEngine_l476) begin
                 if(sgMode) begin
                   dmaState_1 <= DmaState_NEXT_DESC;
                 end else begin
@@ -3815,7 +3816,7 @@ module DmaEngine (
           descIdx <= (descIdx + 16'h0001);
           descCurrent <= (descIdx + 16'h0001);
           statusReg[3] <= 1'b1;
-          if(when_DmaEngine_l495) begin
+          if(when_DmaEngine_l496) begin
             dmaState_1 <= DmaState_DONE;
           end else begin
             dmaState_1 <= DmaState_FETCH_DESC;
