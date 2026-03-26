@@ -214,6 +214,7 @@ class DmaEngine(maxPayload: Int = 256, maxDescriptors: Int = 256) extends Compon
 
   // Max Read Request Size (from config space, default 128 DW = 512 bytes)
   val mrrsDw = Reg(UInt(32 bits)) init(128)
+  mrrsDw := mrrsDw  // Read-only, self-assign to avoid UNASSIGNED REGISTER warning
   // Max Payload Size for writes
   val maxPayloadDw = U(maxPayload / 4, 32 bits)
 
