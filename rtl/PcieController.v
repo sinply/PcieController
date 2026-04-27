@@ -1,6 +1,6 @@
 // Generator : SpinalHDL v1.9.4    git head : 270018552577f3bb8e5339ee2583c9c22d324215
 // Component : PcieController
-// Git hash  : 0699282e37b91ab3fdf47c5e5e35d10740a211d9
+// Git hash  : 2af464134b48e5e72955d7b562b73429ff1dd683
 
 `timescale 1ns/1ps
 
@@ -138,16 +138,8 @@ module PcieController (
   localparam TlpType_MSG_D = 4'd11;
   localparam TlpType_INVALID = 4'd12;
 
-  wire                dllpHandler_1_io_dllpIn_valid;
-  wire       [31:0]   dllpHandler_1_io_dllpIn_payload;
-  wire                dllpHandler_1_io_dllpValid;
   wire                fcMgr_io_init;
-  wire       [7:0]    fcMgr_io_phConsumed;
-  wire       [11:0]   fcMgr_io_pdConsumed;
-  wire       [7:0]    fcMgr_io_nphConsumed;
   wire       [11:0]   fcMgr_io_npdConsumed;
-  wire       [7:0]    fcMgr_io_cplhConsumed;
-  wire       [11:0]   fcMgr_io_cpldConsumed;
   wire                rxEngine_io_memReq_ready;
   wire                rxEngine_io_memDataOut_ready;
   wire       [1:0]    ioHandler_io_regWidth;
@@ -175,6 +167,8 @@ module PcieController (
   wire                dlRx_io_frameIn_ready;
   wire                dlRx_io_tlpOut_valid;
   wire       [31:0]   dlRx_io_tlpOut_payload;
+  wire                dlRx_io_dllpOut_valid;
+  wire       [31:0]   dlRx_io_dllpOut_payload;
   wire       [11:0]   dlRx_io_txAck;
   wire       [11:0]   dlRx_io_txNak;
   wire                dlRx_io_ackValid;
@@ -214,6 +208,11 @@ module PcieController (
   wire                txEngine_io_cplIn_ready;
   wire                txEngine_io_tlpOut_valid;
   wire       [31:0]   txEngine_io_tlpOut_payload;
+  wire       [7:0]    txEngine_io_phConsumed;
+  wire       [11:0]   txEngine_io_pdConsumed;
+  wire       [7:0]    txEngine_io_nphConsumed;
+  wire       [7:0]    txEngine_io_cplhConsumed;
+  wire       [11:0]   txEngine_io_cpldConsumed;
   wire                rxEngine_io_tlpIn_ready;
   wire                rxEngine_io_memReq_valid;
   wire       [3:0]    rxEngine_io_memReq_payload_tlpType;
@@ -512,25 +511,28 @@ module PcieController (
     .reset               (reset                           )  //i
   );
   DlRxDeframer dlRx (
-    .io_frameIn_valid   (phy_io_rxData_valid         ), //i
-    .io_frameIn_ready   (dlRx_io_frameIn_ready       ), //o
-    .io_frameIn_payload (phy_io_rxData_payload[31:0] ), //i
-    .io_tlpOut_valid    (dlRx_io_tlpOut_valid        ), //o
-    .io_tlpOut_ready    (rxEngine_io_tlpIn_ready     ), //i
-    .io_tlpOut_payload  (dlRx_io_tlpOut_payload[31:0]), //o
-    .io_txAck           (dlRx_io_txAck[11:0]         ), //o
-    .io_txNak           (dlRx_io_txNak[11:0]         ), //o
-    .io_ackValid        (dlRx_io_ackValid            ), //o
-    .io_nakValid        (dlRx_io_nakValid            ), //o
-    .io_crcErr          (dlRx_io_crcErr              ), //o
-    .clk                (clk                         ), //i
-    .reset              (reset                       )  //i
+    .io_frameIn_valid   (phy_io_rxData_valid          ), //i
+    .io_frameIn_ready   (dlRx_io_frameIn_ready        ), //o
+    .io_frameIn_payload (phy_io_rxData_payload[31:0]  ), //i
+    .io_tlpOut_valid    (dlRx_io_tlpOut_valid         ), //o
+    .io_tlpOut_ready    (rxEngine_io_tlpIn_ready      ), //i
+    .io_tlpOut_payload  (dlRx_io_tlpOut_payload[31:0] ), //o
+    .io_dllpOut_valid   (dlRx_io_dllpOut_valid        ), //o
+    .io_dllpOut_ready   (dllpHandler_1_io_dllpIn_ready), //i
+    .io_dllpOut_payload (dlRx_io_dllpOut_payload[31:0]), //o
+    .io_txAck           (dlRx_io_txAck[11:0]          ), //o
+    .io_txNak           (dlRx_io_txNak[11:0]          ), //o
+    .io_ackValid        (dlRx_io_ackValid             ), //o
+    .io_nakValid        (dlRx_io_nakValid             ), //o
+    .io_crcErr          (dlRx_io_crcErr               ), //o
+    .clk                (clk                          ), //i
+    .reset              (reset                        )  //i
   );
   DllpHandler dllpHandler_1 (
-    .io_dllpIn_valid         (dllpHandler_1_io_dllpIn_valid              ), //i
+    .io_dllpIn_valid         (dlRx_io_dllpOut_valid                      ), //i
     .io_dllpIn_ready         (dllpHandler_1_io_dllpIn_ready              ), //o
-    .io_dllpIn_payload       (dllpHandler_1_io_dllpIn_payload[31:0]      ), //i
-    .io_dllpValid            (dllpHandler_1_io_dllpValid                 ), //i
+    .io_dllpIn_payload       (dlRx_io_dllpOut_payload[31:0]              ), //i
+    .io_dllpValid            (dlRx_io_dllpOut_valid                      ), //i
     .io_ackSeq               (dllpHandler_1_io_ackSeq[11:0]              ), //o
     .io_ackValid             (dllpHandler_1_io_ackValid                  ), //o
     .io_nakSeq               (dllpHandler_1_io_nakSeq[11:0]              ), //o
@@ -554,12 +556,12 @@ module PcieController (
   FlowControlMgr fcMgr (
     .io_init                  (fcMgr_io_init                              ), //i
     .io_linkUp                (phy_io_linkUp                              ), //i
-    .io_phConsumed            (fcMgr_io_phConsumed[7:0]                   ), //i
-    .io_pdConsumed            (fcMgr_io_pdConsumed[11:0]                  ), //i
-    .io_nphConsumed           (fcMgr_io_nphConsumed[7:0]                  ), //i
+    .io_phConsumed            (txEngine_io_phConsumed[7:0]                ), //i
+    .io_pdConsumed            (txEngine_io_pdConsumed[11:0]               ), //i
+    .io_nphConsumed           (txEngine_io_nphConsumed[7:0]               ), //i
     .io_npdConsumed           (fcMgr_io_npdConsumed[11:0]                 ), //i
-    .io_cplhConsumed          (fcMgr_io_cplhConsumed[7:0]                 ), //i
-    .io_cpldConsumed          (fcMgr_io_cpldConsumed[11:0]                ), //i
+    .io_cplhConsumed          (txEngine_io_cplhConsumed[7:0]              ), //i
+    .io_cpldConsumed          (txEngine_io_cpldConsumed[11:0]             ), //i
     .io_fcUpdateValid         (dllpHandler_1_io_fcUpdateValid             ), //i
     .io_fcUpdate_phCredits    (dllpHandler_1_io_fcUpdate_phCredits[7:0]   ), //i
     .io_fcUpdate_pdCredits    (dllpHandler_1_io_fcUpdate_pdCredits[11:0]  ), //i
@@ -644,6 +646,11 @@ module PcieController (
     .io_fcCredits_npdCredits      (fcMgr_io_available_npdCredits[11:0]       ), //i
     .io_fcCredits_cplhCredits     (fcMgr_io_available_cplhCredits[7:0]       ), //i
     .io_fcCredits_cpldCredits     (fcMgr_io_available_cpldCredits[11:0]      ), //i
+    .io_phConsumed                (txEngine_io_phConsumed[7:0]               ), //o
+    .io_pdConsumed                (txEngine_io_pdConsumed[11:0]              ), //o
+    .io_nphConsumed               (txEngine_io_nphConsumed[7:0]              ), //o
+    .io_cplhConsumed              (txEngine_io_cplhConsumed[7:0]             ), //o
+    .io_cpldConsumed              (txEngine_io_cpldConsumed[11:0]            ), //o
     .clk                          (clk                                       ), //i
     .reset                        (reset                                     )  //i
   );
@@ -1116,16 +1123,8 @@ module PcieController (
   assign io_symbolAlign = phy_io_aligned;
   assign io_codeErr = phy_io_codeErr;
   assign io_dispErr = phy_io_disparityErr;
-  assign dllpHandler_1_io_dllpIn_valid = 1'b0;
-  assign dllpHandler_1_io_dllpIn_payload = 32'h00000000;
-  assign dllpHandler_1_io_dllpValid = 1'b0;
   assign fcMgr_io_init = 1'b0;
-  assign fcMgr_io_phConsumed = 8'h00;
-  assign fcMgr_io_pdConsumed = 12'h000;
-  assign fcMgr_io_nphConsumed = 8'h00;
   assign fcMgr_io_npdConsumed = 12'h000;
-  assign fcMgr_io_cplhConsumed = 8'h00;
-  assign fcMgr_io_cpldConsumed = 12'h000;
   assign cfgSpace_io_barCheckAddr = (rxEngine_io_memReq_valid ? rxEngine_io_memReq_payload_addr : 64'h0000000000000000);
   assign isBar1Req = (rxEngine_io_memReq_valid && cfgSpace_io_barHit[1]);
   assign msix_io_tableAddr = rxEngine_io_memReq_payload_addr[11 : 0];
@@ -6035,6 +6034,11 @@ module TlpTxFifoWrapper (
   input  wire [11:0]   io_fcCredits_npdCredits,
   input  wire [7:0]    io_fcCredits_cplhCredits,
   input  wire [11:0]   io_fcCredits_cpldCredits,
+  output wire [7:0]    io_phConsumed,
+  output wire [11:0]   io_pdConsumed,
+  output wire [7:0]    io_nphConsumed,
+  output wire [7:0]    io_cplhConsumed,
+  output wire [11:0]   io_cpldConsumed,
   input  wire          clk,
   input  wire          reset
 );
@@ -6114,6 +6118,11 @@ module TlpTxFifoWrapper (
   wire                engine_io_cplReq_ready;
   wire                engine_io_tlpOut_valid;
   wire       [31:0]   engine_io_tlpOut_payload;
+  wire       [7:0]    engine_io_phConsumed;
+  wire       [11:0]   engine_io_pdConsumed;
+  wire       [7:0]    engine_io_nphConsumed;
+  wire       [7:0]    engine_io_cplhConsumed;
+  wire       [11:0]   engine_io_cpldConsumed;
   `ifndef SYNTHESIS
   reg [55:0] io_memWrIn_payload_tlpType_string;
   reg [55:0] io_memRdIn_payload_tlpType_string;
@@ -6296,6 +6305,11 @@ module TlpTxFifoWrapper (
     .io_fcCredits_npdCredits       (io_fcCredits_npdCredits[11:0]          ), //i
     .io_fcCredits_cplhCredits      (io_fcCredits_cplhCredits[7:0]          ), //i
     .io_fcCredits_cpldCredits      (io_fcCredits_cpldCredits[11:0]         ), //i
+    .io_phConsumed                 (engine_io_phConsumed[7:0]              ), //o
+    .io_pdConsumed                 (engine_io_pdConsumed[11:0]             ), //o
+    .io_nphConsumed                (engine_io_nphConsumed[7:0]             ), //o
+    .io_cplhConsumed               (engine_io_cplhConsumed[7:0]            ), //o
+    .io_cpldConsumed               (engine_io_cpldConsumed[11:0]           ), //o
     .clk                           (clk                                    ), //i
     .reset                         (reset                                  )  //i
   );
@@ -6361,6 +6375,11 @@ module TlpTxFifoWrapper (
   assign io_cplIn_ready = cplFifo_io_push_ready;
   assign io_tlpOut_valid = engine_io_tlpOut_valid;
   assign io_tlpOut_payload = engine_io_tlpOut_payload;
+  assign io_phConsumed = engine_io_phConsumed;
+  assign io_pdConsumed = engine_io_pdConsumed;
+  assign io_nphConsumed = engine_io_nphConsumed;
+  assign io_cplhConsumed = engine_io_cplhConsumed;
+  assign io_cpldConsumed = engine_io_cpldConsumed;
   assign memWrFifo_io_flush = 1'b0;
   assign memRdFifo_io_flush = 1'b0;
   assign cplFifo_io_flush = 1'b0;
@@ -6417,15 +6436,15 @@ module FlowControlMgr (
   reg        [11:0]   cpld;
   reg                 cplhInfinite;
   reg                 cpldInfinite;
-  wire                when_DataLinkLayer_l203;
-  wire                when_DataLinkLayer_l225;
-  wire                when_DataLinkLayer_l230;
-  wire                when_DataLinkLayer_l238;
-  wire                when_DataLinkLayer_l241;
+  wire                when_DataLinkLayer_l222;
   wire                when_DataLinkLayer_l244;
-  wire                when_DataLinkLayer_l247;
-  wire                when_DataLinkLayer_l250;
-  wire                when_DataLinkLayer_l253;
+  wire                when_DataLinkLayer_l249;
+  wire                when_DataLinkLayer_l257;
+  wire                when_DataLinkLayer_l260;
+  wire                when_DataLinkLayer_l263;
+  wire                when_DataLinkLayer_l266;
+  wire                when_DataLinkLayer_l269;
+  wire                when_DataLinkLayer_l272;
 
   assign _zz_ph = (ph - io_phConsumed);
   assign _zz_pd = (pd - io_pdConsumed);
@@ -6433,15 +6452,15 @@ module FlowControlMgr (
   assign _zz_npd = (npd - io_npdConsumed);
   assign _zz_cplh = (cplh - io_cplhConsumed);
   assign _zz_cpld = (cpld - io_cpldConsumed);
-  assign when_DataLinkLayer_l203 = (io_init || (! io_linkUp));
-  assign when_DataLinkLayer_l225 = (! cplhInfinite);
-  assign when_DataLinkLayer_l230 = (! cpldInfinite);
-  assign when_DataLinkLayer_l238 = (8'h00 < io_phConsumed);
-  assign when_DataLinkLayer_l241 = (12'h000 < io_pdConsumed);
-  assign when_DataLinkLayer_l244 = (8'h00 < io_nphConsumed);
-  assign when_DataLinkLayer_l247 = (12'h000 < io_npdConsumed);
-  assign when_DataLinkLayer_l250 = ((8'h00 < io_cplhConsumed) && (! cplhInfinite));
-  assign when_DataLinkLayer_l253 = ((12'h000 < io_cpldConsumed) && (! cpldInfinite));
+  assign when_DataLinkLayer_l222 = (io_init || (! io_linkUp));
+  assign when_DataLinkLayer_l244 = (! cplhInfinite);
+  assign when_DataLinkLayer_l249 = (! cpldInfinite);
+  assign when_DataLinkLayer_l257 = (8'h00 < io_phConsumed);
+  assign when_DataLinkLayer_l260 = (12'h000 < io_pdConsumed);
+  assign when_DataLinkLayer_l263 = (8'h00 < io_nphConsumed);
+  assign when_DataLinkLayer_l266 = (12'h000 < io_npdConsumed);
+  assign when_DataLinkLayer_l269 = ((8'h00 < io_cplhConsumed) && (! cplhInfinite));
+  assign when_DataLinkLayer_l272 = ((12'h000 < io_cpldConsumed) && (! cpldInfinite));
   assign io_available_phCredits = ph;
   assign io_available_nphCredits = nph;
   assign io_available_cplhCredits = (cplhInfinite ? 8'hff : cplh);
@@ -6462,7 +6481,7 @@ module FlowControlMgr (
       cplhInfinite <= 1'b0;
       cpldInfinite <= 1'b0;
     end else begin
-      if(when_DataLinkLayer_l203) begin
+      if(when_DataLinkLayer_l222) begin
         ph <= 8'h00;
         nph <= 8'h00;
         cplh <= 8'h00;
@@ -6483,33 +6502,33 @@ module FlowControlMgr (
         cpldInfinite <= io_fcInit_cpldCredits[11];
       end
       if(io_fcUpdateValid) begin
-        if(when_DataLinkLayer_l225) begin
+        if(when_DataLinkLayer_l244) begin
           ph <= (ph + io_fcUpdate_phCredits);
           nph <= (nph + io_fcUpdate_nphCredits);
           cplh <= (cplh + io_fcUpdate_cplhCredits);
         end
-        if(when_DataLinkLayer_l230) begin
+        if(when_DataLinkLayer_l249) begin
           pd <= (pd + io_fcUpdate_pdCredits);
           npd <= (npd + io_fcUpdate_npdCredits);
           cpld <= (cpld + io_fcUpdate_cpldCredits);
         end
       end
-      if(when_DataLinkLayer_l238) begin
+      if(when_DataLinkLayer_l257) begin
         ph <= ((io_phConsumed <= ph) ? _zz_ph : 8'h00);
       end
-      if(when_DataLinkLayer_l241) begin
+      if(when_DataLinkLayer_l260) begin
         pd <= ((io_pdConsumed <= pd) ? _zz_pd : 12'h000);
       end
-      if(when_DataLinkLayer_l244) begin
+      if(when_DataLinkLayer_l263) begin
         nph <= ((io_nphConsumed <= nph) ? _zz_nph : 8'h00);
       end
-      if(when_DataLinkLayer_l247) begin
+      if(when_DataLinkLayer_l266) begin
         npd <= ((io_npdConsumed <= npd) ? _zz_npd : 12'h000);
       end
-      if(when_DataLinkLayer_l250) begin
+      if(when_DataLinkLayer_l269) begin
         cplh <= ((io_cplhConsumed <= cplh) ? _zz_cplh : 8'h00);
       end
-      if(when_DataLinkLayer_l253) begin
+      if(when_DataLinkLayer_l272) begin
         cpld <= ((io_cpldConsumed <= cpld) ? _zz_cpld : 12'h000);
       end
     end
@@ -6551,7 +6570,7 @@ module DllpHandler (
   wire       [3:0]    dllpType;
   wire       [23:0]   dllpData;
   wire                io_dllpIn_fire;
-  wire                when_DataLinkLayer_l323;
+  wire                when_DataLinkLayer_l342;
 
   assign _zz_io_fcInit_phCredits = {dllpData[3 : 0],dllpData[7 : 4]};
   assign _zz_io_fcInit_nphCredits = {dllpData[3 : 0],dllpData[7 : 4]};
@@ -6561,7 +6580,7 @@ module DllpHandler (
   assign dllpData = io_dllpIn_payload[27 : 4];
   always @(*) begin
     io_ackValid = 1'b0;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b0000 : begin
           io_ackValid = 1'b1;
@@ -6574,7 +6593,7 @@ module DllpHandler (
 
   always @(*) begin
     io_nakValid = 1'b0;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b0001 : begin
           io_nakValid = 1'b1;
@@ -6587,7 +6606,7 @@ module DllpHandler (
 
   always @(*) begin
     io_ackSeq = 12'h000;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b0000 : begin
           io_ackSeq = dllpData[11 : 0];
@@ -6600,7 +6619,7 @@ module DllpHandler (
 
   always @(*) begin
     io_nakSeq = 12'h000;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b0001 : begin
           io_nakSeq = dllpData[11 : 0];
@@ -6613,7 +6632,7 @@ module DllpHandler (
 
   always @(*) begin
     io_fcInitValid = 1'b0;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b1011 : begin
           io_fcInitValid = 1'b1;
@@ -6632,7 +6651,7 @@ module DllpHandler (
 
   always @(*) begin
     io_fcUpdateValid = 1'b0;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b1110 : begin
           io_fcUpdateValid = 1'b1;
@@ -6645,7 +6664,7 @@ module DllpHandler (
 
   always @(*) begin
     io_pmEnterL1 = 1'b0;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b0010 : begin
           io_pmEnterL1 = 1'b1;
@@ -6658,7 +6677,7 @@ module DllpHandler (
 
   always @(*) begin
     io_fcInit_phCredits = 8'h00;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b1011 : begin
           io_fcInit_phCredits = _zz_io_fcInit_phCredits;
@@ -6671,7 +6690,7 @@ module DllpHandler (
 
   always @(*) begin
     io_fcInit_nphCredits = 8'h00;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b1100 : begin
           io_fcInit_nphCredits = _zz_io_fcInit_nphCredits;
@@ -6684,7 +6703,7 @@ module DllpHandler (
 
   always @(*) begin
     io_fcInit_cplhCredits = 8'h00;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b1101 : begin
           io_fcInit_cplhCredits = _zz_io_fcInit_cplhCredits;
@@ -6697,7 +6716,7 @@ module DllpHandler (
 
   always @(*) begin
     io_fcInit_pdCredits = 12'h000;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b1011 : begin
           io_fcInit_pdCredits = dllpData[19 : 8];
@@ -6710,7 +6729,7 @@ module DllpHandler (
 
   always @(*) begin
     io_fcInit_npdCredits = 12'h000;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b1100 : begin
           io_fcInit_npdCredits = dllpData[19 : 8];
@@ -6723,7 +6742,7 @@ module DllpHandler (
 
   always @(*) begin
     io_fcInit_cpldCredits = 12'h000;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b1101 : begin
           io_fcInit_cpldCredits = dllpData[19 : 8];
@@ -6736,7 +6755,7 @@ module DllpHandler (
 
   always @(*) begin
     io_fcUpdate_phCredits = io_fcInit_phCredits;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b1110 : begin
           io_fcUpdate_phCredits = {4'd0, _zz_io_fcUpdate_phCredits};
@@ -6749,7 +6768,7 @@ module DllpHandler (
 
   always @(*) begin
     io_fcUpdate_pdCredits = io_fcInit_pdCredits;
-    if(when_DataLinkLayer_l323) begin
+    if(when_DataLinkLayer_l342) begin
       case(dllpType)
         4'b1110 : begin
           io_fcUpdate_pdCredits = dllpData[15 : 4];
@@ -6765,18 +6784,21 @@ module DllpHandler (
   assign io_fcUpdate_cplhCredits = io_fcInit_cplhCredits;
   assign io_fcUpdate_cpldCredits = io_fcInit_cpldCredits;
   assign io_dllpIn_fire = (io_dllpIn_valid && io_dllpIn_ready);
-  assign when_DataLinkLayer_l323 = (io_dllpValid && io_dllpIn_fire);
+  assign when_DataLinkLayer_l342 = (io_dllpValid && io_dllpIn_fire);
   assign io_dllpIn_ready = 1'b1;
 
 endmodule
 
 module DlRxDeframer (
   input  wire          io_frameIn_valid,
-  output wire          io_frameIn_ready,
+  output reg           io_frameIn_ready,
   input  wire [31:0]   io_frameIn_payload,
   output reg           io_tlpOut_valid,
   input  wire          io_tlpOut_ready,
   output reg  [31:0]   io_tlpOut_payload,
+  output reg           io_dllpOut_valid,
+  input  wire          io_dllpOut_ready,
+  output reg  [31:0]   io_dllpOut_payload,
   output reg  [11:0]   io_txAck,
   output reg  [11:0]   io_txNak,
   output reg           io_ackValid,
@@ -6785,10 +6807,11 @@ module DlRxDeframer (
   input  wire          clk,
   input  wire          reset
 );
-  localparam St_1_IDLE = 2'd0;
-  localparam St_1_RX_SEQ = 2'd1;
-  localparam St_1_DATA = 2'd2;
-  localparam St_1_CHECK = 2'd3;
+  localparam St_1_IDLE = 3'd0;
+  localparam St_1_RX_SEQ = 3'd1;
+  localparam St_1_DATA = 3'd2;
+  localparam St_1_DLLP_DATA = 3'd3;
+  localparam St_1_CHECK = 3'd4;
 
   wire       [31:0]   _zz__zz_1_port0;
   wire       [31:0]   _zz__zz_3_port0;
@@ -6823,13 +6846,14 @@ module DlRxDeframer (
   wire       [7:0]    _zz__zz_crc_13;
   wire       [31:0]   _zz_crc_16;
   wire       [23:0]   _zz_crc_17;
-  reg        [1:0]    state;
+  reg        [2:0]    state;
   reg        [31:0]   crc;
   reg        [11:0]   rxSeq;
   reg        [11:0]   expSeq;
   reg        [31:0]   prevData;
   reg                 prevVld;
   wire                io_frameIn_fire;
+  wire                when_DataLinkLayer_l132;
   wire       [7:0]    _zz_crc;
   wire       [31:0]   _zz_crc_1;
   wire       [7:0]    _zz_crc_2;
@@ -6844,9 +6868,9 @@ module DlRxDeframer (
   wire       [7:0]    _zz_crc_11;
   wire       [31:0]   _zz_crc_12;
   wire       [7:0]    _zz_crc_13;
-  wire                when_DataLinkLayer_l148;
+  wire                when_DataLinkLayer_l167;
   `ifndef SYNTHESIS
-  reg [47:0] state_string;
+  reg [71:0] state_string;
   `endif
 
   reg [31:0] _zz_1 [0:255];
@@ -6918,11 +6942,12 @@ module DlRxDeframer (
   `ifndef SYNTHESIS
   always @(*) begin
     case(state)
-      St_1_IDLE : state_string = "IDLE  ";
-      St_1_RX_SEQ : state_string = "RX_SEQ";
-      St_1_DATA : state_string = "DATA  ";
-      St_1_CHECK : state_string = "CHECK ";
-      default : state_string = "??????";
+      St_1_IDLE : state_string = "IDLE     ";
+      St_1_RX_SEQ : state_string = "RX_SEQ   ";
+      St_1_DATA : state_string = "DATA     ";
+      St_1_DLLP_DATA : state_string = "DLLP_DATA";
+      St_1_CHECK : state_string = "CHECK    ";
+      default : state_string = "?????????";
     endcase
   end
   `endif
@@ -6936,8 +6961,10 @@ module DlRxDeframer (
       end
       St_1_DATA : begin
       end
+      St_1_DLLP_DATA : begin
+      end
       default : begin
-        if(when_DataLinkLayer_l148) begin
+        if(when_DataLinkLayer_l167) begin
           io_txAck = rxSeq;
         end
       end
@@ -6953,8 +6980,10 @@ module DlRxDeframer (
       end
       St_1_DATA : begin
       end
+      St_1_DLLP_DATA : begin
+      end
       default : begin
-        if(!when_DataLinkLayer_l148) begin
+        if(!when_DataLinkLayer_l167) begin
           io_txNak = rxSeq;
         end
       end
@@ -6970,8 +6999,10 @@ module DlRxDeframer (
       end
       St_1_DATA : begin
       end
+      St_1_DLLP_DATA : begin
+      end
       default : begin
-        if(when_DataLinkLayer_l148) begin
+        if(when_DataLinkLayer_l167) begin
           io_ackValid = 1'b1;
         end
       end
@@ -6987,8 +7018,10 @@ module DlRxDeframer (
       end
       St_1_DATA : begin
       end
+      St_1_DLLP_DATA : begin
+      end
       default : begin
-        if(!when_DataLinkLayer_l148) begin
+        if(!when_DataLinkLayer_l167) begin
           io_nakValid = 1'b1;
         end
       end
@@ -7004,8 +7037,10 @@ module DlRxDeframer (
       end
       St_1_DATA : begin
       end
+      St_1_DLLP_DATA : begin
+      end
       default : begin
-        if(!when_DataLinkLayer_l148) begin
+        if(!when_DataLinkLayer_l167) begin
           io_crcErr = ((~ crc) != prevData);
         end
       end
@@ -7026,6 +7061,8 @@ module DlRxDeframer (
           end
         end
       end
+      St_1_DLLP_DATA : begin
+      end
       default : begin
       end
     endcase
@@ -7045,13 +7082,73 @@ module DlRxDeframer (
           end
         end
       end
+      St_1_DLLP_DATA : begin
+      end
       default : begin
       end
     endcase
   end
 
-  assign io_frameIn_ready = ((! io_tlpOut_valid) || io_tlpOut_ready);
+  always @(*) begin
+    io_dllpOut_valid = 1'b0;
+    case(state)
+      St_1_IDLE : begin
+      end
+      St_1_RX_SEQ : begin
+      end
+      St_1_DATA : begin
+      end
+      St_1_DLLP_DATA : begin
+        if(io_frameIn_fire) begin
+          io_dllpOut_valid = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
+    io_dllpOut_payload = 32'h00000000;
+    case(state)
+      St_1_IDLE : begin
+      end
+      St_1_RX_SEQ : begin
+      end
+      St_1_DATA : begin
+      end
+      St_1_DLLP_DATA : begin
+        if(io_frameIn_fire) begin
+          io_dllpOut_payload = io_frameIn_payload;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
+    io_frameIn_ready = 1'b0;
+    case(state)
+      St_1_IDLE : begin
+        io_frameIn_ready = 1'b1;
+      end
+      St_1_RX_SEQ : begin
+        io_frameIn_ready = 1'b1;
+      end
+      St_1_DATA : begin
+        io_frameIn_ready = ((! io_tlpOut_valid) || io_tlpOut_ready);
+      end
+      St_1_DLLP_DATA : begin
+        io_frameIn_ready = io_dllpOut_ready;
+      end
+      default : begin
+      end
+    endcase
+  end
+
   assign io_frameIn_fire = (io_frameIn_valid && io_frameIn_ready);
+  assign when_DataLinkLayer_l132 = (io_frameIn_payload[31 : 24] == 8'haa);
   assign _zz_crc = _zz__zz_crc;
   assign _zz_crc_1 = (_zz__zz_crc_1 ^ _zz__zz_1_port0);
   assign _zz_crc_2 = _zz__zz_crc_2;
@@ -7066,7 +7163,7 @@ module DlRxDeframer (
   assign _zz_crc_11 = _zz__zz_crc_11;
   assign _zz_crc_12 = (_zz__zz_crc_12 ^ _zz__zz_13_port0);
   assign _zz_crc_13 = _zz__zz_crc_13;
-  assign when_DataLinkLayer_l148 = (((~ crc) == prevData) && (rxSeq == expSeq));
+  assign when_DataLinkLayer_l167 = (((~ crc) == prevData) && (rxSeq == expSeq));
   always @(posedge clk or posedge reset) begin
     if(reset) begin
       state <= St_1_IDLE;
@@ -7086,9 +7183,13 @@ module DlRxDeframer (
         end
         St_1_RX_SEQ : begin
           if(io_frameIn_fire) begin
-            rxSeq <= _zz_rxSeq;
-            crc <= (_zz_crc_14 ^ _zz__zz_7_port0);
-            state <= St_1_DATA;
+            if(when_DataLinkLayer_l132) begin
+              rxSeq <= _zz_rxSeq;
+              crc <= (_zz_crc_14 ^ _zz__zz_7_port0);
+              state <= St_1_DATA;
+            end else begin
+              state <= St_1_DLLP_DATA;
+            end
           end
         end
         St_1_DATA : begin
@@ -7104,8 +7205,13 @@ module DlRxDeframer (
             end
           end
         end
+        St_1_DLLP_DATA : begin
+          if(io_frameIn_fire) begin
+            state <= St_1_IDLE;
+          end
+        end
         default : begin
-          if(when_DataLinkLayer_l148) begin
+          if(when_DataLinkLayer_l167) begin
             expSeq <= (expSeq + 12'h001);
           end
           prevVld <= 1'b0;
@@ -7860,6 +7966,11 @@ module TlpTxEngine (
   input  wire [11:0]   io_fcCredits_npdCredits,
   input  wire [7:0]    io_fcCredits_cplhCredits,
   input  wire [11:0]   io_fcCredits_cpldCredits,
+  output reg  [7:0]    io_phConsumed,
+  output reg  [11:0]   io_pdConsumed,
+  output reg  [7:0]    io_nphConsumed,
+  output reg  [7:0]    io_cplhConsumed,
+  output reg  [11:0]   io_cpldConsumed,
   input  wire          clk,
   input  wire          reset
 );
@@ -7893,8 +8004,8 @@ module TlpTxEngine (
   wire       [11:0]   _zz_canSendMemWr;
   reg        [31:0]   _zz_io_tlpOut_payload_3;
   wire       [1:0]    _zz_io_tlpOut_payload_4;
-  wire       [9:0]    _zz_when_TlpTxEngine_l237;
-  wire       [2:0]    _zz_when_TlpTxEngine_l237_1;
+  wire       [9:0]    _zz_when_TlpTxEngine_l260;
+  wire       [2:0]    _zz_when_TlpTxEngine_l260_1;
   wire       [1:0]    arbState_1;
   reg        [3:0]    activeReq_tlpType;
   reg        [15:0]   activeReq_reqId;
@@ -7921,21 +8032,24 @@ module TlpTxEngine (
   reg        [9:0]    dataIdx;
   reg                 needData;
   reg                 is4DW;
-  wire                when_TlpTxEngine_l148;
-  wire                when_TlpTxEngine_l155;
-  wire                when_TlpTxEngine_l162;
+  wire                when_TlpTxEngine_l159;
+  wire                when_TlpTxEngine_l166;
+  wire                when_TlpTxEngine_l173;
+  wire                io_cplReq_fire;
+  wire                io_memWrReq_fire;
+  wire                io_memRdReq_fire;
   reg        [2:0]    _zz_io_tlpOut_payload;
   reg        [4:0]    _zz_io_tlpOut_payload_1;
   reg        [31:0]   _zz_io_tlpOut_payload_2;
-  wire                _zz_when_TlpTxEngine_l88;
-  wire                _zz_when_TlpTxEngine_l88_1;
-  wire                when_TlpTxEngine_l88;
-  wire                when_TlpTxEngine_l90;
-  wire                when_TlpTxEngine_l92;
+  wire                _zz_when_TlpTxEngine_l99;
+  wire                _zz_when_TlpTxEngine_l99_1;
+  wire                when_TlpTxEngine_l99;
+  wire                when_TlpTxEngine_l101;
+  wire                when_TlpTxEngine_l103;
   wire       [2:0]    _zz_state;
   wire       [2:0]    _zz_state_1;
   wire       [2:0]    _zz_state_2;
-  wire                when_TlpTxEngine_l237;
+  wire                when_TlpTxEngine_l260;
   `ifndef SYNTHESIS
   reg [55:0] io_memWrReq_payload_tlpType_string;
   reg [55:0] io_memRdReq_payload_tlpType_string;
@@ -7955,8 +8069,8 @@ module TlpTxEngine (
   assign _zz_canSendCpl = {2'd0, cplDataCredits};
   assign _zz_canSendMemWr = {2'd0, memWrDataCredits};
   assign _zz_io_tlpOut_payload_4 = dataIdx[1:0];
-  assign _zz_when_TlpTxEngine_l237_1 = (((activeReq_dataValid == 3'b000) ? 3'b001 : activeReq_dataValid) - 3'b001);
-  assign _zz_when_TlpTxEngine_l237 = {7'd0, _zz_when_TlpTxEngine_l237_1};
+  assign _zz_when_TlpTxEngine_l260_1 = (((activeReq_dataValid == 3'b000) ? 3'b001 : activeReq_dataValid) - 3'b001);
+  assign _zz_when_TlpTxEngine_l260 = {7'd0, _zz_when_TlpTxEngine_l260_1};
   always @(*) begin
     case(_zz_io_tlpOut_payload_4)
       2'b00 : _zz_io_tlpOut_payload_3 = activeReq_data_0;
@@ -8168,11 +8282,11 @@ module TlpTxEngine (
     io_memWrReq_ready = 1'b0;
     case(state)
       TxState_IDLE : begin
-        if(!when_TlpTxEngine_l148) begin
-          if(when_TlpTxEngine_l155) begin
+        if(!when_TlpTxEngine_l159) begin
+          if(when_TlpTxEngine_l166) begin
             io_memWrReq_ready = 1'b1;
           end else begin
-            if(!when_TlpTxEngine_l162) begin
+            if(!when_TlpTxEngine_l173) begin
               if(!canSendCpl) begin
                 if(canSendMemWr) begin
                   io_memWrReq_ready = 1'b1;
@@ -8199,9 +8313,9 @@ module TlpTxEngine (
     io_memRdReq_ready = 1'b0;
     case(state)
       TxState_IDLE : begin
-        if(!when_TlpTxEngine_l148) begin
-          if(!when_TlpTxEngine_l155) begin
-            if(when_TlpTxEngine_l162) begin
+        if(!when_TlpTxEngine_l159) begin
+          if(!when_TlpTxEngine_l166) begin
+            if(when_TlpTxEngine_l173) begin
               io_memRdReq_ready = 1'b1;
             end else begin
               if(!canSendCpl) begin
@@ -8232,11 +8346,11 @@ module TlpTxEngine (
     io_cplReq_ready = 1'b0;
     case(state)
       TxState_IDLE : begin
-        if(when_TlpTxEngine_l148) begin
+        if(when_TlpTxEngine_l159) begin
           io_cplReq_ready = 1'b1;
         end else begin
-          if(!when_TlpTxEngine_l155) begin
-            if(!when_TlpTxEngine_l162) begin
+          if(!when_TlpTxEngine_l166) begin
+            if(!when_TlpTxEngine_l173) begin
               if(canSendCpl) begin
                 io_cplReq_ready = 1'b1;
               end
@@ -8257,29 +8371,137 @@ module TlpTxEngine (
     endcase
   end
 
-  assign when_TlpTxEngine_l148 = ((rrPtr == 2'b00) && canSendCpl);
-  assign when_TlpTxEngine_l155 = ((rrPtr == 2'b01) && canSendMemWr);
-  assign when_TlpTxEngine_l162 = ((rrPtr == 2'b10) && canSendMemRd);
-  assign _zz_when_TlpTxEngine_l88 = (activeReq_dataValid != 3'b000);
-  assign _zz_when_TlpTxEngine_l88_1 = (((((activeReq_tlpType == TlpType_MEM_RD) || (activeReq_tlpType == TlpType_MEM_WR)) || (activeReq_tlpType == TlpType_IO_RD)) || (activeReq_tlpType == TlpType_IO_WR)) && (activeReq_addr[63 : 32] != 32'h00000000));
+  always @(*) begin
+    io_phConsumed = 8'h00;
+    case(state)
+      TxState_IDLE : begin
+        if(io_memWrReq_fire) begin
+          io_phConsumed = 8'h01;
+        end
+      end
+      TxState_HDR1 : begin
+      end
+      TxState_HDR2 : begin
+      end
+      TxState_HDR3 : begin
+      end
+      TxState_HDR4 : begin
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
+    io_pdConsumed = 12'h000;
+    case(state)
+      TxState_IDLE : begin
+        if(io_memWrReq_fire) begin
+          io_pdConsumed = {2'd0, memWrDataCredits};
+        end
+      end
+      TxState_HDR1 : begin
+      end
+      TxState_HDR2 : begin
+      end
+      TxState_HDR3 : begin
+      end
+      TxState_HDR4 : begin
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
+    io_nphConsumed = 8'h00;
+    case(state)
+      TxState_IDLE : begin
+        if(io_memRdReq_fire) begin
+          io_nphConsumed = 8'h01;
+        end
+      end
+      TxState_HDR1 : begin
+      end
+      TxState_HDR2 : begin
+      end
+      TxState_HDR3 : begin
+      end
+      TxState_HDR4 : begin
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
+    io_cplhConsumed = 8'h00;
+    case(state)
+      TxState_IDLE : begin
+        if(io_cplReq_fire) begin
+          io_cplhConsumed = 8'h01;
+        end
+      end
+      TxState_HDR1 : begin
+      end
+      TxState_HDR2 : begin
+      end
+      TxState_HDR3 : begin
+      end
+      TxState_HDR4 : begin
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
+    io_cpldConsumed = 12'h000;
+    case(state)
+      TxState_IDLE : begin
+        if(io_cplReq_fire) begin
+          io_cpldConsumed = {2'd0, cplDataCredits};
+        end
+      end
+      TxState_HDR1 : begin
+      end
+      TxState_HDR2 : begin
+      end
+      TxState_HDR3 : begin
+      end
+      TxState_HDR4 : begin
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_TlpTxEngine_l159 = ((rrPtr == 2'b00) && canSendCpl);
+  assign when_TlpTxEngine_l166 = ((rrPtr == 2'b01) && canSendMemWr);
+  assign when_TlpTxEngine_l173 = ((rrPtr == 2'b10) && canSendMemRd);
+  assign io_cplReq_fire = (io_cplReq_valid && io_cplReq_ready);
+  assign io_memWrReq_fire = (io_memWrReq_valid && io_memWrReq_ready);
+  assign io_memRdReq_fire = (io_memRdReq_valid && io_memRdReq_ready);
+  assign _zz_when_TlpTxEngine_l99 = (activeReq_dataValid != 3'b000);
+  assign _zz_when_TlpTxEngine_l99_1 = (((((activeReq_tlpType == TlpType_MEM_RD) || (activeReq_tlpType == TlpType_MEM_WR)) || (activeReq_tlpType == TlpType_IO_RD)) || (activeReq_tlpType == TlpType_IO_WR)) && (activeReq_addr[63 : 32] != 32'h00000000));
   always @(*) begin
     _zz_io_tlpOut_payload = 3'b000;
-    if(when_TlpTxEngine_l88) begin
+    if(when_TlpTxEngine_l99) begin
       _zz_io_tlpOut_payload = 3'b011;
     end else begin
-      if(when_TlpTxEngine_l90) begin
+      if(when_TlpTxEngine_l101) begin
         _zz_io_tlpOut_payload = 3'b001;
       end else begin
-        if(when_TlpTxEngine_l92) begin
+        if(when_TlpTxEngine_l103) begin
           _zz_io_tlpOut_payload = 3'b010;
         end
       end
     end
   end
 
-  assign when_TlpTxEngine_l88 = (_zz_when_TlpTxEngine_l88_1 && _zz_when_TlpTxEngine_l88);
-  assign when_TlpTxEngine_l90 = (_zz_when_TlpTxEngine_l88_1 && (! _zz_when_TlpTxEngine_l88));
-  assign when_TlpTxEngine_l92 = ((! _zz_when_TlpTxEngine_l88_1) && _zz_when_TlpTxEngine_l88);
+  assign when_TlpTxEngine_l99 = (_zz_when_TlpTxEngine_l99_1 && _zz_when_TlpTxEngine_l99);
+  assign when_TlpTxEngine_l101 = (_zz_when_TlpTxEngine_l99_1 && (! _zz_when_TlpTxEngine_l99));
+  assign when_TlpTxEngine_l103 = ((! _zz_when_TlpTxEngine_l99_1) && _zz_when_TlpTxEngine_l99);
   always @(*) begin
     _zz_io_tlpOut_payload_1 = 5'h1f;
     case(activeReq_tlpType)
@@ -8318,7 +8540,7 @@ module TlpTxEngine (
   assign _zz_state = (needData ? TxState_DATA : TxState_IDLE);
   assign _zz_state_1 = (is4DW ? TxState_HDR4 : _zz_state);
   assign _zz_state_2 = (needData ? TxState_DATA : TxState_IDLE);
-  assign when_TlpTxEngine_l237 = (dataIdx == _zz_when_TlpTxEngine_l237);
+  assign when_TlpTxEngine_l260 = (dataIdx == _zz_when_TlpTxEngine_l260);
   always @(posedge clk or posedge reset) begin
     if(reset) begin
       rrPtr <= 2'b00;
@@ -8329,19 +8551,19 @@ module TlpTxEngine (
     end else begin
       case(state)
         TxState_IDLE : begin
-          if(when_TlpTxEngine_l148) begin
+          if(when_TlpTxEngine_l159) begin
             needData <= (io_cplReq_payload_dataValid != 3'b000);
             is4DW <= (((((io_cplReq_payload_tlpType == TlpType_MEM_RD) || (io_cplReq_payload_tlpType == TlpType_MEM_WR)) || (io_cplReq_payload_tlpType == TlpType_IO_RD)) || (io_cplReq_payload_tlpType == TlpType_IO_WR)) && (io_cplReq_payload_addr[63 : 32] != 32'h00000000));
             state <= TxState_HDR1;
             rrPtr <= 2'b01;
           end else begin
-            if(when_TlpTxEngine_l155) begin
+            if(when_TlpTxEngine_l166) begin
               needData <= (io_memWrReq_payload_dataValid != 3'b000);
               is4DW <= (((((io_memWrReq_payload_tlpType == TlpType_MEM_RD) || (io_memWrReq_payload_tlpType == TlpType_MEM_WR)) || (io_memWrReq_payload_tlpType == TlpType_IO_RD)) || (io_memWrReq_payload_tlpType == TlpType_IO_WR)) && (io_memWrReq_payload_addr[63 : 32] != 32'h00000000));
               state <= TxState_HDR1;
               rrPtr <= 2'b10;
             end else begin
-              if(when_TlpTxEngine_l162) begin
+              if(when_TlpTxEngine_l173) begin
                 needData <= (io_memRdReq_payload_dataValid != 3'b000);
                 is4DW <= (((((io_memRdReq_payload_tlpType == TlpType_MEM_RD) || (io_memRdReq_payload_tlpType == TlpType_MEM_WR)) || (io_memRdReq_payload_tlpType == TlpType_IO_RD)) || (io_memRdReq_payload_tlpType == TlpType_IO_WR)) && (io_memRdReq_payload_addr[63 : 32] != 32'h00000000));
                 state <= TxState_HDR1;
@@ -8396,7 +8618,7 @@ module TlpTxEngine (
         default : begin
           if(io_tlpOut_ready) begin
             dataIdx <= (dataIdx + 10'h001);
-            if(when_TlpTxEngine_l237) begin
+            if(when_TlpTxEngine_l260) begin
               state <= TxState_IDLE;
             end
           end
@@ -8408,7 +8630,7 @@ module TlpTxEngine (
   always @(posedge clk) begin
     case(state)
       TxState_IDLE : begin
-        if(when_TlpTxEngine_l148) begin
+        if(when_TlpTxEngine_l159) begin
           activeReq_tlpType <= io_cplReq_payload_tlpType;
           activeReq_reqId <= io_cplReq_payload_reqId;
           activeReq_tag <= io_cplReq_payload_tag;
@@ -8424,7 +8646,7 @@ module TlpTxEngine (
           activeReq_data_3 <= io_cplReq_payload_data_3;
           activeReq_dataValid <= io_cplReq_payload_dataValid;
         end else begin
-          if(when_TlpTxEngine_l155) begin
+          if(when_TlpTxEngine_l166) begin
             activeReq_tlpType <= io_memWrReq_payload_tlpType;
             activeReq_reqId <= io_memWrReq_payload_reqId;
             activeReq_tag <= io_memWrReq_payload_tag;
@@ -8440,7 +8662,7 @@ module TlpTxEngine (
             activeReq_data_3 <= io_memWrReq_payload_data_3;
             activeReq_dataValid <= io_memWrReq_payload_dataValid;
           end else begin
-            if(when_TlpTxEngine_l162) begin
+            if(when_TlpTxEngine_l173) begin
               activeReq_tlpType <= io_memRdReq_payload_tlpType;
               activeReq_reqId <= io_memRdReq_payload_reqId;
               activeReq_tag <= io_memRdReq_payload_tag;
@@ -10234,7 +10456,6 @@ module Encoder8b10b (
   wire       [2:0]    _zz_encoded6b_2;
   reg        [11:0]   _zz_encoded6b_3;
   wire       [2:0]    _zz_encoded6b_4;
-  wire       [1:0]    _zz__zz_encoded6b;
   reg        [11:0]   _zz_encoded6b_5;
   reg        [11:0]   _zz_encoded6b_6;
   reg        [11:0]   _zz_encoded6b_7;
@@ -10272,14 +10493,42 @@ module Encoder8b10b (
   wire       [11:0]   _zz_encoded6b_39;
   wire       [11:0]   _zz_encoded6b_40;
   wire       [3:0]    _zz_disp6b;
-  wire       [0:0]    _zz_disp6b_1;
+  wire       [2:0]    _zz_disp6b_1;
+  wire       [2:0]    _zz_disp6b_2;
+  wire       [2:0]    _zz_disp6b_3;
+  wire       [2:0]    _zz_disp6b_4;
+  wire       [2:0]    _zz_disp6b_5;
+  wire       [2:0]    _zz_disp6b_6;
+  wire       [2:0]    _zz_disp6b_7;
+  wire       [0:0]    _zz_disp6b_8;
+  wire       [2:0]    _zz_disp6b_9;
+  wire       [0:0]    _zz_disp6b_10;
+  wire       [2:0]    _zz_disp6b_11;
+  wire       [0:0]    _zz_disp6b_12;
+  wire       [2:0]    _zz_disp6b_13;
+  wire       [0:0]    _zz_disp6b_14;
+  wire       [2:0]    _zz_disp6b_15;
+  wire       [0:0]    _zz_disp6b_16;
+  wire       [2:0]    _zz_disp6b_17;
+  wire       [0:0]    _zz_disp6b_18;
   wire       [2:0]    _zz_data3bIdx;
   reg        [7:0]    _zz_encoded4b;
   reg        [7:0]    _zz_encoded4b_1;
   reg        [7:0]    _zz_encoded4b_2;
   reg        [7:0]    _zz_encoded4b_3;
   wire       [3:0]    _zz_disp4b;
-  wire       [0:0]    _zz_disp4b_1;
+  wire       [2:0]    _zz_disp4b_1;
+  wire       [2:0]    _zz_disp4b_2;
+  wire       [2:0]    _zz_disp4b_3;
+  wire       [2:0]    _zz_disp4b_4;
+  wire       [2:0]    _zz_disp4b_5;
+  wire       [0:0]    _zz_disp4b_6;
+  wire       [2:0]    _zz_disp4b_7;
+  wire       [0:0]    _zz_disp4b_8;
+  wire       [2:0]    _zz_disp4b_9;
+  wire       [0:0]    _zz_disp4b_10;
+  wire       [2:0]    _zz_disp4b_11;
+  wire       [0:0]    _zz_disp4b_12;
   wire       [4:0]    data5b;
   wire       [2:0]    data3b;
   reg                 rd;
@@ -10294,17 +10543,44 @@ module Encoder8b10b (
   wire                isDxP07;
   wire                useAltEncoding;
   wire                when_Encoder8b10b_l133;
-  wire       [2:0]    _zz_encoded6b;
+  reg        [2:0]    _zz_encoded6b;
   wire       [2:0]    data3bIdx;
-  wire                when_Encoder8b10b_l157;
-  wire                when_Encoder8b10b_l182;
+  wire                when_Encoder8b10b_l164;
+  wire                when_Encoder8b10b_l189;
 
-  assign _zz__zz_encoded6b = data5b[1 : 0];
-  assign _zz_disp6b_1 = (^encoded6b);
-  assign _zz_disp6b = {{3{_zz_disp6b_1[0]}}, _zz_disp6b_1};
+  assign _zz_disp6b_1 = _zz_disp6b_2;
+  assign _zz_disp6b = {{1{_zz_disp6b_1[2]}}, _zz_disp6b_1};
+  assign _zz_disp6b_2 = (_zz_disp6b_3 + _zz_disp6b_17);
+  assign _zz_disp6b_3 = (_zz_disp6b_4 + _zz_disp6b_15);
+  assign _zz_disp6b_4 = (_zz_disp6b_5 + _zz_disp6b_13);
+  assign _zz_disp6b_5 = (_zz_disp6b_6 + _zz_disp6b_11);
+  assign _zz_disp6b_6 = (_zz_disp6b_7 + _zz_disp6b_9);
+  assign _zz_disp6b_8 = encoded6b[0];
+  assign _zz_disp6b_7 = {2'd0, _zz_disp6b_8};
+  assign _zz_disp6b_10 = encoded6b[1];
+  assign _zz_disp6b_9 = {2'd0, _zz_disp6b_10};
+  assign _zz_disp6b_12 = encoded6b[2];
+  assign _zz_disp6b_11 = {2'd0, _zz_disp6b_12};
+  assign _zz_disp6b_14 = encoded6b[3];
+  assign _zz_disp6b_13 = {2'd0, _zz_disp6b_14};
+  assign _zz_disp6b_16 = encoded6b[4];
+  assign _zz_disp6b_15 = {2'd0, _zz_disp6b_16};
+  assign _zz_disp6b_18 = encoded6b[5];
+  assign _zz_disp6b_17 = {2'd0, _zz_disp6b_18};
   assign _zz_data3bIdx = data3b;
-  assign _zz_disp4b_1 = (^encoded4b);
-  assign _zz_disp4b = {{3{_zz_disp4b_1[0]}}, _zz_disp4b_1};
+  assign _zz_disp4b_1 = _zz_disp4b_2;
+  assign _zz_disp4b = {{1{_zz_disp4b_1[2]}}, _zz_disp4b_1};
+  assign _zz_disp4b_2 = (_zz_disp4b_3 + _zz_disp4b_11);
+  assign _zz_disp4b_3 = (_zz_disp4b_4 + _zz_disp4b_9);
+  assign _zz_disp4b_4 = (_zz_disp4b_5 + _zz_disp4b_7);
+  assign _zz_disp4b_6 = encoded4b[0];
+  assign _zz_disp4b_5 = {2'd0, _zz_disp4b_6};
+  assign _zz_disp4b_8 = encoded4b[1];
+  assign _zz_disp4b_7 = {2'd0, _zz_disp4b_8};
+  assign _zz_disp4b_10 = encoded4b[2];
+  assign _zz_disp4b_9 = {2'd0, _zz_disp4b_10};
+  assign _zz_disp4b_12 = encoded4b[3];
+  assign _zz_disp4b_11 = {2'd0, _zz_disp4b_12};
   assign _zz_encoded6b_2 = 3'b011;
   assign _zz_encoded6b_4 = 3'b011;
   assign _zz_encoded6b_8 = data5b;
@@ -10498,12 +10774,31 @@ module Encoder8b10b (
     end
   end
 
-  assign _zz_encoded6b = {1'd0, _zz__zz_encoded6b};
+  always @(*) begin
+    _zz_encoded6b = 3'b000;
+    case(data5b)
+      5'h17 : begin
+        _zz_encoded6b = 3'b001;
+      end
+      5'h1b : begin
+        _zz_encoded6b = 3'b010;
+      end
+      5'h1d : begin
+        _zz_encoded6b = 3'b100;
+      end
+      5'h1e : begin
+        _zz_encoded6b = 3'b101;
+      end
+      default : begin
+      end
+    endcase
+  end
+
   assign disp6b = ($signed(_zz_disp6b) - $signed(4'b0011));
   assign data3bIdx = _zz_data3bIdx;
-  assign when_Encoder8b10b_l157 = (io_kCode && (data5b == 5'h1c));
+  assign when_Encoder8b10b_l164 = (io_kCode && (data5b == 5'h1c));
   always @(*) begin
-    if(when_Encoder8b10b_l157) begin
+    if(when_Encoder8b10b_l164) begin
       encoded4b = (rd ? _zz_encoded4b[3 : 0] : _zz_encoded4b_1[7 : 4]);
     end else begin
       encoded4b = (rd ? _zz_encoded4b_2[3 : 0] : _zz_encoded4b_3[7 : 4]);
@@ -10516,12 +10811,12 @@ module Encoder8b10b (
   assign totalDisp = ($signed(disp6b) + $signed(disp4b));
   assign rdNext = (($signed(4'b0000) < $signed(totalDisp)) ? 1'b0 : (($signed(totalDisp) < $signed(4'b0000)) ? 1'b1 : rd));
   assign io_rdOut = rdNext;
-  assign when_Encoder8b10b_l182 = ((io_dataIn != 8'h00) || io_kCode);
+  assign when_Encoder8b10b_l189 = ((io_dataIn != 8'h00) || io_kCode);
   always @(posedge clk or posedge reset) begin
     if(reset) begin
       rd <= 1'b0;
     end else begin
-      if(when_Encoder8b10b_l182) begin
+      if(when_Encoder8b10b_l189) begin
         rd <= rdNext;
       end
     end
@@ -10542,10 +10837,36 @@ module Decoder8b10b (
 
   wire       [3:0]    _zz_disp6b;
   wire       [3:0]    _zz_disp6b_1;
-  wire       [0:0]    _zz_disp6b_2;
+  wire       [2:0]    _zz_disp6b_2;
+  wire       [2:0]    _zz_disp6b_3;
+  wire       [2:0]    _zz_disp6b_4;
+  wire       [2:0]    _zz_disp6b_5;
+  wire       [2:0]    _zz_disp6b_6;
+  wire       [2:0]    _zz_disp6b_7;
+  wire       [0:0]    _zz_disp6b_8;
+  wire       [2:0]    _zz_disp6b_9;
+  wire       [0:0]    _zz_disp6b_10;
+  wire       [2:0]    _zz_disp6b_11;
+  wire       [0:0]    _zz_disp6b_12;
+  wire       [2:0]    _zz_disp6b_13;
+  wire       [0:0]    _zz_disp6b_14;
+  wire       [2:0]    _zz_disp6b_15;
+  wire       [0:0]    _zz_disp6b_16;
+  wire       [2:0]    _zz_disp6b_17;
+  wire       [0:0]    _zz_disp6b_18;
   wire       [3:0]    _zz_disp4b;
   wire       [3:0]    _zz_disp4b_1;
-  wire       [0:0]    _zz_disp4b_2;
+  wire       [2:0]    _zz_disp4b_2;
+  wire       [2:0]    _zz_disp4b_3;
+  wire       [2:0]    _zz_disp4b_4;
+  wire       [2:0]    _zz_disp4b_5;
+  wire       [0:0]    _zz_disp4b_6;
+  wire       [2:0]    _zz_disp4b_7;
+  wire       [0:0]    _zz_disp4b_8;
+  wire       [2:0]    _zz_disp4b_9;
+  wire       [0:0]    _zz_disp4b_10;
+  wire       [2:0]    _zz_disp4b_11;
+  wire       [0:0]    _zz_disp4b_12;
   wire       [3:0]    _zz_actualRd;
   wire       [5:0]    code6b;
   wire       [3:0]    code4b;
@@ -10560,17 +10881,46 @@ module Decoder8b10b (
   wire                isK28_0;
   wire                isK28_1;
   wire                isK28_2;
-  wire                when_Encoder8b10b_l246;
+  wire                when_Encoder8b10b_l253;
   wire       [3:0]    disp6b;
   wire       [3:0]    disp4b;
   wire                actualRd;
+  wire       [3:0]    totalDisp;
+  wire                when_Encoder8b10b_l321;
+  wire                when_Encoder8b10b_l323;
 
   assign _zz_disp6b = (_zz_disp6b_1 - 4'b0011);
-  assign _zz_disp6b_2 = (^code6b);
-  assign _zz_disp6b_1 = {3'd0, _zz_disp6b_2};
+  assign _zz_disp6b_2 = (_zz_disp6b_3 + _zz_disp6b_17);
+  assign _zz_disp6b_1 = {1'd0, _zz_disp6b_2};
+  assign _zz_disp6b_3 = (_zz_disp6b_4 + _zz_disp6b_15);
+  assign _zz_disp6b_4 = (_zz_disp6b_5 + _zz_disp6b_13);
+  assign _zz_disp6b_5 = (_zz_disp6b_6 + _zz_disp6b_11);
+  assign _zz_disp6b_6 = (_zz_disp6b_7 + _zz_disp6b_9);
+  assign _zz_disp6b_8 = code6b[0];
+  assign _zz_disp6b_7 = {2'd0, _zz_disp6b_8};
+  assign _zz_disp6b_10 = code6b[1];
+  assign _zz_disp6b_9 = {2'd0, _zz_disp6b_10};
+  assign _zz_disp6b_12 = code6b[2];
+  assign _zz_disp6b_11 = {2'd0, _zz_disp6b_12};
+  assign _zz_disp6b_14 = code6b[3];
+  assign _zz_disp6b_13 = {2'd0, _zz_disp6b_14};
+  assign _zz_disp6b_16 = code6b[4];
+  assign _zz_disp6b_15 = {2'd0, _zz_disp6b_16};
+  assign _zz_disp6b_18 = code6b[5];
+  assign _zz_disp6b_17 = {2'd0, _zz_disp6b_18};
   assign _zz_disp4b = (_zz_disp4b_1 - 4'b0010);
-  assign _zz_disp4b_2 = (^code4b);
-  assign _zz_disp4b_1 = {3'd0, _zz_disp4b_2};
+  assign _zz_disp4b_2 = (_zz_disp4b_3 + _zz_disp4b_11);
+  assign _zz_disp4b_1 = {1'd0, _zz_disp4b_2};
+  assign _zz_disp4b_3 = (_zz_disp4b_4 + _zz_disp4b_9);
+  assign _zz_disp4b_4 = (_zz_disp4b_5 + _zz_disp4b_7);
+  assign _zz_disp4b_6 = code4b[0];
+  assign _zz_disp4b_5 = {2'd0, _zz_disp4b_6};
+  assign _zz_disp4b_8 = code4b[1];
+  assign _zz_disp4b_7 = {2'd0, _zz_disp4b_8};
+  assign _zz_disp4b_10 = code4b[2];
+  assign _zz_disp4b_9 = {2'd0, _zz_disp4b_10};
+  assign _zz_disp4b_12 = code4b[3];
+  assign _zz_disp4b_11 = {2'd0, _zz_disp4b_12};
   assign _zz_actualRd = ($signed(disp6b) + $signed(disp4b));
   assign code6b = io_dataIn[9 : 4];
   assign code4b = io_dataIn[3 : 0];
@@ -10580,7 +10930,7 @@ module Decoder8b10b (
   assign isK28_2 = (((code6b == 6'h37) || (code6b == 6'h08)) && ((code4b == 4'b0101) || (code4b == 4'b1010)));
   always @(*) begin
     decoded5b = 5'h00;
-    if(when_Encoder8b10b_l246) begin
+    if(when_Encoder8b10b_l253) begin
       decoded5b = 5'h1c;
     end else begin
       case(code6b)
@@ -10638,7 +10988,7 @@ module Decoder8b10b (
 
   always @(*) begin
     decoded3b = 3'b000;
-    if(when_Encoder8b10b_l246) begin
+    if(when_Encoder8b10b_l253) begin
       if(isK28_5) begin
         decoded3b = 3'b101;
       end else begin
@@ -10684,7 +11034,7 @@ module Decoder8b10b (
 
   always @(*) begin
     isKCode = 1'b0;
-    if(when_Encoder8b10b_l246) begin
+    if(when_Encoder8b10b_l253) begin
       isKCode = 1'b1;
     end else begin
       isKCode = 1'b0;
@@ -10693,7 +11043,7 @@ module Decoder8b10b (
 
   always @(*) begin
     invalid6b = 1'b0;
-    if(!when_Encoder8b10b_l246) begin
+    if(!when_Encoder8b10b_l253) begin
       case(code6b)
         6'h1b : begin
         end
@@ -10734,7 +11084,7 @@ module Decoder8b10b (
 
   always @(*) begin
     invalid4b = 1'b0;
-    if(!when_Encoder8b10b_l246) begin
+    if(!when_Encoder8b10b_l253) begin
       case(code4b)
         4'b0100 : begin
         end
@@ -10757,11 +11107,14 @@ module Decoder8b10b (
     end
   end
 
-  assign when_Encoder8b10b_l246 = (((isK28_5 || isK28_0) || isK28_1) || isK28_2);
+  assign when_Encoder8b10b_l253 = (((isK28_5 || isK28_0) || isK28_1) || isK28_2);
   assign disp6b = _zz_disp6b;
   assign disp4b = _zz_disp4b;
   assign actualRd = ($signed(4'b0000) < $signed(_zz_actualRd));
   assign disparityError = ((rd != actualRd) && (! isKCode));
+  assign totalDisp = ($signed(disp6b) + $signed(disp4b));
+  assign when_Encoder8b10b_l321 = ($signed(4'b0000) < $signed(totalDisp));
+  assign when_Encoder8b10b_l323 = ($signed(totalDisp) < $signed(4'b0000));
   assign io_dataOut = {decoded3b,decoded5b};
   assign io_kCode = isKCode;
   assign io_codeErr = (invalid6b || invalid4b);
@@ -10770,7 +11123,13 @@ module Decoder8b10b (
     if(reset) begin
       rd <= 1'b0;
     end else begin
-      rd <= (! rd);
+      if(when_Encoder8b10b_l321) begin
+        rd <= 1'b0;
+      end else begin
+        if(when_Encoder8b10b_l323) begin
+          rd <= 1'b1;
+        end
+      end
     end
   end
 
@@ -10796,28 +11155,28 @@ module SymbolAligner (
   reg        [19:0]   buffer_1;
   reg                 commaFound;
   reg        [3:0]    commaPos;
-  wire       [9:0]    _zz_when_Encoder8b10b_l361;
-  wire                when_Encoder8b10b_l361;
-  wire       [9:0]    _zz_when_Encoder8b10b_l361_1;
-  wire                when_Encoder8b10b_l361_1;
-  wire       [9:0]    _zz_when_Encoder8b10b_l361_2;
-  wire                when_Encoder8b10b_l361_2;
-  wire       [9:0]    _zz_when_Encoder8b10b_l361_3;
-  wire                when_Encoder8b10b_l361_3;
-  wire       [9:0]    _zz_when_Encoder8b10b_l361_4;
-  wire                when_Encoder8b10b_l361_4;
-  wire       [9:0]    _zz_when_Encoder8b10b_l361_5;
-  wire                when_Encoder8b10b_l361_5;
-  wire       [9:0]    _zz_when_Encoder8b10b_l361_6;
-  wire                when_Encoder8b10b_l361_6;
-  wire       [9:0]    _zz_when_Encoder8b10b_l361_7;
-  wire                when_Encoder8b10b_l361_7;
-  wire       [9:0]    _zz_when_Encoder8b10b_l361_8;
-  wire                when_Encoder8b10b_l361_8;
-  wire       [9:0]    _zz_when_Encoder8b10b_l361_9;
-  wire                when_Encoder8b10b_l361_9;
-  wire                when_Encoder8b10b_l368;
-  wire                when_Encoder8b10b_l376;
+  wire       [9:0]    _zz_when_Encoder8b10b_l374;
+  wire                when_Encoder8b10b_l374;
+  wire       [9:0]    _zz_when_Encoder8b10b_l374_1;
+  wire                when_Encoder8b10b_l374_1;
+  wire       [9:0]    _zz_when_Encoder8b10b_l374_2;
+  wire                when_Encoder8b10b_l374_2;
+  wire       [9:0]    _zz_when_Encoder8b10b_l374_3;
+  wire                when_Encoder8b10b_l374_3;
+  wire       [9:0]    _zz_when_Encoder8b10b_l374_4;
+  wire                when_Encoder8b10b_l374_4;
+  wire       [9:0]    _zz_when_Encoder8b10b_l374_5;
+  wire                when_Encoder8b10b_l374_5;
+  wire       [9:0]    _zz_when_Encoder8b10b_l374_6;
+  wire                when_Encoder8b10b_l374_6;
+  wire       [9:0]    _zz_when_Encoder8b10b_l374_7;
+  wire                when_Encoder8b10b_l374_7;
+  wire       [9:0]    _zz_when_Encoder8b10b_l374_8;
+  wire                when_Encoder8b10b_l374_8;
+  wire       [9:0]    _zz_when_Encoder8b10b_l374_9;
+  wire                when_Encoder8b10b_l374_9;
+  wire                when_Encoder8b10b_l381;
+  wire                when_Encoder8b10b_l389;
   wire       [9:0]    shiftedData;
 
   assign _zz_buffer_1 = {buffer_1,io_dataIn};
@@ -10827,94 +11186,94 @@ module SymbolAligner (
   assign commaDetected = 1'b0;
   always @(*) begin
     commaFound = 1'b0;
-    if(when_Encoder8b10b_l361) begin
+    if(when_Encoder8b10b_l374) begin
       commaFound = 1'b1;
     end
-    if(when_Encoder8b10b_l361_1) begin
+    if(when_Encoder8b10b_l374_1) begin
       commaFound = 1'b1;
     end
-    if(when_Encoder8b10b_l361_2) begin
+    if(when_Encoder8b10b_l374_2) begin
       commaFound = 1'b1;
     end
-    if(when_Encoder8b10b_l361_3) begin
+    if(when_Encoder8b10b_l374_3) begin
       commaFound = 1'b1;
     end
-    if(when_Encoder8b10b_l361_4) begin
+    if(when_Encoder8b10b_l374_4) begin
       commaFound = 1'b1;
     end
-    if(when_Encoder8b10b_l361_5) begin
+    if(when_Encoder8b10b_l374_5) begin
       commaFound = 1'b1;
     end
-    if(when_Encoder8b10b_l361_6) begin
+    if(when_Encoder8b10b_l374_6) begin
       commaFound = 1'b1;
     end
-    if(when_Encoder8b10b_l361_7) begin
+    if(when_Encoder8b10b_l374_7) begin
       commaFound = 1'b1;
     end
-    if(when_Encoder8b10b_l361_8) begin
+    if(when_Encoder8b10b_l374_8) begin
       commaFound = 1'b1;
     end
-    if(when_Encoder8b10b_l361_9) begin
+    if(when_Encoder8b10b_l374_9) begin
       commaFound = 1'b1;
     end
   end
 
   always @(*) begin
     commaPos = 4'b0000;
-    if(when_Encoder8b10b_l361) begin
+    if(when_Encoder8b10b_l374) begin
       commaPos = 4'b0000;
     end
-    if(when_Encoder8b10b_l361_1) begin
+    if(when_Encoder8b10b_l374_1) begin
       commaPos = 4'b0001;
     end
-    if(when_Encoder8b10b_l361_2) begin
+    if(when_Encoder8b10b_l374_2) begin
       commaPos = 4'b0010;
     end
-    if(when_Encoder8b10b_l361_3) begin
+    if(when_Encoder8b10b_l374_3) begin
       commaPos = 4'b0011;
     end
-    if(when_Encoder8b10b_l361_4) begin
+    if(when_Encoder8b10b_l374_4) begin
       commaPos = 4'b0100;
     end
-    if(when_Encoder8b10b_l361_5) begin
+    if(when_Encoder8b10b_l374_5) begin
       commaPos = 4'b0101;
     end
-    if(when_Encoder8b10b_l361_6) begin
+    if(when_Encoder8b10b_l374_6) begin
       commaPos = 4'b0110;
     end
-    if(when_Encoder8b10b_l361_7) begin
+    if(when_Encoder8b10b_l374_7) begin
       commaPos = 4'b0111;
     end
-    if(when_Encoder8b10b_l361_8) begin
+    if(when_Encoder8b10b_l374_8) begin
       commaPos = 4'b1000;
     end
-    if(when_Encoder8b10b_l361_9) begin
+    if(when_Encoder8b10b_l374_9) begin
       commaPos = 4'b1001;
     end
   end
 
-  assign _zz_when_Encoder8b10b_l361 = buffer_1[9 : 0];
-  assign when_Encoder8b10b_l361 = ((_zz_when_Encoder8b10b_l361 == COMMA_POS) || (_zz_when_Encoder8b10b_l361 == COMMA_NEG));
-  assign _zz_when_Encoder8b10b_l361_1 = buffer_1[10 : 1];
-  assign when_Encoder8b10b_l361_1 = ((_zz_when_Encoder8b10b_l361_1 == COMMA_POS) || (_zz_when_Encoder8b10b_l361_1 == COMMA_NEG));
-  assign _zz_when_Encoder8b10b_l361_2 = buffer_1[11 : 2];
-  assign when_Encoder8b10b_l361_2 = ((_zz_when_Encoder8b10b_l361_2 == COMMA_POS) || (_zz_when_Encoder8b10b_l361_2 == COMMA_NEG));
-  assign _zz_when_Encoder8b10b_l361_3 = buffer_1[12 : 3];
-  assign when_Encoder8b10b_l361_3 = ((_zz_when_Encoder8b10b_l361_3 == COMMA_POS) || (_zz_when_Encoder8b10b_l361_3 == COMMA_NEG));
-  assign _zz_when_Encoder8b10b_l361_4 = buffer_1[13 : 4];
-  assign when_Encoder8b10b_l361_4 = ((_zz_when_Encoder8b10b_l361_4 == COMMA_POS) || (_zz_when_Encoder8b10b_l361_4 == COMMA_NEG));
-  assign _zz_when_Encoder8b10b_l361_5 = buffer_1[14 : 5];
-  assign when_Encoder8b10b_l361_5 = ((_zz_when_Encoder8b10b_l361_5 == COMMA_POS) || (_zz_when_Encoder8b10b_l361_5 == COMMA_NEG));
-  assign _zz_when_Encoder8b10b_l361_6 = buffer_1[15 : 6];
-  assign when_Encoder8b10b_l361_6 = ((_zz_when_Encoder8b10b_l361_6 == COMMA_POS) || (_zz_when_Encoder8b10b_l361_6 == COMMA_NEG));
-  assign _zz_when_Encoder8b10b_l361_7 = buffer_1[16 : 7];
-  assign when_Encoder8b10b_l361_7 = ((_zz_when_Encoder8b10b_l361_7 == COMMA_POS) || (_zz_when_Encoder8b10b_l361_7 == COMMA_NEG));
-  assign _zz_when_Encoder8b10b_l361_8 = buffer_1[17 : 8];
-  assign when_Encoder8b10b_l361_8 = ((_zz_when_Encoder8b10b_l361_8 == COMMA_POS) || (_zz_when_Encoder8b10b_l361_8 == COMMA_NEG));
-  assign _zz_when_Encoder8b10b_l361_9 = buffer_1[18 : 9];
-  assign when_Encoder8b10b_l361_9 = ((_zz_when_Encoder8b10b_l361_9 == COMMA_POS) || (_zz_when_Encoder8b10b_l361_9 == COMMA_NEG));
-  assign when_Encoder8b10b_l368 = (! alignedReg);
-  assign when_Encoder8b10b_l376 = (commaFound && (commaPos != alignState));
+  assign _zz_when_Encoder8b10b_l374 = buffer_1[9 : 0];
+  assign when_Encoder8b10b_l374 = ((_zz_when_Encoder8b10b_l374 == COMMA_POS) || (_zz_when_Encoder8b10b_l374 == COMMA_NEG));
+  assign _zz_when_Encoder8b10b_l374_1 = buffer_1[10 : 1];
+  assign when_Encoder8b10b_l374_1 = ((_zz_when_Encoder8b10b_l374_1 == COMMA_POS) || (_zz_when_Encoder8b10b_l374_1 == COMMA_NEG));
+  assign _zz_when_Encoder8b10b_l374_2 = buffer_1[11 : 2];
+  assign when_Encoder8b10b_l374_2 = ((_zz_when_Encoder8b10b_l374_2 == COMMA_POS) || (_zz_when_Encoder8b10b_l374_2 == COMMA_NEG));
+  assign _zz_when_Encoder8b10b_l374_3 = buffer_1[12 : 3];
+  assign when_Encoder8b10b_l374_3 = ((_zz_when_Encoder8b10b_l374_3 == COMMA_POS) || (_zz_when_Encoder8b10b_l374_3 == COMMA_NEG));
+  assign _zz_when_Encoder8b10b_l374_4 = buffer_1[13 : 4];
+  assign when_Encoder8b10b_l374_4 = ((_zz_when_Encoder8b10b_l374_4 == COMMA_POS) || (_zz_when_Encoder8b10b_l374_4 == COMMA_NEG));
+  assign _zz_when_Encoder8b10b_l374_5 = buffer_1[14 : 5];
+  assign when_Encoder8b10b_l374_5 = ((_zz_when_Encoder8b10b_l374_5 == COMMA_POS) || (_zz_when_Encoder8b10b_l374_5 == COMMA_NEG));
+  assign _zz_when_Encoder8b10b_l374_6 = buffer_1[15 : 6];
+  assign when_Encoder8b10b_l374_6 = ((_zz_when_Encoder8b10b_l374_6 == COMMA_POS) || (_zz_when_Encoder8b10b_l374_6 == COMMA_NEG));
+  assign _zz_when_Encoder8b10b_l374_7 = buffer_1[16 : 7];
+  assign when_Encoder8b10b_l374_7 = ((_zz_when_Encoder8b10b_l374_7 == COMMA_POS) || (_zz_when_Encoder8b10b_l374_7 == COMMA_NEG));
+  assign _zz_when_Encoder8b10b_l374_8 = buffer_1[17 : 8];
+  assign when_Encoder8b10b_l374_8 = ((_zz_when_Encoder8b10b_l374_8 == COMMA_POS) || (_zz_when_Encoder8b10b_l374_8 == COMMA_NEG));
+  assign _zz_when_Encoder8b10b_l374_9 = buffer_1[18 : 9];
+  assign when_Encoder8b10b_l374_9 = ((_zz_when_Encoder8b10b_l374_9 == COMMA_POS) || (_zz_when_Encoder8b10b_l374_9 == COMMA_NEG));
+  assign when_Encoder8b10b_l381 = (! alignedReg);
+  assign when_Encoder8b10b_l389 = (commaFound && (commaPos != alignState));
   assign shiftedData = _zz_shiftedData[9:0];
   assign io_dataOut = shiftedData;
   assign io_aligned = alignedReg;
@@ -10925,13 +11284,13 @@ module SymbolAligner (
       buffer_1 <= 20'h00000;
     end else begin
       buffer_1 <= _zz_buffer_1[19 : 0];
-      if(when_Encoder8b10b_l368) begin
+      if(when_Encoder8b10b_l381) begin
         if(commaFound) begin
           alignState <= commaPos;
           alignedReg <= 1'b1;
         end
       end else begin
-        if(when_Encoder8b10b_l376) begin
+        if(when_Encoder8b10b_l389) begin
           alignedReg <= 1'b0;
         end
       end

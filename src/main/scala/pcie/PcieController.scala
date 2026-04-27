@@ -135,9 +135,8 @@ class PcieController(cfg: PcieControllerConfig = PcieControllerConfig()) extends
   // ============================================================
   // Note: DLLP input would come from a separate detection path
   // in a full implementation. Here we connect it for structure.
-  dllpHandler.io.dllpIn.valid := False
-  dllpHandler.io.dllpIn.payload := 0
-  dllpHandler.io.dllpValid := False
+  dllpHandler.io.dllpIn    << dlRx.io.dllpOut
+  dllpHandler.io.dllpValid := dlRx.io.dllpOut.valid
 
   // ============================================================
   // Flow Control Manager - Full Implementation
@@ -146,12 +145,12 @@ class PcieController(cfg: PcieControllerConfig = PcieControllerConfig()) extends
   fcMgr.io.linkUp        := phy.io.linkUp
 
   // Credit consumption from TLP TX engine
-  fcMgr.io.phConsumed    := 0
-  fcMgr.io.pdConsumed    := 0
-  fcMgr.io.nphConsumed   := 0
-  fcMgr.io.npdConsumed   := 0
-  fcMgr.io.cplhConsumed  := 0
-  fcMgr.io.cpldConsumed  := 0
+  fcMgr.io.phConsumed    := txEngine.io.phConsumed
+  fcMgr.io.pdConsumed    := txEngine.io.pdConsumed
+  fcMgr.io.nphConsumed   := txEngine.io.nphConsumed
+  fcMgr.io.npdConsumed   := 0  // Non-posted data consumed with nph
+  fcMgr.io.cplhConsumed  := txEngine.io.cplhConsumed
+  fcMgr.io.cpldConsumed  := txEngine.io.cpldConsumed
 
   // FC updates from DLLP handler
   fcMgr.io.fcInitValid   := dllpHandler.io.fcInitValid

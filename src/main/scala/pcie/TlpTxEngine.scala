@@ -16,6 +16,12 @@ class TlpTxEngine extends Component {
     val cplReq    = slave  Stream(TlpStreamPacket())  // Completion packets
     val tlpOut    = master Stream(Bits(32 bits))       // To Data Link Layer
     val fcCredits = in(FlowControlCredits())           // Available credits
+    // Credit consumption reporting (pulsed when packet is granted)
+    val phConsumed   = out UInt(8 bits)
+    val pdConsumed   = out UInt(12 bits)
+    val nphConsumed  = out UInt(8 bits)
+    val cplhConsumed = out UInt(8 bits)
+    val cpldConsumed = out UInt(12 bits)
   }
 
   // -------------------------------------------------------
@@ -72,6 +78,11 @@ class TlpTxEngine extends Component {
   io.memWrReq.ready := False
   io.memRdReq.ready := False
   io.cplReq.ready   := False
+  io.phConsumed     := 0
+  io.pdConsumed     := 0
+  io.nphConsumed    := 0
+  io.cplhConsumed   := 0
+  io.cpldConsumed   := 0
 
   // -------------------------------------------------------
   // Build HDR1: [FMT|Type|TC|0|Attr|0|0|TD|EP|Length]
@@ -191,6 +202,18 @@ class TlpTxEngine extends Component {
           rrPtr := 0
         }
       }
+      // Credit consumption on grant (fire = valid && ready)
+      when(io.cplReq.fire) {
+        io.cplhConsumed := 1
+        io.cpldConsumed := cplDataCredits.resize(12)
+      }
+      when(io.memWrReq.fire) {
+        io.phConsumed := 1
+        io.pdConsumed := memWrDataCredits.resize(12)
+      }
+      when(io.memRdReq.fire) {
+        io.nphConsumed := 1
+      }
     }
 
     is(TxState.HDR1) {
@@ -252,6 +275,12 @@ class TlpTxFifoWrapper extends Component {
     val cplIn    = slave  Stream(TlpStreamPacket())
     val tlpOut   = master Stream(Bits(32 bits))
     val fcCredits = in(FlowControlCredits())
+    // Credit consumption passthrough
+    val phConsumed   = out UInt(8 bits)
+    val pdConsumed   = out UInt(12 bits)
+    val nphConsumed  = out UInt(8 bits)
+    val cplhConsumed = out UInt(8 bits)
+    val cpldConsumed = out UInt(12 bits)
   }
 
   // Per-channel FIFOs to prevent head-of-line blocking
@@ -269,4 +298,9 @@ class TlpTxFifoWrapper extends Component {
   engine.io.cplReq    << cplFifo.io.pop
   engine.io.fcCredits := io.fcCredits
   io.tlpOut           << engine.io.tlpOut
+  io.phConsumed       := engine.io.phConsumed
+  io.pdConsumed       := engine.io.pdConsumed
+  io.nphConsumed      := engine.io.nphConsumed
+  io.cplhConsumed     := engine.io.cplhConsumed
+  io.cpldConsumed     := engine.io.cpldConsumed
 }

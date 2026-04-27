@@ -136,8 +136,15 @@ class Encoder8b10b extends Component {
                             Encoder8b10bTables.kCode5b6b(U(3, 3 bits))(11 downto 6))
     } otherwise {
       // Other K codes (K23, K27, K29, K30)
-      // Map: K23->0, K27->1, K29->2, K30->3, K28->4, K28.0->5
-      val kIdx = data5b(1 downto 0).asUInt.resize(3)
+      // Map: K23->1, K27->2, K29->4, K30->5
+      val kIdx = UInt(3 bits)
+      kIdx := 0
+      switch(data5b) {
+        is(23) { kIdx := 1 }
+        is(27) { kIdx := 2 }
+        is(29) { kIdx := 4 }
+        is(30) { kIdx := 5 }
+      }
       encoded6b := Mux(rd, Encoder8b10bTables.kCode5b6b(kIdx)(5 downto 0),
                             Encoder8b10bTables.kCode5b6b(kIdx)(11 downto 6))
     }
@@ -148,7 +155,7 @@ class Encoder8b10b extends Component {
   }
 
   // Calculate 6b disparity
-  disp6b := encoded6b.xorR.asSInt.resize(4) - S(3, 4 bits)  // Approximate
+  disp6b := encoded6b.asBools.map(b => b.asUInt.resize(3)).reduce(_ + _).asSInt.resize(4) - S(3, 4 bits)
 
   // ============================================================
   // 3b/4b Encoding
@@ -165,7 +172,7 @@ class Encoder8b10b extends Component {
   }
 
   // Calculate 4b disparity
-  disp4b := encoded4b.xorR.asSInt.resize(4) - S(2, 4 bits)  // Approximate
+  disp4b := encoded4b.asBools.map(b => b.asUInt.resize(3)).reduce(_ + _).asSInt.resize(4) - S(2, 4 bits)
 
   // ============================================================
   // Combine and output
@@ -300,17 +307,23 @@ class Decoder8b10b extends Component {
   val disp6b = SInt(4 bits)
   val disp4b = SInt(4 bits)
 
-  // Count ones minus zeros (approximate)
-  disp6b := (code6b.xorR.asUInt.resize(4) - U(3, 4 bits)).asSInt
-  disp4b := (code4b.xorR.asUInt.resize(4) - U(2, 4 bits)).asSInt
+  // Count ones minus zeros using popCount for accurate disparity
+  disp6b := (code6b.asBools.map(b => b.asUInt.resize(3)).reduce(_ + _).resize(4) - U(3, 4 bits)).asSInt
+  disp4b := (code4b.asBools.map(b => b.asUInt.resize(3)).reduce(_ + _).resize(4) - U(2, 4 bits)).asSInt
 
   // Check for disparity errors
   val expectedRd = rd
   val actualRd = (disp6b + disp4b) > 0
   disparityError := (expectedRd =/= actualRd) && !isKCode
 
-  // Update RD
-  rd := !rd
+  // Update RD based on actual received disparity (not unconditional toggle)
+  val totalDisp = disp6b + disp4b
+  when(totalDisp > 0) {
+    rd := False  // Positive disparity received, RD becomes negative
+  } elsewhen(totalDisp < 0) {
+    rd := True   // Negative disparity received, RD becomes positive
+  }
+  // Neutral disparity: rd unchanged
 
   // ============================================================
   // Output

@@ -92,6 +92,7 @@ class DlRxDeframer extends Component {
   val io = new Bundle {
     val frameIn  = slave  Stream(Bits(32 bits))
     val tlpOut   = master Stream(Bits(32 bits))
+    val dllpOut  = master Stream(Bits(32 bits))
     val txAck    = out UInt(12 bits)
     val txNak    = out UInt(12 bits)
     val ackValid = out Bool()
@@ -99,7 +100,7 @@ class DlRxDeframer extends Component {
     val crcErr   = out Bool()
   }
 
-  object St extends SpinalEnum { val IDLE, RX_SEQ, DATA, CHECK = newElement() }
+  object St extends SpinalEnum { val IDLE, RX_SEQ, DATA, DLLP_DATA, CHECK = newElement() }
   val state    = Reg(St()) init(St.IDLE)
   val crc      = Reg(UInt(32 bits)) init(0xFFFFFFFFL)
   val rxSeq    = Reg(UInt(12 bits)) init(0)
@@ -115,20 +116,30 @@ class DlRxDeframer extends Component {
 
   io.tlpOut.valid   := False
   io.tlpOut.payload := prevData
-  io.frameIn.ready  := !io.tlpOut.valid || io.tlpOut.ready
+  io.dllpOut.valid  := False
+  io.dllpOut.payload := 0
+  io.frameIn.ready  := False  // Default, overridden per-state
 
   switch(state) {
     is(St.IDLE) {
+      io.frameIn.ready := True
       when(io.frameIn.valid) { crc := 0xFFFFFFFFL; prevVld := False; state := St.RX_SEQ }
     }
     is(St.RX_SEQ) {
+      io.frameIn.ready := True
       when(io.frameIn.fire) {
-        rxSeq := io.frameIn.payload(23 downto 12).asUInt.resize(12)
-        crc   := Crc32.updateDword(crc, io.frameIn.payload)
-        state := St.DATA
+        // Detect DLLP vs TLP: first byte 0xAA = TLP, otherwise = DLLP
+        when(io.frameIn.payload(31 downto 24) === B"8'hAA") {
+          rxSeq := io.frameIn.payload(23 downto 12).asUInt.resize(12)
+          crc   := Crc32.updateDword(crc, io.frameIn.payload)
+          state := St.DATA
+        } otherwise {
+          state := St.DLLP_DATA
+        }
       }
     }
     is(St.DATA) {
+      io.frameIn.ready := !io.tlpOut.valid || io.tlpOut.ready
       when(io.frameIn.valid) {
         when(prevVld) {
           io.tlpOut.valid   := True
@@ -141,6 +152,14 @@ class DlRxDeframer extends Component {
         }
       }.otherwise {
         when(prevVld) { state := St.CHECK }
+      }
+    }
+    is(St.DLLP_DATA) {
+      io.frameIn.ready := io.dllpOut.ready
+      when(io.frameIn.fire) {
+        io.dllpOut.valid   := True
+        io.dllpOut.payload := io.frameIn.payload
+        state := St.IDLE
       }
     }
     is(St.CHECK) {
