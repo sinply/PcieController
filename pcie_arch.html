@@ -134,8 +134,15 @@
         <div class="mod-title">🗂 Config Space</div>
         <div class="mod-item">Vendor/Device ID</div>
         <div class="mod-item">6× BAR Registers</div>
-        <div class="mod-item">Command/Status</div>
-        <div class="mod-item">Cap Pointer</div>
+        <div class="mod-item">MSI-X / PM / PCIe Caps</div>
+        <div class="mod-item">BAR Decode Enable</div>
+      </div>
+      <div class="mod m-green">
+        <div class="mod-title">🧩 BAR0 / I/O Handler</div>
+        <div class="mod-item">BAR0 MMIO Registers</div>
+        <div class="mod-item">I/O Space Requests</div>
+        <div class="mod-item">Read CplD Generation</div>
+        <div class="mod-item">Posted MemWr Handling</div>
       </div>
       <div class="mod m-green" style="flex:0.6">
         <div class="mod-title">🔗 AXI4 I/F</div>
@@ -169,8 +176,8 @@
       <div class="mod m-green">
         <div class="mod-title">📤 TLP TX Engine</div>
         <div class="mod-item">3DW / 4DW Headers</div>
+        <div class="mod-item">Completion Headers</div>
         <div class="mod-item">MemWr / MemRd TLP</div>
-        <div class="mod-item">Completion TLP</div>
         <div class="mod-item">Round-Robin Arbiter</div>
         <div class="mod-item">Per-channel FIFOs</div>
       </div>
@@ -178,9 +185,9 @@
         <div class="mod-title">📥 TLP RX Engine</div>
         <div class="mod-item">Header Parsing</div>
         <div class="mod-item">TLP Classification</div>
-        <div class="mod-item">Mem/Cfg/Cpl Routing</div>
+        <div class="mod-item">Mem/Cfg/Cpl/I/O Routing</div>
+        <div class="mod-item">Cpl Byte Count / Lower Addr</div>
         <div class="mod-item">4DW addr support</div>
-        <div class="mod-item">Parse Error Flag</div>
       </div>
       <div class="mod m-teal">
         <div class="mod-title">🏦 Flow Control</div>
@@ -320,9 +327,18 @@
       <h3 style="color:#f6e05e">⚙️ Config Read (Enumeration)</h3>
       <div class="flow-step"><div class="step-num">1</div>Root Complex sends CfgRd0 TLP</div>
       <div class="flow-step"><div class="step-num">2</div>RX Engine routes to Config Space Ctrl</div>
-      <div class="flow-step"><div class="step-num">3</div>Decode DWORD address (0x00=VID/DID…)</div>
-      <div class="flow-step"><div class="step-num">4</div>Config Space generates CplD TLP</div>
+      <div class="flow-step"><div class="step-num">3</div>Decode Type0 header and capability DWORDs</div>
+      <div class="flow-step"><div class="step-num">4</div>Config Space generates CplD with requester/tag/lower address</div>
       <div class="flow-step"><div class="step-num">5</div>TX Engine → DL → PHY → Root Complex</div>
+    </div>
+
+    <div class="flow-box">
+      <h3 style="color:#4fd1c5">🧩 BAR0 Register Access</h3>
+      <div class="flow-step"><div class="step-num">1</div>Root Complex sends MEM_RD/MEM_WR to BAR0</div>
+      <div class="flow-step"><div class="step-num">2</div>Config Space BAR decode qualifies the request</div>
+      <div class="flow-step"><div class="step-num">3</div>Top level routes packet to the register handler</div>
+      <div class="flow-step"><div class="step-num">4</div>ioRegAddr/ioRegRdEn/ioRegWrEn drives user logic</div>
+      <div class="flow-step"><div class="step-num">5</div>Reads return CplD; memory writes remain posted</div>
     </div>
 
     <div class="flow-box">
@@ -344,7 +360,7 @@
   <div class="file-grid">
     <div class="file-item">
       <div class="file-name">PcieTypes.scala</div>
-      <div class="file-desc">TLP 数据结构、枚举类型、配置寄存器、DMA 描述符</div>
+      <div class="file-desc">TLP 数据结构、Completion 字段、枚举类型、配置寄存器、DMA 描述符</div>
     </div>
     <div class="file-item">
       <div class="file-name">PcieController.scala</div>
@@ -356,11 +372,11 @@
     </div>
     <div class="file-item">
       <div class="file-name">TlpTxEngine.scala</div>
-      <div class="file-desc">TLP 发送引擎，3DW/4DW 头部序列化，优先级仲裁</div>
+      <div class="file-desc">TLP 发送引擎，请求/Completion 头部序列化，优先级仲裁</div>
     </div>
     <div class="file-item">
       <div class="file-name">TlpRxEngine.scala</div>
-      <div class="file-desc">TLP 接收引擎，包解析，按类型路由到各处理器</div>
+      <div class="file-desc">TLP 接收引擎，包解析，Completion 字段提取，按类型路由到各处理器</div>
     </div>
     <div class="file-item">
       <div class="file-name">DataLinkLayer.scala</div>

@@ -11,15 +11,25 @@ A PCIe 2.0 controller implemented in [SpinalHDL](https://github.com/SpinalHDL/Sp
 - **Physical Layer** - Full 8b/10b encoder/decoder with running disparity, symbol alignment, TS1/TS2 detection
 - **Data Link Layer** - TLP framing/deframing with CRC-32, sequence numbers, ACK/NAK handling
 - **Transaction Layer** - TLP RX/TX engines with streaming data path and flow control
-- **Configuration Space Controller** - PCIe config space (Type 0) with BAR support
+- **Configuration Space Controller** - PCIe Type 0 config space with BAR and capability support
 - **DMA Engine** - Scatter-gather DMA for host memory access
 - **MSI-X Controller** - Up to 32 interrupt vectors
-- **I/O Request Handler** - I/O read/write with completion generation
+- **I/O/BAR0 Request Handler** - I/O and BAR0 register access with completion generation
 - **DLLP Handler** - ACK/NAK and flow control DLLP processing
 
 ## Architecture
 
 ```
+
+## Design Documents
+
+The detailed design notes are maintained in:
+
+| Document | Contents |
+|----------|----------|
+| [Interface Design](docs/INTERFACE_DESIGN.md) | Top-level IO, AXI interfaces, BAR apertures, interrupt pins, and internal `TlpStreamPacket` fields |
+| [Architecture Design](docs/ARCHITECTURE_DESIGN.md) | Layering, receive/transmit paths, BAR routing, completion generation, and flow-control structure |
+| [Functional Design](docs/FUNCTIONAL_DESIGN.md) | Enumeration, BAR0 register access, DMA, MSI-X, TLP RX/TX behavior, and current limitations |
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Application                               │
 │    ┌──────────┐    ┌──────────┐    ┌──────────┐                 │
@@ -265,19 +275,23 @@ end
 | d2hDone | Output | 1 | Device-to-Host DMA transfer complete |
 | dmaErr | Output | 1 | DMA error occurred |
 
-### I/O Register Interface
+### I/O and BAR0 Register Interface
 
-For devices with I/O space, connect to your register file:
+For devices with I/O space or BAR0 memory-mapped registers, connect to your
+register file:
 
 | Signal | Direction | Width | Description |
 |--------|-----------|-------|-------------|
-| ioRegAddr | Output | 32 | I/O register address |
+| ioRegAddr | Output | 32 | I/O/BAR0 register byte address |
 | ioRegWrData | Output | 32 | Write data |
 | ioRegRdData | Input | 32 | Read data |
 | ioRegWrEn | Output | 1 | Write enable |
 | ioRegRdEn | Output | 1 | Read enable |
 
-**I/O Usage Example:**
+I/O reads and BAR0 memory reads return CplD completions. I/O writes return Cpl
+completions. BAR0 memory writes are posted and do not return completions.
+
+**Register Usage Example:**
 ```verilog
 // Simple I/O register implementation
 always @(posedge clk) begin
@@ -291,8 +305,10 @@ assign ioRegRdData = ioRegRdEn ? my_reg[ioRegAddr[3:0]] : 32'h0;
 
 | BAR | Size | Description |
 |-----|------|-------------|
-| BAR0 | 4KB | Device control registers |
-| BAR1 | 64KB | MSI-X Table and PBA |
+| BAR0 | 4KB | Device control/status register aperture routed to `ioReg*` |
+| BAR1 | 64KB | MSI-X table and PBA aperture |
+
+BAR decode is gated by the PCI command register Memory Space Enable bit.
 
 ## Implementation Status
 
@@ -305,16 +321,19 @@ This is a **functional PCIe 2.0 controller implementation** with the following s
 - ✅ **LTSSM**: Complete state machine with TS1/TS2 detection and link negotiation
 - ✅ **Flow Control**: Credit tracking with FC init and update DLLP support
 - ✅ **I/O Requests**: Full I/O read/write handling with completion generation
+- ✅ **BAR0 MMIO Registers**: Memory reads/writes routed to the user register interface
+- ✅ **Completion Headers**: Dedicated internal fields for completer ID, status, byte count, requester ID, tag, and lower address
+- ✅ **Configuration Capabilities**: MSI-X, Power Management, and PCIe capabilities at standard capability offsets
 - ✅ **TLP Streaming**: Support for large payloads up to max payload size (256 bytes)
 - ✅ **DLLP Processing**: ACK/NAK and flow control DLLP handler
 
 ### Remaining Limitations
 
-1. **Scatter-Gather DMA**: Single operation only (no descriptor chaining)
-2. **Power Management**: L1/L2 states defined but not fully implemented
-3. **Extended Config Space**: Only first 64 bytes implemented
+1. **External SG Descriptor Fetch**: Descriptor memory exists internally; host-memory descriptor fetch is not implemented
+2. **D2H DMA Packet Size**: Device-to-host writes currently use one local 64-bit beat per Memory Write packet
+3. **Power Management**: L1/L2 states are modeled but not fully integrated with platform power control
 4. **Multi-Lane**: Single lane (x1) only
-5. **Gen3 Support**: 128b/130b encoding not implemented
+5. **Gen3 Support**: 128b/130b encoding is not implemented
 
 ### For Production Use
 

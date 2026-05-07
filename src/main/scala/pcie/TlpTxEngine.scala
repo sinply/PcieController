@@ -137,13 +137,28 @@ class TlpTxEngine extends Component {
   }
 
   // HDR2: [ReqID | Tag | LastBE | FirstBE]
-  def buildHdr2(pkt: TlpStreamPacket): Bits =
-    (pkt.reqId.asBits ## pkt.tag.asBits ##
-     pkt.lastBe ## pkt.firstBe).asBits
+  def packetIsCompletion(pkt: TlpStreamPacket): Bool =
+    pkt.tlpType === TlpType.CPL || pkt.tlpType === TlpType.CPL_D
+
+  def buildHdr2(pkt: TlpStreamPacket): Bits = {
+    val hdr = Bits(32 bits)
+    hdr := (pkt.reqId.asBits ## pkt.tag.asBits ## pkt.lastBe ## pkt.firstBe).asBits
+    when(packetIsCompletion(pkt)) {
+      hdr := (pkt.cplId.asBits ## pkt.cplStatus.asBits ## B"1'b0" ## pkt.cplByteCount.asBits).asBits
+    }
+    hdr
+  }
 
   // HDR3 (3DW addr upper) / HDR3 (4DW addr[63:32])
   def buildHdr3_4DW(pkt: TlpStreamPacket): Bits = pkt.addr(63 downto 32).asBits
-  def buildHdr3_3DW(pkt: TlpStreamPacket): Bits = pkt.addr(31 downto  0).asBits
+  def buildHdr3_3DW(pkt: TlpStreamPacket): Bits = {
+    val hdr = Bits(32 bits)
+    hdr := pkt.addr(31 downto 0).asBits
+    when(packetIsCompletion(pkt)) {
+      hdr := (pkt.reqId.asBits ## pkt.tag.asBits ## B"1'b0" ## pkt.cplLowerAddr.asBits).asBits
+    }
+    hdr
+  }
 
   // HDR4 (4DW addr lower)
   def buildHdr4_4DW(pkt: TlpStreamPacket): Bits = pkt.addr(31 downto  0).asBits

@@ -29,7 +29,8 @@ sbt "testOnly pcie.LtssmTest"
 Application Layer
     ├── DMA Engine (scatter-gather for host memory access)
     ├── MSI-X Controller (interrupt handling)
-    └── I/O Request Handler (I/O space completions)
+    ├── Config Space Controller (Type 0 header, BAR decode, capabilities)
+    └── I/O/BAR0 Request Handler (I/O completions and BAR0 register access)
          │
 Transaction Layer
     ├── TlpTxEngine (TLP transmission with flow control)
@@ -109,8 +110,9 @@ val bytesTo4k = U(4096, 32 bits) - (addrLower32 & U(4095, 32 bits))
 
 ## Known Issues
 
-- `TlpRxEngine` test is disabled due to WIDTH MISMATCH issue in data array handling
-- `memWrArb` in PcieController may have NO DRIVER warning for arbitration output - this is benign (arbiter output unused)
+- Full `sbt test` can run for a long time because some simulations contain broad wait loops; use targeted `testOnly` filters during development.
+- SpinalHDL may warn that generated async `Mem.readAsync` blocks are emitted as write-first memories in Verilog; this is expected for the current generated RTL.
+- Many top-level debug/status fields are pruned by Verilog generation because they are not consumed by downstream logic.
 
 ## PCIe Configuration
 
@@ -121,4 +123,10 @@ Default configuration in `PcieControllerConfig`:
 - maxPayload: 256 bytes
 - numMsixVec: 32
 
-BAR0: 4KB (device registers), BAR1: 64KB (MSI-X table)
+BAR0: 4KB (device registers via `ioReg*`), BAR1: 64KB (MSI-X table/PBA)
+
+## Design Documents
+
+- `docs/INTERFACE_DESIGN.md` - top-level IO, AXI interfaces, BAR apertures, interrupts, and internal TLP packet fields
+- `docs/ARCHITECTURE_DESIGN.md` - layer structure, routing, completion generation, and flow-control architecture
+- `docs/FUNCTIONAL_DESIGN.md` - enumeration, BAR0 access, DMA, MSI-X, TLP RX/TX behavior, and limitations

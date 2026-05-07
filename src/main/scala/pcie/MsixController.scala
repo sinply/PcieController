@@ -124,6 +124,10 @@ class MsixController(numVectors: Int = 32) extends Component {
       p.firstBe  := 0xF
       p.lastBe   := 0xF
       p.length   := 1
+      p.cplId    := 0
+      p.cplStatus := 0
+      p.cplByteCount := 0
+      p.cplLowerAddr := 0
       p.dataValid := 1
       p.addr     := (tableAddrHi.readAsync(activeVec) ##
                      tableAddrLo.readAsync(activeVec)).asUInt

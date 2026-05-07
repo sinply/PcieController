@@ -183,13 +183,15 @@ class PcieController(cfg: PcieControllerConfig = PcieControllerConfig()) extends
   // Memory requests (inbound MMIO writes to our BAR space)
   val inboundMemReq = rxEngine.io.memReq
 
-  // Route BAR1 writes to MSI-X table, others to user
+  // Route BAR0 to user registers and BAR1 writes to the MSI-X table.
   val barHit      = cfgSpace.io.barHit
+  val isBar0Req   = inboundMemReq.valid && barHit(0)
   val isBar1Req   = inboundMemReq.valid && barHit(1)
+  val isBar1Write = isBar1Req && inboundMemReq.payload.tlpType === TlpType.MEM_WR
 
   msix.io.tableAddr  := inboundMemReq.payload.addr(11 downto 0).asBits.asUInt
   msix.io.tableWdata := inboundMemReq.payload.data(0)
-  msix.io.tableWen   := isBar1Req && inboundMemReq.payload.tlpType === TlpType.MEM_WR
+  msix.io.tableWen   := inboundMemReq.fire && isBar1Write
   msix.io.tableBe    := inboundMemReq.payload.firstBe
   msix.io.busDevFunc := myBdf
   msix.io.msixEnable := cfgSpace.io.msixEnable
@@ -204,15 +206,22 @@ class PcieController(cfg: PcieControllerConfig = PcieControllerConfig()) extends
   )
   txEngine.io.memWrIn << memWrArb
 
-  // Consume/drop inbound mem request
-  inboundMemReq.ready := True
+  val bar0MemReq = Stream(TlpStreamPacket())
+  bar0MemReq.valid   := isBar0Req
+  bar0MemReq.payload := inboundMemReq.payload
+  inboundMemReq.ready := isBar0Req ? bar0MemReq.ready | True
 
   // ============================================================
   // I/O Request Handler
   // ============================================================
-  ioHandler.io.ioReq     << rxEngine.io.ioReq
+  val userRegReq = StreamArbiterFactory.roundRobin.onArgs(
+    rxEngine.io.ioReq,
+    bar0MemReq
+  )
+  ioHandler.io.ioReq     << userRegReq
   ioHandler.io.regRdData := io.ioRegRdData
   ioHandler.io.regWidth  := 2  // Default: DWORD access
+  ioHandler.io.completerId := myBdf
 
   io.ioRegAddr           := ioHandler.io.regAddr
   io.ioRegWrData         := ioHandler.io.regWrData

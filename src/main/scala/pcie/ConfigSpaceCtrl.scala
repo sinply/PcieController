@@ -90,7 +90,7 @@ class PcieConfigSpaceCtrl(
   val msixCap = new Area {
     val capId      = B"8'h11"     // MSI-X capability ID
     val nextCap    = Reg(UInt(8 bits)) init(0x50)     // Points to PM cap
-    val msgCtrl    = Reg(Bits(16 bits)) init(0x0020)  // Table size = 32, enabled
+    val msgCtrl    = Reg(Bits(16 bits)) init(0x001F)  // Table size = 32 vectors (N-1)
     val tableBIR   = Reg(Bits(3 bits)) init(0x1)      // BAR1
     val tableOff   = Reg(Bits(29 bits)) init(0x0000)
     val pbaBIR     = Reg(Bits(3 bits)) init(0x1)      // BAR1
@@ -235,25 +235,22 @@ class PcieConfigSpaceCtrl(
       is(14) { data := 0 }  // Reserved
       is(15) { data := (B"8'h00" ## regs.intPin.asBits ## B"8'h00" ## regs.intLine.asBits) }
 
-      // MSI-X Capability (0x40-0x4F in byte address, 0x10-0x13 in dwAddr)
+      // MSI-X Capability (0x40-0x4B in byte address, 0x10-0x12 in dwAddr)
       // Capability header: [15:8]=nextCap, [7:0]=capId
-      is(0x10) { data := (B"16'h0000" ## msixCap.nextCap.asBits ## msixCap.capId) }
-      is(0x11) { data := (msixCap.msgCtrl ## B"16'h0000") }
-      is(0x12) { data := (msixCap.tableOff ## msixCap.tableBIR).asBits }
-      is(0x13) { data := (msixCap.pbaOff ## msixCap.pbaBIR).asBits }
+      is(0x10) { data := (msixCap.msgCtrl ## msixCap.nextCap.asBits ## msixCap.capId) }
+      is(0x11) { data := (msixCap.tableOff ## msixCap.tableBIR).asBits }
+      is(0x12) { data := (msixCap.pbaOff ## msixCap.pbaBIR).asBits }
 
       // Power Management Capability (0x50-0x57 in byte address, 0x14-0x17 in dwAddr)
-      is(0x14) { data := (B"16'h0000" ## pmCap.nextCap.asBits ## pmCap.capId) }
-      is(0x15) { data := (pmCap.pmCapReg ## B"16'h0000") }
-      is(0x16) { data := (pmCap.pmData ## pmCap.pmBridgeExt ## pmCap.pmCtrlStat) }
+      is(0x14) { data := (pmCap.pmCapReg ## pmCap.nextCap.asBits ## pmCap.capId) }
+      is(0x15) { data := (pmCap.pmData ## pmCap.pmBridgeExt ## pmCap.pmCtrlStat) }
 
       // PCIe Capability (0x60-0x7F in byte address, 0x18-0x1F in dwAddr)
-      is(0x18) { data := (B"16'h0000" ## pcieCap.nextCap.asBits ## pcieCap.capId) }
-      is(0x19) { data := (pcieCap.pcieCapReg ## B"16'h0000") }
-      is(0x1A) { data := pcieCap.devCap }
-      is(0x1B) { data := (pcieCap.devStat ## pcieCap.devCtrl) }
-      is(0x1C) { data := pcieCap.linkCap }
-      is(0x1D) { data := (pcieCap.linkStat ## pcieCap.linkCtrl) }
+      is(0x18) { data := (pcieCap.pcieCapReg ## pcieCap.nextCap.asBits ## pcieCap.capId) }
+      is(0x19) { data := pcieCap.devCap }
+      is(0x1A) { data := (pcieCap.devStat ## pcieCap.devCtrl) }
+      is(0x1B) { data := pcieCap.linkCap }
+      is(0x1C) { data := (pcieCap.linkStat ## pcieCap.linkCtrl) }
 
       // Extended Config Space (0x40+ in dwAddr)
       default {
@@ -296,6 +293,10 @@ class PcieConfigSpaceCtrl(
     r.lastBe   := 0x0
     r.tc       := 0
     r.attr     := 0
+    r.cplId    := io.busDevFunc
+    r.cplStatus := 0
+    r.cplByteCount := 0
+    r.cplLowerAddr := 0
     r.dataValid := 1
     r.data(0) := 0
     for (i <- 1 until 4) r.data(i) := 0
@@ -304,6 +305,8 @@ class PcieConfigSpaceCtrl(
       // ---- Config Read ----
       is(TlpType.CFG_RD0, TlpType.CFG_RD1) {
         r.tlpType  := TlpType.CPL_D
+        r.cplByteCount := 4
+        r.cplLowerAddr := req.addr(6 downto 0).resize(7)
         r.data(0)  := readConfigDword(dwAddr)
         respPkt    := r
         respValid  := True
@@ -352,18 +355,23 @@ class PcieConfigSpaceCtrl(
             regs.intPin  := req.data(0)(15 downto 8).asUInt
           }
           // MSI-X writes
-          is(0x11) { msixCap.msgCtrl := req.data(0)(15 downto 0) }
-          is(0x12) {
+          is(0x10) {
+            val old = (msixCap.msgCtrl ## msixCap.nextCap.asBits ## msixCap.capId)
+            val merged = mergeBe32(old, req.data(0), req.firstBe)
+            val newMsgCtrl = merged(31 downto 16)
+            msixCap.msgCtrl := (newMsgCtrl & B"16'hC000") | (msixCap.msgCtrl & B"16'h07FF")
+          }
+          is(0x11) {
             msixCap.tableOff := req.data(0)(31 downto 3)
             msixCap.tableBIR := req.data(0)(2 downto 0)
           }
-          is(0x13) {
+          is(0x12) {
             msixCap.pbaOff := req.data(0)(31 downto 3)
             msixCap.pbaBIR := req.data(0)(2 downto 0)
           }
           // PCIe capability writes
-          is(0x1B) { pcieCap.devCtrl := req.data(0)(15 downto 0) }
-          is(0x1D) { pcieCap.linkCtrl := req.data(0)(15 downto 0) }
+          is(0x1A) { pcieCap.devCtrl := req.data(0)(15 downto 0) }
+          is(0x1C) { pcieCap.linkCtrl := req.data(0)(15 downto 0) }
           // Extended config space writes
           default {
             when(isExtDw(dwAddr)) {

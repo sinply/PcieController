@@ -47,6 +47,7 @@ class TlpRxEngine(maxPayloadBytes: Int = 256) extends Component {
   val dataIdx    = Reg(UInt(11 bits)) init(0)
   val is4DW      = Reg(Bool()) init(False)
   val hasData    = Reg(Bool()) init(False)
+  val isCpl      = Reg(Bool()) init(False)
   val parseErrR  = Reg(Bool()) init(False)
   val overflowR  = Reg(Bool()) init(False)
 
@@ -120,9 +121,14 @@ class TlpRxEngine(maxPayloadBytes: Int = 256) extends Component {
 
         hasData      := curHasData
         is4DW        := fmt(0)
+        isCpl        := False
         pkt.length   := curLength
         pkt.tc       := dw(22 downto 20).asUInt
         pkt.attr     := dw(13 downto 12)
+        pkt.cplId    := 0
+        pkt.cplStatus := 0
+        pkt.cplByteCount := 0
+        pkt.cplLowerAddr := 0
         pkt.dataValid := 0
         pkt.data(0) := B(0, 32 bits)
         pkt.data(1) := B(0, 32 bits)
@@ -148,6 +154,7 @@ class TlpRxEngine(maxPayloadBytes: Int = 256) extends Component {
           }
           is(B"5'b01010") {
             pkt.tlpType := fmt(1) ? TlpType.CPL_D | TlpType.CPL
+            isCpl := True
           }
           is(B"5'b10000") {
             pkt.tlpType := fmt(1) ? TlpType.MSG_D | TlpType.MSG
@@ -173,17 +180,41 @@ class TlpRxEngine(maxPayloadBytes: Int = 256) extends Component {
     is(RxState.HDR2) {
       when(io.tlpIn.fire) {
         val dw = io.tlpIn.payload
-        pkt.reqId   := dw(31 downto 16).asUInt
-        pkt.tag     := dw(15 downto  8).asUInt
-        pkt.lastBe  := dw( 7 downto  4)
-        pkt.firstBe := dw( 3 downto  0)
+        when(isCpl) {
+          pkt.cplId       := dw(31 downto 16).asUInt
+          pkt.cplStatus   := dw(15 downto 13).asUInt
+          pkt.cplByteCount := dw(11 downto 0).asUInt
+          pkt.firstBe     := 0
+          pkt.lastBe      := 0
+        } otherwise {
+          pkt.reqId   := dw(31 downto 16).asUInt
+          pkt.tag     := dw(15 downto  8).asUInt
+          pkt.lastBe  := dw( 7 downto  4)
+          pkt.firstBe := dw( 3 downto  0)
+        }
         state       := RxState.HDR3
       }
     }
 
     is(RxState.HDR3) {
       when(io.tlpIn.fire) {
-        when(is4DW) {
+        when(isCpl) {
+          pkt.reqId        := io.tlpIn.payload(31 downto 16).asUInt
+          pkt.tag          := io.tlpIn.payload(15 downto 8).asUInt
+          pkt.cplLowerAddr := io.tlpIn.payload(6 downto 0).asUInt
+          pkt.addr         := 0
+          when(hasData) {
+            dataIdx := 0
+            when(pkt.length > 4) {
+              state := RxState.DATA_STREAM
+              io.memDataStart := True
+            } otherwise {
+              state := RxState.DATA
+            }
+          } otherwise {
+            state := RxState.EMIT
+          }
+        } elsewhen(is4DW) {
           pkt.addr(63 downto 32) := io.tlpIn.payload.asUInt
           state := RxState.HDR4
         } otherwise {
@@ -322,6 +353,7 @@ class IoRequestHandler extends Component {
     val regWrEn  = out Bool()
     val regRdEn  = out Bool()
     val regWidth = in  UInt(2 bits)  // 0=byte, 1=word, 2=dword
+    val completerId = in UInt(16 bits)
 
     // Status
     val ioErr    = out Bool()
@@ -346,6 +378,10 @@ class IoRequestHandler extends Component {
   respPkt.lastBe := 0
   respPkt.tc := 0
   respPkt.attr := 0
+  respPkt.cplId := 0
+  respPkt.cplStatus := 0
+  respPkt.cplByteCount := 0
+  respPkt.cplLowerAddr := 0
   for (i <- 0 until 4) respPkt.data(i) := 0
   respPkt.dataValid := 0
 
@@ -373,35 +409,51 @@ class IoRequestHandler extends Component {
       // Decode I/O address
       io.regAddr := reqPkt.addr(31 downto 0)
 
-      when(reqPkt.tlpType === TlpType.IO_RD) {
-        // I/O Read: generate completion with data
+      when(reqPkt.tlpType === TlpType.IO_RD || reqPkt.tlpType === TlpType.MEM_RD) {
+        // I/O or BAR memory read: generate completion with data
         io.regRdEn := True
         respPkt.tlpType := TlpType.CPL_D
+        respPkt.reqId := reqPkt.reqId
+        respPkt.tag := reqPkt.tag
+        respPkt.cplId := io.completerId
+        respPkt.cplStatus := 0
+        respPkt.cplByteCount := 4
+        respPkt.cplLowerAddr := reqPkt.addr(6 downto 0).resize(7)
         respPkt.length := 1
         respPkt.data(0) := io.regRdData
         respPkt.dataValid := 1
         state := IoState.RESPOND
-      } elsewhen(reqPkt.tlpType === TlpType.IO_WR) {
-        // I/O Write: generate completion without data
+      } elsewhen(reqPkt.tlpType === TlpType.IO_WR || reqPkt.tlpType === TlpType.MEM_WR) {
+        // I/O writes require a completion; memory writes are posted.
         io.regWrEn := True
         io.regWrData := reqPkt.data(0)
         respPkt.tlpType := TlpType.CPL
+        respPkt.reqId := reqPkt.reqId
+        respPkt.tag := reqPkt.tag
+        respPkt.cplId := io.completerId
+        respPkt.cplStatus := 0
+        respPkt.cplByteCount := 0
+        respPkt.cplLowerAddr := reqPkt.addr(6 downto 0).resize(7)
         respPkt.length := 0
         respPkt.dataValid := 0
-        state := IoState.RESPOND
+        state := (reqPkt.tlpType === TlpType.IO_WR) ? IoState.RESPOND | IoState.IDLE
       } otherwise {
         // Invalid I/O request
         io.ioErr := True
         respPkt.tlpType := TlpType.CPL
+        respPkt.reqId := reqPkt.reqId
+        respPkt.tag := reqPkt.tag
+        respPkt.cplId := io.completerId
+        respPkt.cplStatus := 1
+        respPkt.cplByteCount := 0
+        respPkt.cplLowerAddr := reqPkt.addr(6 downto 0).resize(7)
         respPkt.length := 0
         respPkt.dataValid := 0
         state := IoState.RESPOND
       }
 
       // Set completion fields
-      respPkt.reqId := 0  // Our completer ID (set by upper layer)
-      respPkt.tag := reqPkt.tag
-      respPkt.addr := reqPkt.reqId.resize(64)  // Requester ID as lower address
+      respPkt.addr := 0
       respPkt.firstBe := reqPkt.firstBe
       respPkt.lastBe := reqPkt.lastBe
       respPkt.tc := 0

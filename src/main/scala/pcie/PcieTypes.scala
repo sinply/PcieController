@@ -80,6 +80,10 @@ case class TlpStreamPacket() extends Bundle {
   val lastBe   = Bits(4 bits)
   val tc       = UInt(3 bits)
   val attr     = Bits(2 bits)
+  val cplId    = UInt(16 bits)
+  val cplStatus = UInt(3 bits)
+  val cplByteCount = UInt(12 bits)
+  val cplLowerAddr = UInt(7 bits)
   val data     = Vec(Bits(32 bits), 4)  // Inline data for small payloads (up to 16 bytes)
   val dataValid = UInt(3 bits)          // How many inline data DWORDs valid
 }

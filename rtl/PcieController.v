@@ -1,6 +1,6 @@
 // Generator : SpinalHDL v1.9.4    git head : 270018552577f3bb8e5339ee2583c9c22d324215
 // Component : PcieController
-// Git hash  : 9dd5baafcc728628adeafd1bf032ef14361c665d
+// Git hash  : be0b2e2ad7a7d79aa11b4fc40fb174ba50e55774
 
 `timescale 1ns/1ps
 
@@ -222,6 +222,10 @@ module PcieController (
   wire       [3:0]    rxEngine_io_memReq_payload_lastBe;
   wire       [2:0]    rxEngine_io_memReq_payload_tc;
   wire       [1:0]    rxEngine_io_memReq_payload_attr;
+  wire       [15:0]   rxEngine_io_memReq_payload_cplId;
+  wire       [2:0]    rxEngine_io_memReq_payload_cplStatus;
+  wire       [11:0]   rxEngine_io_memReq_payload_cplByteCount;
+  wire       [6:0]    rxEngine_io_memReq_payload_cplLowerAddr;
   wire       [31:0]   rxEngine_io_memReq_payload_data_0;
   wire       [31:0]   rxEngine_io_memReq_payload_data_1;
   wire       [31:0]   rxEngine_io_memReq_payload_data_2;
@@ -237,6 +241,10 @@ module PcieController (
   wire       [3:0]    rxEngine_io_cfgReq_payload_lastBe;
   wire       [2:0]    rxEngine_io_cfgReq_payload_tc;
   wire       [1:0]    rxEngine_io_cfgReq_payload_attr;
+  wire       [15:0]   rxEngine_io_cfgReq_payload_cplId;
+  wire       [2:0]    rxEngine_io_cfgReq_payload_cplStatus;
+  wire       [11:0]   rxEngine_io_cfgReq_payload_cplByteCount;
+  wire       [6:0]    rxEngine_io_cfgReq_payload_cplLowerAddr;
   wire       [31:0]   rxEngine_io_cfgReq_payload_data_0;
   wire       [31:0]   rxEngine_io_cfgReq_payload_data_1;
   wire       [31:0]   rxEngine_io_cfgReq_payload_data_2;
@@ -252,6 +260,10 @@ module PcieController (
   wire       [3:0]    rxEngine_io_cplIn_payload_lastBe;
   wire       [2:0]    rxEngine_io_cplIn_payload_tc;
   wire       [1:0]    rxEngine_io_cplIn_payload_attr;
+  wire       [15:0]   rxEngine_io_cplIn_payload_cplId;
+  wire       [2:0]    rxEngine_io_cplIn_payload_cplStatus;
+  wire       [11:0]   rxEngine_io_cplIn_payload_cplByteCount;
+  wire       [6:0]    rxEngine_io_cplIn_payload_cplLowerAddr;
   wire       [31:0]   rxEngine_io_cplIn_payload_data_0;
   wire       [31:0]   rxEngine_io_cplIn_payload_data_1;
   wire       [31:0]   rxEngine_io_cplIn_payload_data_2;
@@ -267,6 +279,10 @@ module PcieController (
   wire       [3:0]    rxEngine_io_ioReq_payload_lastBe;
   wire       [2:0]    rxEngine_io_ioReq_payload_tc;
   wire       [1:0]    rxEngine_io_ioReq_payload_attr;
+  wire       [15:0]   rxEngine_io_ioReq_payload_cplId;
+  wire       [2:0]    rxEngine_io_ioReq_payload_cplStatus;
+  wire       [11:0]   rxEngine_io_ioReq_payload_cplByteCount;
+  wire       [6:0]    rxEngine_io_ioReq_payload_cplLowerAddr;
   wire       [31:0]   rxEngine_io_ioReq_payload_data_0;
   wire       [31:0]   rxEngine_io_ioReq_payload_data_1;
   wire       [31:0]   rxEngine_io_ioReq_payload_data_2;
@@ -291,6 +307,10 @@ module PcieController (
   wire       [3:0]    ioHandler_io_cplOut_payload_lastBe;
   wire       [2:0]    ioHandler_io_cplOut_payload_tc;
   wire       [1:0]    ioHandler_io_cplOut_payload_attr;
+  wire       [15:0]   ioHandler_io_cplOut_payload_cplId;
+  wire       [2:0]    ioHandler_io_cplOut_payload_cplStatus;
+  wire       [11:0]   ioHandler_io_cplOut_payload_cplByteCount;
+  wire       [6:0]    ioHandler_io_cplOut_payload_cplLowerAddr;
   wire       [31:0]   ioHandler_io_cplOut_payload_data_0;
   wire       [31:0]   ioHandler_io_cplOut_payload_data_1;
   wire       [31:0]   ioHandler_io_cplOut_payload_data_2;
@@ -312,6 +332,10 @@ module PcieController (
   wire       [3:0]    cfgSpace_io_cfgResp_payload_lastBe;
   wire       [2:0]    cfgSpace_io_cfgResp_payload_tc;
   wire       [1:0]    cfgSpace_io_cfgResp_payload_attr;
+  wire       [15:0]   cfgSpace_io_cfgResp_payload_cplId;
+  wire       [2:0]    cfgSpace_io_cfgResp_payload_cplStatus;
+  wire       [11:0]   cfgSpace_io_cfgResp_payload_cplByteCount;
+  wire       [6:0]    cfgSpace_io_cfgResp_payload_cplLowerAddr;
   wire       [31:0]   cfgSpace_io_cfgResp_payload_data_0;
   wire       [31:0]   cfgSpace_io_cfgResp_payload_data_1;
   wire       [31:0]   cfgSpace_io_cfgResp_payload_data_2;
@@ -362,6 +386,10 @@ module PcieController (
   wire       [3:0]    dma_io_memWrOut_payload_lastBe;
   wire       [2:0]    dma_io_memWrOut_payload_tc;
   wire       [1:0]    dma_io_memWrOut_payload_attr;
+  wire       [15:0]   dma_io_memWrOut_payload_cplId;
+  wire       [2:0]    dma_io_memWrOut_payload_cplStatus;
+  wire       [11:0]   dma_io_memWrOut_payload_cplByteCount;
+  wire       [6:0]    dma_io_memWrOut_payload_cplLowerAddr;
   wire       [31:0]   dma_io_memWrOut_payload_data_0;
   wire       [31:0]   dma_io_memWrOut_payload_data_1;
   wire       [31:0]   dma_io_memWrOut_payload_data_2;
@@ -377,6 +405,10 @@ module PcieController (
   wire       [3:0]    dma_io_memRdOut_payload_lastBe;
   wire       [2:0]    dma_io_memRdOut_payload_tc;
   wire       [1:0]    dma_io_memRdOut_payload_attr;
+  wire       [15:0]   dma_io_memRdOut_payload_cplId;
+  wire       [2:0]    dma_io_memRdOut_payload_cplStatus;
+  wire       [11:0]   dma_io_memRdOut_payload_cplByteCount;
+  wire       [6:0]    dma_io_memRdOut_payload_cplLowerAddr;
   wire       [31:0]   dma_io_memRdOut_payload_data_0;
   wire       [31:0]   dma_io_memRdOut_payload_data_1;
   wire       [31:0]   dma_io_memRdOut_payload_data_2;
@@ -425,31 +457,16 @@ module PcieController (
   wire       [3:0]    msix_io_msgTlpOut_payload_lastBe;
   wire       [2:0]    msix_io_msgTlpOut_payload_tc;
   wire       [1:0]    msix_io_msgTlpOut_payload_attr;
+  wire       [15:0]   msix_io_msgTlpOut_payload_cplId;
+  wire       [2:0]    msix_io_msgTlpOut_payload_cplStatus;
+  wire       [11:0]   msix_io_msgTlpOut_payload_cplByteCount;
+  wire       [6:0]    msix_io_msgTlpOut_payload_cplLowerAddr;
   wire       [31:0]   msix_io_msgTlpOut_payload_data_0;
   wire       [31:0]   msix_io_msgTlpOut_payload_data_1;
   wire       [31:0]   msix_io_msgTlpOut_payload_data_2;
   wire       [31:0]   msix_io_msgTlpOut_payload_data_3;
   wire       [2:0]    msix_io_msgTlpOut_payload_dataValid;
   wire       [31:0]   msix_io_tableRdata;
-  wire                streamArbiter_2_io_inputs_0_ready;
-  wire                streamArbiter_2_io_inputs_1_ready;
-  wire                streamArbiter_2_io_output_valid;
-  wire       [3:0]    streamArbiter_2_io_output_payload_tlpType;
-  wire       [15:0]   streamArbiter_2_io_output_payload_reqId;
-  wire       [7:0]    streamArbiter_2_io_output_payload_tag;
-  wire       [63:0]   streamArbiter_2_io_output_payload_addr;
-  wire       [9:0]    streamArbiter_2_io_output_payload_length;
-  wire       [3:0]    streamArbiter_2_io_output_payload_firstBe;
-  wire       [3:0]    streamArbiter_2_io_output_payload_lastBe;
-  wire       [2:0]    streamArbiter_2_io_output_payload_tc;
-  wire       [1:0]    streamArbiter_2_io_output_payload_attr;
-  wire       [31:0]   streamArbiter_2_io_output_payload_data_0;
-  wire       [31:0]   streamArbiter_2_io_output_payload_data_1;
-  wire       [31:0]   streamArbiter_2_io_output_payload_data_2;
-  wire       [31:0]   streamArbiter_2_io_output_payload_data_3;
-  wire       [2:0]    streamArbiter_2_io_output_payload_dataValid;
-  wire       [0:0]    streamArbiter_2_io_chosen;
-  wire       [1:0]    streamArbiter_2_io_chosenOH;
   wire                streamArbiter_3_io_inputs_0_ready;
   wire                streamArbiter_3_io_inputs_1_ready;
   wire                streamArbiter_3_io_output_valid;
@@ -462,6 +479,10 @@ module PcieController (
   wire       [3:0]    streamArbiter_3_io_output_payload_lastBe;
   wire       [2:0]    streamArbiter_3_io_output_payload_tc;
   wire       [1:0]    streamArbiter_3_io_output_payload_attr;
+  wire       [15:0]   streamArbiter_3_io_output_payload_cplId;
+  wire       [2:0]    streamArbiter_3_io_output_payload_cplStatus;
+  wire       [11:0]   streamArbiter_3_io_output_payload_cplByteCount;
+  wire       [6:0]    streamArbiter_3_io_output_payload_cplLowerAddr;
   wire       [31:0]   streamArbiter_3_io_output_payload_data_0;
   wire       [31:0]   streamArbiter_3_io_output_payload_data_1;
   wire       [31:0]   streamArbiter_3_io_output_payload_data_2;
@@ -469,6 +490,52 @@ module PcieController (
   wire       [2:0]    streamArbiter_3_io_output_payload_dataValid;
   wire       [0:0]    streamArbiter_3_io_chosen;
   wire       [1:0]    streamArbiter_3_io_chosenOH;
+  wire                streamArbiter_4_io_inputs_0_ready;
+  wire                streamArbiter_4_io_inputs_1_ready;
+  wire                streamArbiter_4_io_output_valid;
+  wire       [3:0]    streamArbiter_4_io_output_payload_tlpType;
+  wire       [15:0]   streamArbiter_4_io_output_payload_reqId;
+  wire       [7:0]    streamArbiter_4_io_output_payload_tag;
+  wire       [63:0]   streamArbiter_4_io_output_payload_addr;
+  wire       [9:0]    streamArbiter_4_io_output_payload_length;
+  wire       [3:0]    streamArbiter_4_io_output_payload_firstBe;
+  wire       [3:0]    streamArbiter_4_io_output_payload_lastBe;
+  wire       [2:0]    streamArbiter_4_io_output_payload_tc;
+  wire       [1:0]    streamArbiter_4_io_output_payload_attr;
+  wire       [15:0]   streamArbiter_4_io_output_payload_cplId;
+  wire       [2:0]    streamArbiter_4_io_output_payload_cplStatus;
+  wire       [11:0]   streamArbiter_4_io_output_payload_cplByteCount;
+  wire       [6:0]    streamArbiter_4_io_output_payload_cplLowerAddr;
+  wire       [31:0]   streamArbiter_4_io_output_payload_data_0;
+  wire       [31:0]   streamArbiter_4_io_output_payload_data_1;
+  wire       [31:0]   streamArbiter_4_io_output_payload_data_2;
+  wire       [31:0]   streamArbiter_4_io_output_payload_data_3;
+  wire       [2:0]    streamArbiter_4_io_output_payload_dataValid;
+  wire       [0:0]    streamArbiter_4_io_chosen;
+  wire       [1:0]    streamArbiter_4_io_chosenOH;
+  wire                streamArbiter_5_io_inputs_0_ready;
+  wire                streamArbiter_5_io_inputs_1_ready;
+  wire                streamArbiter_5_io_output_valid;
+  wire       [3:0]    streamArbiter_5_io_output_payload_tlpType;
+  wire       [15:0]   streamArbiter_5_io_output_payload_reqId;
+  wire       [7:0]    streamArbiter_5_io_output_payload_tag;
+  wire       [63:0]   streamArbiter_5_io_output_payload_addr;
+  wire       [9:0]    streamArbiter_5_io_output_payload_length;
+  wire       [3:0]    streamArbiter_5_io_output_payload_firstBe;
+  wire       [3:0]    streamArbiter_5_io_output_payload_lastBe;
+  wire       [2:0]    streamArbiter_5_io_output_payload_tc;
+  wire       [1:0]    streamArbiter_5_io_output_payload_attr;
+  wire       [15:0]   streamArbiter_5_io_output_payload_cplId;
+  wire       [2:0]    streamArbiter_5_io_output_payload_cplStatus;
+  wire       [11:0]   streamArbiter_5_io_output_payload_cplByteCount;
+  wire       [6:0]    streamArbiter_5_io_output_payload_cplLowerAddr;
+  wire       [31:0]   streamArbiter_5_io_output_payload_data_0;
+  wire       [31:0]   streamArbiter_5_io_output_payload_data_1;
+  wire       [31:0]   streamArbiter_5_io_output_payload_data_2;
+  wire       [31:0]   streamArbiter_5_io_output_payload_data_3;
+  wire       [2:0]    streamArbiter_5_io_output_payload_dataValid;
+  wire       [0:0]    streamArbiter_5_io_chosen;
+  wire       [1:0]    streamArbiter_5_io_chosenOH;
   reg        [15:0]   myBdf;
   wire                when_PcieController_l99;
   wire                cplArb_valid;
@@ -482,12 +549,19 @@ module PcieController (
   wire       [3:0]    cplArb_payload_lastBe;
   wire       [2:0]    cplArb_payload_tc;
   wire       [1:0]    cplArb_payload_attr;
+  wire       [15:0]   cplArb_payload_cplId;
+  wire       [2:0]    cplArb_payload_cplStatus;
+  wire       [11:0]   cplArb_payload_cplByteCount;
+  wire       [6:0]    cplArb_payload_cplLowerAddr;
   wire       [31:0]   cplArb_payload_data_0;
   wire       [31:0]   cplArb_payload_data_1;
   wire       [31:0]   cplArb_payload_data_2;
   wire       [31:0]   cplArb_payload_data_3;
   wire       [2:0]    cplArb_payload_dataValid;
+  wire                isBar0Req;
   wire                isBar1Req;
+  wire                isBar1Write;
+  wire                toplevel_rxEngine_io_memReq_fire;
   wire                memWrArb_valid;
   wire                memWrArb_ready;
   wire       [3:0]    memWrArb_payload_tlpType;
@@ -499,15 +573,61 @@ module PcieController (
   wire       [3:0]    memWrArb_payload_lastBe;
   wire       [2:0]    memWrArb_payload_tc;
   wire       [1:0]    memWrArb_payload_attr;
+  wire       [15:0]   memWrArb_payload_cplId;
+  wire       [2:0]    memWrArb_payload_cplStatus;
+  wire       [11:0]   memWrArb_payload_cplByteCount;
+  wire       [6:0]    memWrArb_payload_cplLowerAddr;
   wire       [31:0]   memWrArb_payload_data_0;
   wire       [31:0]   memWrArb_payload_data_1;
   wire       [31:0]   memWrArb_payload_data_2;
   wire       [31:0]   memWrArb_payload_data_3;
   wire       [2:0]    memWrArb_payload_dataValid;
+  wire                bar0MemReq_valid;
+  wire                bar0MemReq_ready;
+  wire       [3:0]    bar0MemReq_payload_tlpType;
+  wire       [15:0]   bar0MemReq_payload_reqId;
+  wire       [7:0]    bar0MemReq_payload_tag;
+  wire       [63:0]   bar0MemReq_payload_addr;
+  wire       [9:0]    bar0MemReq_payload_length;
+  wire       [3:0]    bar0MemReq_payload_firstBe;
+  wire       [3:0]    bar0MemReq_payload_lastBe;
+  wire       [2:0]    bar0MemReq_payload_tc;
+  wire       [1:0]    bar0MemReq_payload_attr;
+  wire       [15:0]   bar0MemReq_payload_cplId;
+  wire       [2:0]    bar0MemReq_payload_cplStatus;
+  wire       [11:0]   bar0MemReq_payload_cplByteCount;
+  wire       [6:0]    bar0MemReq_payload_cplLowerAddr;
+  wire       [31:0]   bar0MemReq_payload_data_0;
+  wire       [31:0]   bar0MemReq_payload_data_1;
+  wire       [31:0]   bar0MemReq_payload_data_2;
+  wire       [31:0]   bar0MemReq_payload_data_3;
+  wire       [2:0]    bar0MemReq_payload_dataValid;
+  wire                userRegReq_valid;
+  wire                userRegReq_ready;
+  wire       [3:0]    userRegReq_payload_tlpType;
+  wire       [15:0]   userRegReq_payload_reqId;
+  wire       [7:0]    userRegReq_payload_tag;
+  wire       [63:0]   userRegReq_payload_addr;
+  wire       [9:0]    userRegReq_payload_length;
+  wire       [3:0]    userRegReq_payload_firstBe;
+  wire       [3:0]    userRegReq_payload_lastBe;
+  wire       [2:0]    userRegReq_payload_tc;
+  wire       [1:0]    userRegReq_payload_attr;
+  wire       [15:0]   userRegReq_payload_cplId;
+  wire       [2:0]    userRegReq_payload_cplStatus;
+  wire       [11:0]   userRegReq_payload_cplByteCount;
+  wire       [6:0]    userRegReq_payload_cplLowerAddr;
+  wire       [31:0]   userRegReq_payload_data_0;
+  wire       [31:0]   userRegReq_payload_data_1;
+  wire       [31:0]   userRegReq_payload_data_2;
+  wire       [31:0]   userRegReq_payload_data_3;
+  wire       [2:0]    userRegReq_payload_dataValid;
   `ifndef SYNTHESIS
   reg [183:0] io_ltssState_string;
   reg [55:0] cplArb_payload_tlpType_string;
   reg [55:0] memWrArb_payload_tlpType_string;
+  reg [55:0] bar0MemReq_payload_tlpType_string;
+  reg [55:0] userRegReq_payload_tlpType_string;
   `endif
 
 
@@ -624,516 +744,667 @@ module PcieController (
     .reset                    (reset                                      )  //i
   );
   TlpTxFifoWrapper txEngine (
-    .io_memWrIn_valid             (memWrArb_valid                        ), //i
-    .io_memWrIn_ready             (txEngine_io_memWrIn_ready             ), //o
-    .io_memWrIn_payload_tlpType   (memWrArb_payload_tlpType[3:0]         ), //i
-    .io_memWrIn_payload_reqId     (memWrArb_payload_reqId[15:0]          ), //i
-    .io_memWrIn_payload_tag       (memWrArb_payload_tag[7:0]             ), //i
-    .io_memWrIn_payload_addr      (memWrArb_payload_addr[63:0]           ), //i
-    .io_memWrIn_payload_length    (memWrArb_payload_length[9:0]          ), //i
-    .io_memWrIn_payload_firstBe   (memWrArb_payload_firstBe[3:0]         ), //i
-    .io_memWrIn_payload_lastBe    (memWrArb_payload_lastBe[3:0]          ), //i
-    .io_memWrIn_payload_tc        (memWrArb_payload_tc[2:0]              ), //i
-    .io_memWrIn_payload_attr      (memWrArb_payload_attr[1:0]            ), //i
-    .io_memWrIn_payload_data_0    (memWrArb_payload_data_0[31:0]         ), //i
-    .io_memWrIn_payload_data_1    (memWrArb_payload_data_1[31:0]         ), //i
-    .io_memWrIn_payload_data_2    (memWrArb_payload_data_2[31:0]         ), //i
-    .io_memWrIn_payload_data_3    (memWrArb_payload_data_3[31:0]         ), //i
-    .io_memWrIn_payload_dataValid (memWrArb_payload_dataValid[2:0]       ), //i
-    .io_memRdIn_valid             (dma_io_memRdOut_valid                 ), //i
-    .io_memRdIn_ready             (txEngine_io_memRdIn_ready             ), //o
-    .io_memRdIn_payload_tlpType   (dma_io_memRdOut_payload_tlpType[3:0]  ), //i
-    .io_memRdIn_payload_reqId     (dma_io_memRdOut_payload_reqId[15:0]   ), //i
-    .io_memRdIn_payload_tag       (dma_io_memRdOut_payload_tag[7:0]      ), //i
-    .io_memRdIn_payload_addr      (dma_io_memRdOut_payload_addr[63:0]    ), //i
-    .io_memRdIn_payload_length    (dma_io_memRdOut_payload_length[9:0]   ), //i
-    .io_memRdIn_payload_firstBe   (dma_io_memRdOut_payload_firstBe[3:0]  ), //i
-    .io_memRdIn_payload_lastBe    (dma_io_memRdOut_payload_lastBe[3:0]   ), //i
-    .io_memRdIn_payload_tc        (dma_io_memRdOut_payload_tc[2:0]       ), //i
-    .io_memRdIn_payload_attr      (dma_io_memRdOut_payload_attr[1:0]     ), //i
-    .io_memRdIn_payload_data_0    (dma_io_memRdOut_payload_data_0[31:0]  ), //i
-    .io_memRdIn_payload_data_1    (dma_io_memRdOut_payload_data_1[31:0]  ), //i
-    .io_memRdIn_payload_data_2    (dma_io_memRdOut_payload_data_2[31:0]  ), //i
-    .io_memRdIn_payload_data_3    (dma_io_memRdOut_payload_data_3[31:0]  ), //i
-    .io_memRdIn_payload_dataValid (dma_io_memRdOut_payload_dataValid[2:0]), //i
-    .io_cplIn_valid               (cplArb_valid                          ), //i
-    .io_cplIn_ready               (txEngine_io_cplIn_ready               ), //o
-    .io_cplIn_payload_tlpType     (cplArb_payload_tlpType[3:0]           ), //i
-    .io_cplIn_payload_reqId       (cplArb_payload_reqId[15:0]            ), //i
-    .io_cplIn_payload_tag         (cplArb_payload_tag[7:0]               ), //i
-    .io_cplIn_payload_addr        (cplArb_payload_addr[63:0]             ), //i
-    .io_cplIn_payload_length      (cplArb_payload_length[9:0]            ), //i
-    .io_cplIn_payload_firstBe     (cplArb_payload_firstBe[3:0]           ), //i
-    .io_cplIn_payload_lastBe      (cplArb_payload_lastBe[3:0]            ), //i
-    .io_cplIn_payload_tc          (cplArb_payload_tc[2:0]                ), //i
-    .io_cplIn_payload_attr        (cplArb_payload_attr[1:0]              ), //i
-    .io_cplIn_payload_data_0      (cplArb_payload_data_0[31:0]           ), //i
-    .io_cplIn_payload_data_1      (cplArb_payload_data_1[31:0]           ), //i
-    .io_cplIn_payload_data_2      (cplArb_payload_data_2[31:0]           ), //i
-    .io_cplIn_payload_data_3      (cplArb_payload_data_3[31:0]           ), //i
-    .io_cplIn_payload_dataValid   (cplArb_payload_dataValid[2:0]         ), //i
-    .io_tlpOut_valid              (txEngine_io_tlpOut_valid              ), //o
-    .io_tlpOut_ready              (dlTx_io_tlpIn_ready                   ), //i
-    .io_tlpOut_payload            (txEngine_io_tlpOut_payload[31:0]      ), //o
-    .io_fcCredits_phCredits       (fcMgr_io_available_phCredits[7:0]     ), //i
-    .io_fcCredits_pdCredits       (fcMgr_io_available_pdCredits[11:0]    ), //i
-    .io_fcCredits_nphCredits      (fcMgr_io_available_nphCredits[7:0]    ), //i
-    .io_fcCredits_npdCredits      (fcMgr_io_available_npdCredits[11:0]   ), //i
-    .io_fcCredits_cplhCredits     (fcMgr_io_available_cplhCredits[7:0]   ), //i
-    .io_fcCredits_cpldCredits     (fcMgr_io_available_cpldCredits[11:0]  ), //i
-    .io_phConsumed                (txEngine_io_phConsumed[7:0]           ), //o
-    .io_pdConsumed                (txEngine_io_pdConsumed[11:0]          ), //o
-    .io_nphConsumed               (txEngine_io_nphConsumed[7:0]          ), //o
-    .io_cplhConsumed              (txEngine_io_cplhConsumed[7:0]         ), //o
-    .io_cpldConsumed              (txEngine_io_cpldConsumed[11:0]        ), //o
-    .clk                          (clk                                   ), //i
-    .reset                        (reset                                 )  //i
+    .io_memWrIn_valid                (memWrArb_valid                            ), //i
+    .io_memWrIn_ready                (txEngine_io_memWrIn_ready                 ), //o
+    .io_memWrIn_payload_tlpType      (memWrArb_payload_tlpType[3:0]             ), //i
+    .io_memWrIn_payload_reqId        (memWrArb_payload_reqId[15:0]              ), //i
+    .io_memWrIn_payload_tag          (memWrArb_payload_tag[7:0]                 ), //i
+    .io_memWrIn_payload_addr         (memWrArb_payload_addr[63:0]               ), //i
+    .io_memWrIn_payload_length       (memWrArb_payload_length[9:0]              ), //i
+    .io_memWrIn_payload_firstBe      (memWrArb_payload_firstBe[3:0]             ), //i
+    .io_memWrIn_payload_lastBe       (memWrArb_payload_lastBe[3:0]              ), //i
+    .io_memWrIn_payload_tc           (memWrArb_payload_tc[2:0]                  ), //i
+    .io_memWrIn_payload_attr         (memWrArb_payload_attr[1:0]                ), //i
+    .io_memWrIn_payload_cplId        (memWrArb_payload_cplId[15:0]              ), //i
+    .io_memWrIn_payload_cplStatus    (memWrArb_payload_cplStatus[2:0]           ), //i
+    .io_memWrIn_payload_cplByteCount (memWrArb_payload_cplByteCount[11:0]       ), //i
+    .io_memWrIn_payload_cplLowerAddr (memWrArb_payload_cplLowerAddr[6:0]        ), //i
+    .io_memWrIn_payload_data_0       (memWrArb_payload_data_0[31:0]             ), //i
+    .io_memWrIn_payload_data_1       (memWrArb_payload_data_1[31:0]             ), //i
+    .io_memWrIn_payload_data_2       (memWrArb_payload_data_2[31:0]             ), //i
+    .io_memWrIn_payload_data_3       (memWrArb_payload_data_3[31:0]             ), //i
+    .io_memWrIn_payload_dataValid    (memWrArb_payload_dataValid[2:0]           ), //i
+    .io_memRdIn_valid                (dma_io_memRdOut_valid                     ), //i
+    .io_memRdIn_ready                (txEngine_io_memRdIn_ready                 ), //o
+    .io_memRdIn_payload_tlpType      (dma_io_memRdOut_payload_tlpType[3:0]      ), //i
+    .io_memRdIn_payload_reqId        (dma_io_memRdOut_payload_reqId[15:0]       ), //i
+    .io_memRdIn_payload_tag          (dma_io_memRdOut_payload_tag[7:0]          ), //i
+    .io_memRdIn_payload_addr         (dma_io_memRdOut_payload_addr[63:0]        ), //i
+    .io_memRdIn_payload_length       (dma_io_memRdOut_payload_length[9:0]       ), //i
+    .io_memRdIn_payload_firstBe      (dma_io_memRdOut_payload_firstBe[3:0]      ), //i
+    .io_memRdIn_payload_lastBe       (dma_io_memRdOut_payload_lastBe[3:0]       ), //i
+    .io_memRdIn_payload_tc           (dma_io_memRdOut_payload_tc[2:0]           ), //i
+    .io_memRdIn_payload_attr         (dma_io_memRdOut_payload_attr[1:0]         ), //i
+    .io_memRdIn_payload_cplId        (dma_io_memRdOut_payload_cplId[15:0]       ), //i
+    .io_memRdIn_payload_cplStatus    (dma_io_memRdOut_payload_cplStatus[2:0]    ), //i
+    .io_memRdIn_payload_cplByteCount (dma_io_memRdOut_payload_cplByteCount[11:0]), //i
+    .io_memRdIn_payload_cplLowerAddr (dma_io_memRdOut_payload_cplLowerAddr[6:0] ), //i
+    .io_memRdIn_payload_data_0       (dma_io_memRdOut_payload_data_0[31:0]      ), //i
+    .io_memRdIn_payload_data_1       (dma_io_memRdOut_payload_data_1[31:0]      ), //i
+    .io_memRdIn_payload_data_2       (dma_io_memRdOut_payload_data_2[31:0]      ), //i
+    .io_memRdIn_payload_data_3       (dma_io_memRdOut_payload_data_3[31:0]      ), //i
+    .io_memRdIn_payload_dataValid    (dma_io_memRdOut_payload_dataValid[2:0]    ), //i
+    .io_cplIn_valid                  (cplArb_valid                              ), //i
+    .io_cplIn_ready                  (txEngine_io_cplIn_ready                   ), //o
+    .io_cplIn_payload_tlpType        (cplArb_payload_tlpType[3:0]               ), //i
+    .io_cplIn_payload_reqId          (cplArb_payload_reqId[15:0]                ), //i
+    .io_cplIn_payload_tag            (cplArb_payload_tag[7:0]                   ), //i
+    .io_cplIn_payload_addr           (cplArb_payload_addr[63:0]                 ), //i
+    .io_cplIn_payload_length         (cplArb_payload_length[9:0]                ), //i
+    .io_cplIn_payload_firstBe        (cplArb_payload_firstBe[3:0]               ), //i
+    .io_cplIn_payload_lastBe         (cplArb_payload_lastBe[3:0]                ), //i
+    .io_cplIn_payload_tc             (cplArb_payload_tc[2:0]                    ), //i
+    .io_cplIn_payload_attr           (cplArb_payload_attr[1:0]                  ), //i
+    .io_cplIn_payload_cplId          (cplArb_payload_cplId[15:0]                ), //i
+    .io_cplIn_payload_cplStatus      (cplArb_payload_cplStatus[2:0]             ), //i
+    .io_cplIn_payload_cplByteCount   (cplArb_payload_cplByteCount[11:0]         ), //i
+    .io_cplIn_payload_cplLowerAddr   (cplArb_payload_cplLowerAddr[6:0]          ), //i
+    .io_cplIn_payload_data_0         (cplArb_payload_data_0[31:0]               ), //i
+    .io_cplIn_payload_data_1         (cplArb_payload_data_1[31:0]               ), //i
+    .io_cplIn_payload_data_2         (cplArb_payload_data_2[31:0]               ), //i
+    .io_cplIn_payload_data_3         (cplArb_payload_data_3[31:0]               ), //i
+    .io_cplIn_payload_dataValid      (cplArb_payload_dataValid[2:0]             ), //i
+    .io_tlpOut_valid                 (txEngine_io_tlpOut_valid                  ), //o
+    .io_tlpOut_ready                 (dlTx_io_tlpIn_ready                       ), //i
+    .io_tlpOut_payload               (txEngine_io_tlpOut_payload[31:0]          ), //o
+    .io_fcCredits_phCredits          (fcMgr_io_available_phCredits[7:0]         ), //i
+    .io_fcCredits_pdCredits          (fcMgr_io_available_pdCredits[11:0]        ), //i
+    .io_fcCredits_nphCredits         (fcMgr_io_available_nphCredits[7:0]        ), //i
+    .io_fcCredits_npdCredits         (fcMgr_io_available_npdCredits[11:0]       ), //i
+    .io_fcCredits_cplhCredits        (fcMgr_io_available_cplhCredits[7:0]       ), //i
+    .io_fcCredits_cpldCredits        (fcMgr_io_available_cpldCredits[11:0]      ), //i
+    .io_phConsumed                   (txEngine_io_phConsumed[7:0]               ), //o
+    .io_pdConsumed                   (txEngine_io_pdConsumed[11:0]              ), //o
+    .io_nphConsumed                  (txEngine_io_nphConsumed[7:0]              ), //o
+    .io_cplhConsumed                 (txEngine_io_cplhConsumed[7:0]             ), //o
+    .io_cpldConsumed                 (txEngine_io_cpldConsumed[11:0]            ), //o
+    .clk                             (clk                                       ), //i
+    .reset                           (reset                                     )  //i
   );
   TlpRxEngine rxEngine (
-    .io_tlpIn_valid               (dlRx_io_tlpOut_valid                      ), //i
-    .io_tlpIn_ready               (rxEngine_io_tlpIn_ready                   ), //o
-    .io_tlpIn_payload             (dlRx_io_tlpOut_payload[31:0]              ), //i
-    .io_memReq_valid              (rxEngine_io_memReq_valid                  ), //o
-    .io_memReq_ready              (rxEngine_io_memReq_ready                  ), //i
-    .io_memReq_payload_tlpType    (rxEngine_io_memReq_payload_tlpType[3:0]   ), //o
-    .io_memReq_payload_reqId      (rxEngine_io_memReq_payload_reqId[15:0]    ), //o
-    .io_memReq_payload_tag        (rxEngine_io_memReq_payload_tag[7:0]       ), //o
-    .io_memReq_payload_addr       (rxEngine_io_memReq_payload_addr[63:0]     ), //o
-    .io_memReq_payload_length     (rxEngine_io_memReq_payload_length[9:0]    ), //o
-    .io_memReq_payload_firstBe    (rxEngine_io_memReq_payload_firstBe[3:0]   ), //o
-    .io_memReq_payload_lastBe     (rxEngine_io_memReq_payload_lastBe[3:0]    ), //o
-    .io_memReq_payload_tc         (rxEngine_io_memReq_payload_tc[2:0]        ), //o
-    .io_memReq_payload_attr       (rxEngine_io_memReq_payload_attr[1:0]      ), //o
-    .io_memReq_payload_data_0     (rxEngine_io_memReq_payload_data_0[31:0]   ), //o
-    .io_memReq_payload_data_1     (rxEngine_io_memReq_payload_data_1[31:0]   ), //o
-    .io_memReq_payload_data_2     (rxEngine_io_memReq_payload_data_2[31:0]   ), //o
-    .io_memReq_payload_data_3     (rxEngine_io_memReq_payload_data_3[31:0]   ), //o
-    .io_memReq_payload_dataValid  (rxEngine_io_memReq_payload_dataValid[2:0] ), //o
-    .io_cfgReq_valid              (rxEngine_io_cfgReq_valid                  ), //o
-    .io_cfgReq_ready              (cfgSpace_io_cfgReq_ready                  ), //i
-    .io_cfgReq_payload_tlpType    (rxEngine_io_cfgReq_payload_tlpType[3:0]   ), //o
-    .io_cfgReq_payload_reqId      (rxEngine_io_cfgReq_payload_reqId[15:0]    ), //o
-    .io_cfgReq_payload_tag        (rxEngine_io_cfgReq_payload_tag[7:0]       ), //o
-    .io_cfgReq_payload_addr       (rxEngine_io_cfgReq_payload_addr[63:0]     ), //o
-    .io_cfgReq_payload_length     (rxEngine_io_cfgReq_payload_length[9:0]    ), //o
-    .io_cfgReq_payload_firstBe    (rxEngine_io_cfgReq_payload_firstBe[3:0]   ), //o
-    .io_cfgReq_payload_lastBe     (rxEngine_io_cfgReq_payload_lastBe[3:0]    ), //o
-    .io_cfgReq_payload_tc         (rxEngine_io_cfgReq_payload_tc[2:0]        ), //o
-    .io_cfgReq_payload_attr       (rxEngine_io_cfgReq_payload_attr[1:0]      ), //o
-    .io_cfgReq_payload_data_0     (rxEngine_io_cfgReq_payload_data_0[31:0]   ), //o
-    .io_cfgReq_payload_data_1     (rxEngine_io_cfgReq_payload_data_1[31:0]   ), //o
-    .io_cfgReq_payload_data_2     (rxEngine_io_cfgReq_payload_data_2[31:0]   ), //o
-    .io_cfgReq_payload_data_3     (rxEngine_io_cfgReq_payload_data_3[31:0]   ), //o
-    .io_cfgReq_payload_dataValid  (rxEngine_io_cfgReq_payload_dataValid[2:0] ), //o
-    .io_cplIn_valid               (rxEngine_io_cplIn_valid                   ), //o
-    .io_cplIn_ready               (dma_io_cplIn_ready                        ), //i
-    .io_cplIn_payload_tlpType     (rxEngine_io_cplIn_payload_tlpType[3:0]    ), //o
-    .io_cplIn_payload_reqId       (rxEngine_io_cplIn_payload_reqId[15:0]     ), //o
-    .io_cplIn_payload_tag         (rxEngine_io_cplIn_payload_tag[7:0]        ), //o
-    .io_cplIn_payload_addr        (rxEngine_io_cplIn_payload_addr[63:0]      ), //o
-    .io_cplIn_payload_length      (rxEngine_io_cplIn_payload_length[9:0]     ), //o
-    .io_cplIn_payload_firstBe     (rxEngine_io_cplIn_payload_firstBe[3:0]    ), //o
-    .io_cplIn_payload_lastBe      (rxEngine_io_cplIn_payload_lastBe[3:0]     ), //o
-    .io_cplIn_payload_tc          (rxEngine_io_cplIn_payload_tc[2:0]         ), //o
-    .io_cplIn_payload_attr        (rxEngine_io_cplIn_payload_attr[1:0]       ), //o
-    .io_cplIn_payload_data_0      (rxEngine_io_cplIn_payload_data_0[31:0]    ), //o
-    .io_cplIn_payload_data_1      (rxEngine_io_cplIn_payload_data_1[31:0]    ), //o
-    .io_cplIn_payload_data_2      (rxEngine_io_cplIn_payload_data_2[31:0]    ), //o
-    .io_cplIn_payload_data_3      (rxEngine_io_cplIn_payload_data_3[31:0]    ), //o
-    .io_cplIn_payload_dataValid   (rxEngine_io_cplIn_payload_dataValid[2:0]  ), //o
-    .io_ioReq_valid               (rxEngine_io_ioReq_valid                   ), //o
-    .io_ioReq_ready               (ioHandler_io_ioReq_ready                  ), //i
-    .io_ioReq_payload_tlpType     (rxEngine_io_ioReq_payload_tlpType[3:0]    ), //o
-    .io_ioReq_payload_reqId       (rxEngine_io_ioReq_payload_reqId[15:0]     ), //o
-    .io_ioReq_payload_tag         (rxEngine_io_ioReq_payload_tag[7:0]        ), //o
-    .io_ioReq_payload_addr        (rxEngine_io_ioReq_payload_addr[63:0]      ), //o
-    .io_ioReq_payload_length      (rxEngine_io_ioReq_payload_length[9:0]     ), //o
-    .io_ioReq_payload_firstBe     (rxEngine_io_ioReq_payload_firstBe[3:0]    ), //o
-    .io_ioReq_payload_lastBe      (rxEngine_io_ioReq_payload_lastBe[3:0]     ), //o
-    .io_ioReq_payload_tc          (rxEngine_io_ioReq_payload_tc[2:0]         ), //o
-    .io_ioReq_payload_attr        (rxEngine_io_ioReq_payload_attr[1:0]       ), //o
-    .io_ioReq_payload_data_0      (rxEngine_io_ioReq_payload_data_0[31:0]    ), //o
-    .io_ioReq_payload_data_1      (rxEngine_io_ioReq_payload_data_1[31:0]    ), //o
-    .io_ioReq_payload_data_2      (rxEngine_io_ioReq_payload_data_2[31:0]    ), //o
-    .io_ioReq_payload_data_3      (rxEngine_io_ioReq_payload_data_3[31:0]    ), //o
-    .io_ioReq_payload_dataValid   (rxEngine_io_ioReq_payload_dataValid[2:0]  ), //o
-    .io_memDataOut_valid          (rxEngine_io_memDataOut_valid              ), //o
-    .io_memDataOut_ready          (rxEngine_io_memDataOut_ready              ), //i
-    .io_memDataOut_payload_data   (rxEngine_io_memDataOut_payload_data[31:0] ), //o
-    .io_memDataOut_payload_valid  (rxEngine_io_memDataOut_payload_valid      ), //o
-    .io_memDataOut_payload_last   (rxEngine_io_memDataOut_payload_last       ), //o
-    .io_memDataOut_payload_byteEn (rxEngine_io_memDataOut_payload_byteEn[3:0]), //o
-    .io_memDataStart              (rxEngine_io_memDataStart                  ), //o
-    .io_parseErr                  (rxEngine_io_parseErr                      ), //o
-    .io_overflow                  (rxEngine_io_overflow                      ), //o
-    .clk                          (clk                                       ), //i
-    .reset                        (reset                                     )  //i
+    .io_tlpIn_valid                 (dlRx_io_tlpOut_valid                         ), //i
+    .io_tlpIn_ready                 (rxEngine_io_tlpIn_ready                      ), //o
+    .io_tlpIn_payload               (dlRx_io_tlpOut_payload[31:0]                 ), //i
+    .io_memReq_valid                (rxEngine_io_memReq_valid                     ), //o
+    .io_memReq_ready                (rxEngine_io_memReq_ready                     ), //i
+    .io_memReq_payload_tlpType      (rxEngine_io_memReq_payload_tlpType[3:0]      ), //o
+    .io_memReq_payload_reqId        (rxEngine_io_memReq_payload_reqId[15:0]       ), //o
+    .io_memReq_payload_tag          (rxEngine_io_memReq_payload_tag[7:0]          ), //o
+    .io_memReq_payload_addr         (rxEngine_io_memReq_payload_addr[63:0]        ), //o
+    .io_memReq_payload_length       (rxEngine_io_memReq_payload_length[9:0]       ), //o
+    .io_memReq_payload_firstBe      (rxEngine_io_memReq_payload_firstBe[3:0]      ), //o
+    .io_memReq_payload_lastBe       (rxEngine_io_memReq_payload_lastBe[3:0]       ), //o
+    .io_memReq_payload_tc           (rxEngine_io_memReq_payload_tc[2:0]           ), //o
+    .io_memReq_payload_attr         (rxEngine_io_memReq_payload_attr[1:0]         ), //o
+    .io_memReq_payload_cplId        (rxEngine_io_memReq_payload_cplId[15:0]       ), //o
+    .io_memReq_payload_cplStatus    (rxEngine_io_memReq_payload_cplStatus[2:0]    ), //o
+    .io_memReq_payload_cplByteCount (rxEngine_io_memReq_payload_cplByteCount[11:0]), //o
+    .io_memReq_payload_cplLowerAddr (rxEngine_io_memReq_payload_cplLowerAddr[6:0] ), //o
+    .io_memReq_payload_data_0       (rxEngine_io_memReq_payload_data_0[31:0]      ), //o
+    .io_memReq_payload_data_1       (rxEngine_io_memReq_payload_data_1[31:0]      ), //o
+    .io_memReq_payload_data_2       (rxEngine_io_memReq_payload_data_2[31:0]      ), //o
+    .io_memReq_payload_data_3       (rxEngine_io_memReq_payload_data_3[31:0]      ), //o
+    .io_memReq_payload_dataValid    (rxEngine_io_memReq_payload_dataValid[2:0]    ), //o
+    .io_cfgReq_valid                (rxEngine_io_cfgReq_valid                     ), //o
+    .io_cfgReq_ready                (cfgSpace_io_cfgReq_ready                     ), //i
+    .io_cfgReq_payload_tlpType      (rxEngine_io_cfgReq_payload_tlpType[3:0]      ), //o
+    .io_cfgReq_payload_reqId        (rxEngine_io_cfgReq_payload_reqId[15:0]       ), //o
+    .io_cfgReq_payload_tag          (rxEngine_io_cfgReq_payload_tag[7:0]          ), //o
+    .io_cfgReq_payload_addr         (rxEngine_io_cfgReq_payload_addr[63:0]        ), //o
+    .io_cfgReq_payload_length       (rxEngine_io_cfgReq_payload_length[9:0]       ), //o
+    .io_cfgReq_payload_firstBe      (rxEngine_io_cfgReq_payload_firstBe[3:0]      ), //o
+    .io_cfgReq_payload_lastBe       (rxEngine_io_cfgReq_payload_lastBe[3:0]       ), //o
+    .io_cfgReq_payload_tc           (rxEngine_io_cfgReq_payload_tc[2:0]           ), //o
+    .io_cfgReq_payload_attr         (rxEngine_io_cfgReq_payload_attr[1:0]         ), //o
+    .io_cfgReq_payload_cplId        (rxEngine_io_cfgReq_payload_cplId[15:0]       ), //o
+    .io_cfgReq_payload_cplStatus    (rxEngine_io_cfgReq_payload_cplStatus[2:0]    ), //o
+    .io_cfgReq_payload_cplByteCount (rxEngine_io_cfgReq_payload_cplByteCount[11:0]), //o
+    .io_cfgReq_payload_cplLowerAddr (rxEngine_io_cfgReq_payload_cplLowerAddr[6:0] ), //o
+    .io_cfgReq_payload_data_0       (rxEngine_io_cfgReq_payload_data_0[31:0]      ), //o
+    .io_cfgReq_payload_data_1       (rxEngine_io_cfgReq_payload_data_1[31:0]      ), //o
+    .io_cfgReq_payload_data_2       (rxEngine_io_cfgReq_payload_data_2[31:0]      ), //o
+    .io_cfgReq_payload_data_3       (rxEngine_io_cfgReq_payload_data_3[31:0]      ), //o
+    .io_cfgReq_payload_dataValid    (rxEngine_io_cfgReq_payload_dataValid[2:0]    ), //o
+    .io_cplIn_valid                 (rxEngine_io_cplIn_valid                      ), //o
+    .io_cplIn_ready                 (dma_io_cplIn_ready                           ), //i
+    .io_cplIn_payload_tlpType       (rxEngine_io_cplIn_payload_tlpType[3:0]       ), //o
+    .io_cplIn_payload_reqId         (rxEngine_io_cplIn_payload_reqId[15:0]        ), //o
+    .io_cplIn_payload_tag           (rxEngine_io_cplIn_payload_tag[7:0]           ), //o
+    .io_cplIn_payload_addr          (rxEngine_io_cplIn_payload_addr[63:0]         ), //o
+    .io_cplIn_payload_length        (rxEngine_io_cplIn_payload_length[9:0]        ), //o
+    .io_cplIn_payload_firstBe       (rxEngine_io_cplIn_payload_firstBe[3:0]       ), //o
+    .io_cplIn_payload_lastBe        (rxEngine_io_cplIn_payload_lastBe[3:0]        ), //o
+    .io_cplIn_payload_tc            (rxEngine_io_cplIn_payload_tc[2:0]            ), //o
+    .io_cplIn_payload_attr          (rxEngine_io_cplIn_payload_attr[1:0]          ), //o
+    .io_cplIn_payload_cplId         (rxEngine_io_cplIn_payload_cplId[15:0]        ), //o
+    .io_cplIn_payload_cplStatus     (rxEngine_io_cplIn_payload_cplStatus[2:0]     ), //o
+    .io_cplIn_payload_cplByteCount  (rxEngine_io_cplIn_payload_cplByteCount[11:0] ), //o
+    .io_cplIn_payload_cplLowerAddr  (rxEngine_io_cplIn_payload_cplLowerAddr[6:0]  ), //o
+    .io_cplIn_payload_data_0        (rxEngine_io_cplIn_payload_data_0[31:0]       ), //o
+    .io_cplIn_payload_data_1        (rxEngine_io_cplIn_payload_data_1[31:0]       ), //o
+    .io_cplIn_payload_data_2        (rxEngine_io_cplIn_payload_data_2[31:0]       ), //o
+    .io_cplIn_payload_data_3        (rxEngine_io_cplIn_payload_data_3[31:0]       ), //o
+    .io_cplIn_payload_dataValid     (rxEngine_io_cplIn_payload_dataValid[2:0]     ), //o
+    .io_ioReq_valid                 (rxEngine_io_ioReq_valid                      ), //o
+    .io_ioReq_ready                 (streamArbiter_5_io_inputs_0_ready            ), //i
+    .io_ioReq_payload_tlpType       (rxEngine_io_ioReq_payload_tlpType[3:0]       ), //o
+    .io_ioReq_payload_reqId         (rxEngine_io_ioReq_payload_reqId[15:0]        ), //o
+    .io_ioReq_payload_tag           (rxEngine_io_ioReq_payload_tag[7:0]           ), //o
+    .io_ioReq_payload_addr          (rxEngine_io_ioReq_payload_addr[63:0]         ), //o
+    .io_ioReq_payload_length        (rxEngine_io_ioReq_payload_length[9:0]        ), //o
+    .io_ioReq_payload_firstBe       (rxEngine_io_ioReq_payload_firstBe[3:0]       ), //o
+    .io_ioReq_payload_lastBe        (rxEngine_io_ioReq_payload_lastBe[3:0]        ), //o
+    .io_ioReq_payload_tc            (rxEngine_io_ioReq_payload_tc[2:0]            ), //o
+    .io_ioReq_payload_attr          (rxEngine_io_ioReq_payload_attr[1:0]          ), //o
+    .io_ioReq_payload_cplId         (rxEngine_io_ioReq_payload_cplId[15:0]        ), //o
+    .io_ioReq_payload_cplStatus     (rxEngine_io_ioReq_payload_cplStatus[2:0]     ), //o
+    .io_ioReq_payload_cplByteCount  (rxEngine_io_ioReq_payload_cplByteCount[11:0] ), //o
+    .io_ioReq_payload_cplLowerAddr  (rxEngine_io_ioReq_payload_cplLowerAddr[6:0]  ), //o
+    .io_ioReq_payload_data_0        (rxEngine_io_ioReq_payload_data_0[31:0]       ), //o
+    .io_ioReq_payload_data_1        (rxEngine_io_ioReq_payload_data_1[31:0]       ), //o
+    .io_ioReq_payload_data_2        (rxEngine_io_ioReq_payload_data_2[31:0]       ), //o
+    .io_ioReq_payload_data_3        (rxEngine_io_ioReq_payload_data_3[31:0]       ), //o
+    .io_ioReq_payload_dataValid     (rxEngine_io_ioReq_payload_dataValid[2:0]     ), //o
+    .io_memDataOut_valid            (rxEngine_io_memDataOut_valid                 ), //o
+    .io_memDataOut_ready            (rxEngine_io_memDataOut_ready                 ), //i
+    .io_memDataOut_payload_data     (rxEngine_io_memDataOut_payload_data[31:0]    ), //o
+    .io_memDataOut_payload_valid    (rxEngine_io_memDataOut_payload_valid         ), //o
+    .io_memDataOut_payload_last     (rxEngine_io_memDataOut_payload_last          ), //o
+    .io_memDataOut_payload_byteEn   (rxEngine_io_memDataOut_payload_byteEn[3:0]   ), //o
+    .io_memDataStart                (rxEngine_io_memDataStart                     ), //o
+    .io_parseErr                    (rxEngine_io_parseErr                         ), //o
+    .io_overflow                    (rxEngine_io_overflow                         ), //o
+    .clk                            (clk                                          ), //i
+    .reset                          (reset                                        )  //i
   );
   IoRequestHandler ioHandler (
-    .io_ioReq_valid              (rxEngine_io_ioReq_valid                   ), //i
-    .io_ioReq_ready              (ioHandler_io_ioReq_ready                  ), //o
-    .io_ioReq_payload_tlpType    (rxEngine_io_ioReq_payload_tlpType[3:0]    ), //i
-    .io_ioReq_payload_reqId      (rxEngine_io_ioReq_payload_reqId[15:0]     ), //i
-    .io_ioReq_payload_tag        (rxEngine_io_ioReq_payload_tag[7:0]        ), //i
-    .io_ioReq_payload_addr       (rxEngine_io_ioReq_payload_addr[63:0]      ), //i
-    .io_ioReq_payload_length     (rxEngine_io_ioReq_payload_length[9:0]     ), //i
-    .io_ioReq_payload_firstBe    (rxEngine_io_ioReq_payload_firstBe[3:0]    ), //i
-    .io_ioReq_payload_lastBe     (rxEngine_io_ioReq_payload_lastBe[3:0]     ), //i
-    .io_ioReq_payload_tc         (rxEngine_io_ioReq_payload_tc[2:0]         ), //i
-    .io_ioReq_payload_attr       (rxEngine_io_ioReq_payload_attr[1:0]       ), //i
-    .io_ioReq_payload_data_0     (rxEngine_io_ioReq_payload_data_0[31:0]    ), //i
-    .io_ioReq_payload_data_1     (rxEngine_io_ioReq_payload_data_1[31:0]    ), //i
-    .io_ioReq_payload_data_2     (rxEngine_io_ioReq_payload_data_2[31:0]    ), //i
-    .io_ioReq_payload_data_3     (rxEngine_io_ioReq_payload_data_3[31:0]    ), //i
-    .io_ioReq_payload_dataValid  (rxEngine_io_ioReq_payload_dataValid[2:0]  ), //i
-    .io_cplOut_valid             (ioHandler_io_cplOut_valid                 ), //o
-    .io_cplOut_ready             (streamArbiter_2_io_inputs_1_ready         ), //i
-    .io_cplOut_payload_tlpType   (ioHandler_io_cplOut_payload_tlpType[3:0]  ), //o
-    .io_cplOut_payload_reqId     (ioHandler_io_cplOut_payload_reqId[15:0]   ), //o
-    .io_cplOut_payload_tag       (ioHandler_io_cplOut_payload_tag[7:0]      ), //o
-    .io_cplOut_payload_addr      (ioHandler_io_cplOut_payload_addr[63:0]    ), //o
-    .io_cplOut_payload_length    (ioHandler_io_cplOut_payload_length[9:0]   ), //o
-    .io_cplOut_payload_firstBe   (ioHandler_io_cplOut_payload_firstBe[3:0]  ), //o
-    .io_cplOut_payload_lastBe    (ioHandler_io_cplOut_payload_lastBe[3:0]   ), //o
-    .io_cplOut_payload_tc        (ioHandler_io_cplOut_payload_tc[2:0]       ), //o
-    .io_cplOut_payload_attr      (ioHandler_io_cplOut_payload_attr[1:0]     ), //o
-    .io_cplOut_payload_data_0    (ioHandler_io_cplOut_payload_data_0[31:0]  ), //o
-    .io_cplOut_payload_data_1    (ioHandler_io_cplOut_payload_data_1[31:0]  ), //o
-    .io_cplOut_payload_data_2    (ioHandler_io_cplOut_payload_data_2[31:0]  ), //o
-    .io_cplOut_payload_data_3    (ioHandler_io_cplOut_payload_data_3[31:0]  ), //o
-    .io_cplOut_payload_dataValid (ioHandler_io_cplOut_payload_dataValid[2:0]), //o
-    .io_regAddr                  (ioHandler_io_regAddr[31:0]                ), //o
-    .io_regWrData                (ioHandler_io_regWrData[31:0]              ), //o
-    .io_regRdData                (io_ioRegRdData[31:0]                      ), //i
-    .io_regWrEn                  (ioHandler_io_regWrEn                      ), //o
-    .io_regRdEn                  (ioHandler_io_regRdEn                      ), //o
-    .io_regWidth                 (ioHandler_io_regWidth[1:0]                ), //i
-    .io_ioErr                    (ioHandler_io_ioErr                        ), //o
-    .clk                         (clk                                       ), //i
-    .reset                       (reset                                     )  //i
+    .io_ioReq_valid                 (userRegReq_valid                              ), //i
+    .io_ioReq_ready                 (ioHandler_io_ioReq_ready                      ), //o
+    .io_ioReq_payload_tlpType       (userRegReq_payload_tlpType[3:0]               ), //i
+    .io_ioReq_payload_reqId         (userRegReq_payload_reqId[15:0]                ), //i
+    .io_ioReq_payload_tag           (userRegReq_payload_tag[7:0]                   ), //i
+    .io_ioReq_payload_addr          (userRegReq_payload_addr[63:0]                 ), //i
+    .io_ioReq_payload_length        (userRegReq_payload_length[9:0]                ), //i
+    .io_ioReq_payload_firstBe       (userRegReq_payload_firstBe[3:0]               ), //i
+    .io_ioReq_payload_lastBe        (userRegReq_payload_lastBe[3:0]                ), //i
+    .io_ioReq_payload_tc            (userRegReq_payload_tc[2:0]                    ), //i
+    .io_ioReq_payload_attr          (userRegReq_payload_attr[1:0]                  ), //i
+    .io_ioReq_payload_cplId         (userRegReq_payload_cplId[15:0]                ), //i
+    .io_ioReq_payload_cplStatus     (userRegReq_payload_cplStatus[2:0]             ), //i
+    .io_ioReq_payload_cplByteCount  (userRegReq_payload_cplByteCount[11:0]         ), //i
+    .io_ioReq_payload_cplLowerAddr  (userRegReq_payload_cplLowerAddr[6:0]          ), //i
+    .io_ioReq_payload_data_0        (userRegReq_payload_data_0[31:0]               ), //i
+    .io_ioReq_payload_data_1        (userRegReq_payload_data_1[31:0]               ), //i
+    .io_ioReq_payload_data_2        (userRegReq_payload_data_2[31:0]               ), //i
+    .io_ioReq_payload_data_3        (userRegReq_payload_data_3[31:0]               ), //i
+    .io_ioReq_payload_dataValid     (userRegReq_payload_dataValid[2:0]             ), //i
+    .io_cplOut_valid                (ioHandler_io_cplOut_valid                     ), //o
+    .io_cplOut_ready                (streamArbiter_3_io_inputs_1_ready             ), //i
+    .io_cplOut_payload_tlpType      (ioHandler_io_cplOut_payload_tlpType[3:0]      ), //o
+    .io_cplOut_payload_reqId        (ioHandler_io_cplOut_payload_reqId[15:0]       ), //o
+    .io_cplOut_payload_tag          (ioHandler_io_cplOut_payload_tag[7:0]          ), //o
+    .io_cplOut_payload_addr         (ioHandler_io_cplOut_payload_addr[63:0]        ), //o
+    .io_cplOut_payload_length       (ioHandler_io_cplOut_payload_length[9:0]       ), //o
+    .io_cplOut_payload_firstBe      (ioHandler_io_cplOut_payload_firstBe[3:0]      ), //o
+    .io_cplOut_payload_lastBe       (ioHandler_io_cplOut_payload_lastBe[3:0]       ), //o
+    .io_cplOut_payload_tc           (ioHandler_io_cplOut_payload_tc[2:0]           ), //o
+    .io_cplOut_payload_attr         (ioHandler_io_cplOut_payload_attr[1:0]         ), //o
+    .io_cplOut_payload_cplId        (ioHandler_io_cplOut_payload_cplId[15:0]       ), //o
+    .io_cplOut_payload_cplStatus    (ioHandler_io_cplOut_payload_cplStatus[2:0]    ), //o
+    .io_cplOut_payload_cplByteCount (ioHandler_io_cplOut_payload_cplByteCount[11:0]), //o
+    .io_cplOut_payload_cplLowerAddr (ioHandler_io_cplOut_payload_cplLowerAddr[6:0] ), //o
+    .io_cplOut_payload_data_0       (ioHandler_io_cplOut_payload_data_0[31:0]      ), //o
+    .io_cplOut_payload_data_1       (ioHandler_io_cplOut_payload_data_1[31:0]      ), //o
+    .io_cplOut_payload_data_2       (ioHandler_io_cplOut_payload_data_2[31:0]      ), //o
+    .io_cplOut_payload_data_3       (ioHandler_io_cplOut_payload_data_3[31:0]      ), //o
+    .io_cplOut_payload_dataValid    (ioHandler_io_cplOut_payload_dataValid[2:0]    ), //o
+    .io_regAddr                     (ioHandler_io_regAddr[31:0]                    ), //o
+    .io_regWrData                   (ioHandler_io_regWrData[31:0]                  ), //o
+    .io_regRdData                   (io_ioRegRdData[31:0]                          ), //i
+    .io_regWrEn                     (ioHandler_io_regWrEn                          ), //o
+    .io_regRdEn                     (ioHandler_io_regRdEn                          ), //o
+    .io_regWidth                    (ioHandler_io_regWidth[1:0]                    ), //i
+    .io_completerId                 (myBdf[15:0]                                   ), //i
+    .io_ioErr                       (ioHandler_io_ioErr                            ), //o
+    .clk                            (clk                                           ), //i
+    .reset                          (reset                                         )  //i
   );
   PcieConfigSpaceCtrl cfgSpace (
-    .io_cfgReq_valid              (rxEngine_io_cfgReq_valid                  ), //i
-    .io_cfgReq_ready              (cfgSpace_io_cfgReq_ready                  ), //o
-    .io_cfgReq_payload_tlpType    (rxEngine_io_cfgReq_payload_tlpType[3:0]   ), //i
-    .io_cfgReq_payload_reqId      (rxEngine_io_cfgReq_payload_reqId[15:0]    ), //i
-    .io_cfgReq_payload_tag        (rxEngine_io_cfgReq_payload_tag[7:0]       ), //i
-    .io_cfgReq_payload_addr       (rxEngine_io_cfgReq_payload_addr[63:0]     ), //i
-    .io_cfgReq_payload_length     (rxEngine_io_cfgReq_payload_length[9:0]    ), //i
-    .io_cfgReq_payload_firstBe    (rxEngine_io_cfgReq_payload_firstBe[3:0]   ), //i
-    .io_cfgReq_payload_lastBe     (rxEngine_io_cfgReq_payload_lastBe[3:0]    ), //i
-    .io_cfgReq_payload_tc         (rxEngine_io_cfgReq_payload_tc[2:0]        ), //i
-    .io_cfgReq_payload_attr       (rxEngine_io_cfgReq_payload_attr[1:0]      ), //i
-    .io_cfgReq_payload_data_0     (rxEngine_io_cfgReq_payload_data_0[31:0]   ), //i
-    .io_cfgReq_payload_data_1     (rxEngine_io_cfgReq_payload_data_1[31:0]   ), //i
-    .io_cfgReq_payload_data_2     (rxEngine_io_cfgReq_payload_data_2[31:0]   ), //i
-    .io_cfgReq_payload_data_3     (rxEngine_io_cfgReq_payload_data_3[31:0]   ), //i
-    .io_cfgReq_payload_dataValid  (rxEngine_io_cfgReq_payload_dataValid[2:0] ), //i
-    .io_cfgResp_valid             (cfgSpace_io_cfgResp_valid                 ), //o
-    .io_cfgResp_ready             (streamArbiter_2_io_inputs_0_ready         ), //i
-    .io_cfgResp_payload_tlpType   (cfgSpace_io_cfgResp_payload_tlpType[3:0]  ), //o
-    .io_cfgResp_payload_reqId     (cfgSpace_io_cfgResp_payload_reqId[15:0]   ), //o
-    .io_cfgResp_payload_tag       (cfgSpace_io_cfgResp_payload_tag[7:0]      ), //o
-    .io_cfgResp_payload_addr      (cfgSpace_io_cfgResp_payload_addr[63:0]    ), //o
-    .io_cfgResp_payload_length    (cfgSpace_io_cfgResp_payload_length[9:0]   ), //o
-    .io_cfgResp_payload_firstBe   (cfgSpace_io_cfgResp_payload_firstBe[3:0]  ), //o
-    .io_cfgResp_payload_lastBe    (cfgSpace_io_cfgResp_payload_lastBe[3:0]   ), //o
-    .io_cfgResp_payload_tc        (cfgSpace_io_cfgResp_payload_tc[2:0]       ), //o
-    .io_cfgResp_payload_attr      (cfgSpace_io_cfgResp_payload_attr[1:0]     ), //o
-    .io_cfgResp_payload_data_0    (cfgSpace_io_cfgResp_payload_data_0[31:0]  ), //o
-    .io_cfgResp_payload_data_1    (cfgSpace_io_cfgResp_payload_data_1[31:0]  ), //o
-    .io_cfgResp_payload_data_2    (cfgSpace_io_cfgResp_payload_data_2[31:0]  ), //o
-    .io_cfgResp_payload_data_3    (cfgSpace_io_cfgResp_payload_data_3[31:0]  ), //o
-    .io_cfgResp_payload_dataValid (cfgSpace_io_cfgResp_payload_dataValid[2:0]), //o
-    .io_barHit                    (cfgSpace_io_barHit[5:0]                   ), //o
-    .io_barCheckAddr              (cfgSpace_io_barCheckAddr[63:0]            ), //i
-    .io_busDevFunc                (myBdf[15:0]                               ), //i
-    .io_cfgRegs_vendorId          (cfgSpace_io_cfgRegs_vendorId[15:0]        ), //o
-    .io_cfgRegs_deviceId          (cfgSpace_io_cfgRegs_deviceId[15:0]        ), //o
-    .io_cfgRegs_command           (cfgSpace_io_cfgRegs_command[15:0]         ), //o
-    .io_cfgRegs_status            (cfgSpace_io_cfgRegs_status[15:0]          ), //o
-    .io_cfgRegs_revisionId        (cfgSpace_io_cfgRegs_revisionId[7:0]       ), //o
-    .io_cfgRegs_classCode         (cfgSpace_io_cfgRegs_classCode[23:0]       ), //o
-    .io_cfgRegs_cacheLineSize     (cfgSpace_io_cfgRegs_cacheLineSize[7:0]    ), //o
-    .io_cfgRegs_latencyTimer      (cfgSpace_io_cfgRegs_latencyTimer[7:0]     ), //o
-    .io_cfgRegs_headerType        (cfgSpace_io_cfgRegs_headerType[7:0]       ), //o
-    .io_cfgRegs_bist              (cfgSpace_io_cfgRegs_bist[7:0]             ), //o
-    .io_cfgRegs_bar_0             (cfgSpace_io_cfgRegs_bar_0[31:0]           ), //o
-    .io_cfgRegs_bar_1             (cfgSpace_io_cfgRegs_bar_1[31:0]           ), //o
-    .io_cfgRegs_bar_2             (cfgSpace_io_cfgRegs_bar_2[31:0]           ), //o
-    .io_cfgRegs_bar_3             (cfgSpace_io_cfgRegs_bar_3[31:0]           ), //o
-    .io_cfgRegs_bar_4             (cfgSpace_io_cfgRegs_bar_4[31:0]           ), //o
-    .io_cfgRegs_bar_5             (cfgSpace_io_cfgRegs_bar_5[31:0]           ), //o
-    .io_cfgRegs_subVendorId       (cfgSpace_io_cfgRegs_subVendorId[15:0]     ), //o
-    .io_cfgRegs_subSystemId       (cfgSpace_io_cfgRegs_subSystemId[15:0]     ), //o
-    .io_cfgRegs_capPointer        (cfgSpace_io_cfgRegs_capPointer[7:0]       ), //o
-    .io_cfgRegs_intLine           (cfgSpace_io_cfgRegs_intLine[7:0]          ), //o
-    .io_cfgRegs_intPin            (cfgSpace_io_cfgRegs_intPin[7:0]           ), //o
-    .io_msixEnable                (cfgSpace_io_msixEnable                    ), //o
-    .io_msixFuncMask              (cfgSpace_io_msixFuncMask                  ), //o
-    .clk                          (clk                                       ), //i
-    .reset                        (reset                                     )  //i
+    .io_cfgReq_valid                 (rxEngine_io_cfgReq_valid                      ), //i
+    .io_cfgReq_ready                 (cfgSpace_io_cfgReq_ready                      ), //o
+    .io_cfgReq_payload_tlpType       (rxEngine_io_cfgReq_payload_tlpType[3:0]       ), //i
+    .io_cfgReq_payload_reqId         (rxEngine_io_cfgReq_payload_reqId[15:0]        ), //i
+    .io_cfgReq_payload_tag           (rxEngine_io_cfgReq_payload_tag[7:0]           ), //i
+    .io_cfgReq_payload_addr          (rxEngine_io_cfgReq_payload_addr[63:0]         ), //i
+    .io_cfgReq_payload_length        (rxEngine_io_cfgReq_payload_length[9:0]        ), //i
+    .io_cfgReq_payload_firstBe       (rxEngine_io_cfgReq_payload_firstBe[3:0]       ), //i
+    .io_cfgReq_payload_lastBe        (rxEngine_io_cfgReq_payload_lastBe[3:0]        ), //i
+    .io_cfgReq_payload_tc            (rxEngine_io_cfgReq_payload_tc[2:0]            ), //i
+    .io_cfgReq_payload_attr          (rxEngine_io_cfgReq_payload_attr[1:0]          ), //i
+    .io_cfgReq_payload_cplId         (rxEngine_io_cfgReq_payload_cplId[15:0]        ), //i
+    .io_cfgReq_payload_cplStatus     (rxEngine_io_cfgReq_payload_cplStatus[2:0]     ), //i
+    .io_cfgReq_payload_cplByteCount  (rxEngine_io_cfgReq_payload_cplByteCount[11:0] ), //i
+    .io_cfgReq_payload_cplLowerAddr  (rxEngine_io_cfgReq_payload_cplLowerAddr[6:0]  ), //i
+    .io_cfgReq_payload_data_0        (rxEngine_io_cfgReq_payload_data_0[31:0]       ), //i
+    .io_cfgReq_payload_data_1        (rxEngine_io_cfgReq_payload_data_1[31:0]       ), //i
+    .io_cfgReq_payload_data_2        (rxEngine_io_cfgReq_payload_data_2[31:0]       ), //i
+    .io_cfgReq_payload_data_3        (rxEngine_io_cfgReq_payload_data_3[31:0]       ), //i
+    .io_cfgReq_payload_dataValid     (rxEngine_io_cfgReq_payload_dataValid[2:0]     ), //i
+    .io_cfgResp_valid                (cfgSpace_io_cfgResp_valid                     ), //o
+    .io_cfgResp_ready                (streamArbiter_3_io_inputs_0_ready             ), //i
+    .io_cfgResp_payload_tlpType      (cfgSpace_io_cfgResp_payload_tlpType[3:0]      ), //o
+    .io_cfgResp_payload_reqId        (cfgSpace_io_cfgResp_payload_reqId[15:0]       ), //o
+    .io_cfgResp_payload_tag          (cfgSpace_io_cfgResp_payload_tag[7:0]          ), //o
+    .io_cfgResp_payload_addr         (cfgSpace_io_cfgResp_payload_addr[63:0]        ), //o
+    .io_cfgResp_payload_length       (cfgSpace_io_cfgResp_payload_length[9:0]       ), //o
+    .io_cfgResp_payload_firstBe      (cfgSpace_io_cfgResp_payload_firstBe[3:0]      ), //o
+    .io_cfgResp_payload_lastBe       (cfgSpace_io_cfgResp_payload_lastBe[3:0]       ), //o
+    .io_cfgResp_payload_tc           (cfgSpace_io_cfgResp_payload_tc[2:0]           ), //o
+    .io_cfgResp_payload_attr         (cfgSpace_io_cfgResp_payload_attr[1:0]         ), //o
+    .io_cfgResp_payload_cplId        (cfgSpace_io_cfgResp_payload_cplId[15:0]       ), //o
+    .io_cfgResp_payload_cplStatus    (cfgSpace_io_cfgResp_payload_cplStatus[2:0]    ), //o
+    .io_cfgResp_payload_cplByteCount (cfgSpace_io_cfgResp_payload_cplByteCount[11:0]), //o
+    .io_cfgResp_payload_cplLowerAddr (cfgSpace_io_cfgResp_payload_cplLowerAddr[6:0] ), //o
+    .io_cfgResp_payload_data_0       (cfgSpace_io_cfgResp_payload_data_0[31:0]      ), //o
+    .io_cfgResp_payload_data_1       (cfgSpace_io_cfgResp_payload_data_1[31:0]      ), //o
+    .io_cfgResp_payload_data_2       (cfgSpace_io_cfgResp_payload_data_2[31:0]      ), //o
+    .io_cfgResp_payload_data_3       (cfgSpace_io_cfgResp_payload_data_3[31:0]      ), //o
+    .io_cfgResp_payload_dataValid    (cfgSpace_io_cfgResp_payload_dataValid[2:0]    ), //o
+    .io_barHit                       (cfgSpace_io_barHit[5:0]                       ), //o
+    .io_barCheckAddr                 (cfgSpace_io_barCheckAddr[63:0]                ), //i
+    .io_busDevFunc                   (myBdf[15:0]                                   ), //i
+    .io_cfgRegs_vendorId             (cfgSpace_io_cfgRegs_vendorId[15:0]            ), //o
+    .io_cfgRegs_deviceId             (cfgSpace_io_cfgRegs_deviceId[15:0]            ), //o
+    .io_cfgRegs_command              (cfgSpace_io_cfgRegs_command[15:0]             ), //o
+    .io_cfgRegs_status               (cfgSpace_io_cfgRegs_status[15:0]              ), //o
+    .io_cfgRegs_revisionId           (cfgSpace_io_cfgRegs_revisionId[7:0]           ), //o
+    .io_cfgRegs_classCode            (cfgSpace_io_cfgRegs_classCode[23:0]           ), //o
+    .io_cfgRegs_cacheLineSize        (cfgSpace_io_cfgRegs_cacheLineSize[7:0]        ), //o
+    .io_cfgRegs_latencyTimer         (cfgSpace_io_cfgRegs_latencyTimer[7:0]         ), //o
+    .io_cfgRegs_headerType           (cfgSpace_io_cfgRegs_headerType[7:0]           ), //o
+    .io_cfgRegs_bist                 (cfgSpace_io_cfgRegs_bist[7:0]                 ), //o
+    .io_cfgRegs_bar_0                (cfgSpace_io_cfgRegs_bar_0[31:0]               ), //o
+    .io_cfgRegs_bar_1                (cfgSpace_io_cfgRegs_bar_1[31:0]               ), //o
+    .io_cfgRegs_bar_2                (cfgSpace_io_cfgRegs_bar_2[31:0]               ), //o
+    .io_cfgRegs_bar_3                (cfgSpace_io_cfgRegs_bar_3[31:0]               ), //o
+    .io_cfgRegs_bar_4                (cfgSpace_io_cfgRegs_bar_4[31:0]               ), //o
+    .io_cfgRegs_bar_5                (cfgSpace_io_cfgRegs_bar_5[31:0]               ), //o
+    .io_cfgRegs_subVendorId          (cfgSpace_io_cfgRegs_subVendorId[15:0]         ), //o
+    .io_cfgRegs_subSystemId          (cfgSpace_io_cfgRegs_subSystemId[15:0]         ), //o
+    .io_cfgRegs_capPointer           (cfgSpace_io_cfgRegs_capPointer[7:0]           ), //o
+    .io_cfgRegs_intLine              (cfgSpace_io_cfgRegs_intLine[7:0]              ), //o
+    .io_cfgRegs_intPin               (cfgSpace_io_cfgRegs_intPin[7:0]               ), //o
+    .io_msixEnable                   (cfgSpace_io_msixEnable                        ), //o
+    .io_msixFuncMask                 (cfgSpace_io_msixFuncMask                      ), //o
+    .clk                             (clk                                           ), //i
+    .reset                           (reset                                         )  //i
   );
   DmaEngine dma (
-    .io_ctrl_aw_valid              (io_userCtrl_aw_valid                    ), //i
-    .io_ctrl_aw_ready              (dma_io_ctrl_aw_ready                    ), //o
-    .io_ctrl_aw_payload_addr       (io_userCtrl_aw_payload_addr[31:0]       ), //i
-    .io_ctrl_aw_payload_id         (io_userCtrl_aw_payload_id[3:0]          ), //i
-    .io_ctrl_aw_payload_len        (io_userCtrl_aw_payload_len[7:0]         ), //i
-    .io_ctrl_aw_payload_size       (io_userCtrl_aw_payload_size[2:0]        ), //i
-    .io_ctrl_aw_payload_burst      (io_userCtrl_aw_payload_burst[1:0]       ), //i
-    .io_ctrl_w_valid               (io_userCtrl_w_valid                     ), //i
-    .io_ctrl_w_ready               (dma_io_ctrl_w_ready                     ), //o
-    .io_ctrl_w_payload_data        (io_userCtrl_w_payload_data[31:0]        ), //i
-    .io_ctrl_w_payload_last        (io_userCtrl_w_payload_last              ), //i
-    .io_ctrl_b_valid               (dma_io_ctrl_b_valid                     ), //o
-    .io_ctrl_b_ready               (io_userCtrl_b_ready                     ), //i
-    .io_ctrl_b_payload_id          (dma_io_ctrl_b_payload_id[3:0]           ), //o
-    .io_ctrl_b_payload_resp        (dma_io_ctrl_b_payload_resp[1:0]         ), //o
-    .io_ctrl_ar_valid              (io_userCtrl_ar_valid                    ), //i
-    .io_ctrl_ar_ready              (dma_io_ctrl_ar_ready                    ), //o
-    .io_ctrl_ar_payload_addr       (io_userCtrl_ar_payload_addr[31:0]       ), //i
-    .io_ctrl_ar_payload_id         (io_userCtrl_ar_payload_id[3:0]          ), //i
-    .io_ctrl_ar_payload_len        (io_userCtrl_ar_payload_len[7:0]         ), //i
-    .io_ctrl_ar_payload_size       (io_userCtrl_ar_payload_size[2:0]        ), //i
-    .io_ctrl_ar_payload_burst      (io_userCtrl_ar_payload_burst[1:0]       ), //i
-    .io_ctrl_r_valid               (dma_io_ctrl_r_valid                     ), //o
-    .io_ctrl_r_ready               (io_userCtrl_r_ready                     ), //i
-    .io_ctrl_r_payload_data        (dma_io_ctrl_r_payload_data[31:0]        ), //o
-    .io_ctrl_r_payload_id          (dma_io_ctrl_r_payload_id[3:0]           ), //o
-    .io_ctrl_r_payload_resp        (dma_io_ctrl_r_payload_resp[1:0]         ), //o
-    .io_ctrl_r_payload_last        (dma_io_ctrl_r_payload_last              ), //o
-    .io_memWrOut_valid             (dma_io_memWrOut_valid                   ), //o
-    .io_memWrOut_ready             (streamArbiter_3_io_inputs_1_ready       ), //i
-    .io_memWrOut_payload_tlpType   (dma_io_memWrOut_payload_tlpType[3:0]    ), //o
-    .io_memWrOut_payload_reqId     (dma_io_memWrOut_payload_reqId[15:0]     ), //o
-    .io_memWrOut_payload_tag       (dma_io_memWrOut_payload_tag[7:0]        ), //o
-    .io_memWrOut_payload_addr      (dma_io_memWrOut_payload_addr[63:0]      ), //o
-    .io_memWrOut_payload_length    (dma_io_memWrOut_payload_length[9:0]     ), //o
-    .io_memWrOut_payload_firstBe   (dma_io_memWrOut_payload_firstBe[3:0]    ), //o
-    .io_memWrOut_payload_lastBe    (dma_io_memWrOut_payload_lastBe[3:0]     ), //o
-    .io_memWrOut_payload_tc        (dma_io_memWrOut_payload_tc[2:0]         ), //o
-    .io_memWrOut_payload_attr      (dma_io_memWrOut_payload_attr[1:0]       ), //o
-    .io_memWrOut_payload_data_0    (dma_io_memWrOut_payload_data_0[31:0]    ), //o
-    .io_memWrOut_payload_data_1    (dma_io_memWrOut_payload_data_1[31:0]    ), //o
-    .io_memWrOut_payload_data_2    (dma_io_memWrOut_payload_data_2[31:0]    ), //o
-    .io_memWrOut_payload_data_3    (dma_io_memWrOut_payload_data_3[31:0]    ), //o
-    .io_memWrOut_payload_dataValid (dma_io_memWrOut_payload_dataValid[2:0]  ), //o
-    .io_memRdOut_valid             (dma_io_memRdOut_valid                   ), //o
-    .io_memRdOut_ready             (txEngine_io_memRdIn_ready               ), //i
-    .io_memRdOut_payload_tlpType   (dma_io_memRdOut_payload_tlpType[3:0]    ), //o
-    .io_memRdOut_payload_reqId     (dma_io_memRdOut_payload_reqId[15:0]     ), //o
-    .io_memRdOut_payload_tag       (dma_io_memRdOut_payload_tag[7:0]        ), //o
-    .io_memRdOut_payload_addr      (dma_io_memRdOut_payload_addr[63:0]      ), //o
-    .io_memRdOut_payload_length    (dma_io_memRdOut_payload_length[9:0]     ), //o
-    .io_memRdOut_payload_firstBe   (dma_io_memRdOut_payload_firstBe[3:0]    ), //o
-    .io_memRdOut_payload_lastBe    (dma_io_memRdOut_payload_lastBe[3:0]     ), //o
-    .io_memRdOut_payload_tc        (dma_io_memRdOut_payload_tc[2:0]         ), //o
-    .io_memRdOut_payload_attr      (dma_io_memRdOut_payload_attr[1:0]       ), //o
-    .io_memRdOut_payload_data_0    (dma_io_memRdOut_payload_data_0[31:0]    ), //o
-    .io_memRdOut_payload_data_1    (dma_io_memRdOut_payload_data_1[31:0]    ), //o
-    .io_memRdOut_payload_data_2    (dma_io_memRdOut_payload_data_2[31:0]    ), //o
-    .io_memRdOut_payload_data_3    (dma_io_memRdOut_payload_data_3[31:0]    ), //o
-    .io_memRdOut_payload_dataValid (dma_io_memRdOut_payload_dataValid[2:0]  ), //o
-    .io_cplIn_valid                (rxEngine_io_cplIn_valid                 ), //i
-    .io_cplIn_ready                (dma_io_cplIn_ready                      ), //o
-    .io_cplIn_payload_tlpType      (rxEngine_io_cplIn_payload_tlpType[3:0]  ), //i
-    .io_cplIn_payload_reqId        (rxEngine_io_cplIn_payload_reqId[15:0]   ), //i
-    .io_cplIn_payload_tag          (rxEngine_io_cplIn_payload_tag[7:0]      ), //i
-    .io_cplIn_payload_addr         (rxEngine_io_cplIn_payload_addr[63:0]    ), //i
-    .io_cplIn_payload_length       (rxEngine_io_cplIn_payload_length[9:0]   ), //i
-    .io_cplIn_payload_firstBe      (rxEngine_io_cplIn_payload_firstBe[3:0]  ), //i
-    .io_cplIn_payload_lastBe       (rxEngine_io_cplIn_payload_lastBe[3:0]   ), //i
-    .io_cplIn_payload_tc           (rxEngine_io_cplIn_payload_tc[2:0]       ), //i
-    .io_cplIn_payload_attr         (rxEngine_io_cplIn_payload_attr[1:0]     ), //i
-    .io_cplIn_payload_data_0       (rxEngine_io_cplIn_payload_data_0[31:0]  ), //i
-    .io_cplIn_payload_data_1       (rxEngine_io_cplIn_payload_data_1[31:0]  ), //i
-    .io_cplIn_payload_data_2       (rxEngine_io_cplIn_payload_data_2[31:0]  ), //i
-    .io_cplIn_payload_data_3       (rxEngine_io_cplIn_payload_data_3[31:0]  ), //i
-    .io_cplIn_payload_dataValid    (rxEngine_io_cplIn_payload_dataValid[2:0]), //i
-    .io_localMem_aw_valid          (dma_io_localMem_aw_valid                ), //o
-    .io_localMem_aw_ready          (io_localMem_aw_ready                    ), //i
-    .io_localMem_aw_payload_addr   (dma_io_localMem_aw_payload_addr[31:0]   ), //o
-    .io_localMem_aw_payload_id     (dma_io_localMem_aw_payload_id[3:0]      ), //o
-    .io_localMem_aw_payload_region (dma_io_localMem_aw_payload_region[3:0]  ), //o
-    .io_localMem_aw_payload_len    (dma_io_localMem_aw_payload_len[7:0]     ), //o
-    .io_localMem_aw_payload_size   (dma_io_localMem_aw_payload_size[2:0]    ), //o
-    .io_localMem_aw_payload_burst  (dma_io_localMem_aw_payload_burst[1:0]   ), //o
-    .io_localMem_aw_payload_lock   (dma_io_localMem_aw_payload_lock         ), //o
-    .io_localMem_aw_payload_cache  (dma_io_localMem_aw_payload_cache[3:0]   ), //o
-    .io_localMem_aw_payload_qos    (dma_io_localMem_aw_payload_qos[3:0]     ), //o
-    .io_localMem_aw_payload_prot   (dma_io_localMem_aw_payload_prot[2:0]    ), //o
-    .io_localMem_w_valid           (dma_io_localMem_w_valid                 ), //o
-    .io_localMem_w_ready           (io_localMem_w_ready                     ), //i
-    .io_localMem_w_payload_data    (dma_io_localMem_w_payload_data[63:0]    ), //o
-    .io_localMem_w_payload_strb    (dma_io_localMem_w_payload_strb[7:0]     ), //o
-    .io_localMem_w_payload_last    (dma_io_localMem_w_payload_last          ), //o
-    .io_localMem_b_valid           (io_localMem_b_valid                     ), //i
-    .io_localMem_b_ready           (dma_io_localMem_b_ready                 ), //o
-    .io_localMem_b_payload_id      (io_localMem_b_payload_id[3:0]           ), //i
-    .io_localMem_b_payload_resp    (io_localMem_b_payload_resp[1:0]         ), //i
-    .io_localMem_ar_valid          (dma_io_localMem_ar_valid                ), //o
-    .io_localMem_ar_ready          (io_localMem_ar_ready                    ), //i
-    .io_localMem_ar_payload_addr   (dma_io_localMem_ar_payload_addr[31:0]   ), //o
-    .io_localMem_ar_payload_id     (dma_io_localMem_ar_payload_id[3:0]      ), //o
-    .io_localMem_ar_payload_region (dma_io_localMem_ar_payload_region[3:0]  ), //o
-    .io_localMem_ar_payload_len    (dma_io_localMem_ar_payload_len[7:0]     ), //o
-    .io_localMem_ar_payload_size   (dma_io_localMem_ar_payload_size[2:0]    ), //o
-    .io_localMem_ar_payload_burst  (dma_io_localMem_ar_payload_burst[1:0]   ), //o
-    .io_localMem_ar_payload_lock   (dma_io_localMem_ar_payload_lock         ), //o
-    .io_localMem_ar_payload_cache  (dma_io_localMem_ar_payload_cache[3:0]   ), //o
-    .io_localMem_ar_payload_qos    (dma_io_localMem_ar_payload_qos[3:0]     ), //o
-    .io_localMem_ar_payload_prot   (dma_io_localMem_ar_payload_prot[2:0]    ), //o
-    .io_localMem_r_valid           (io_localMem_r_valid                     ), //i
-    .io_localMem_r_ready           (dma_io_localMem_r_ready                 ), //o
-    .io_localMem_r_payload_data    (io_localMem_r_payload_data[63:0]        ), //i
-    .io_localMem_r_payload_id      (io_localMem_r_payload_id[3:0]           ), //i
-    .io_localMem_r_payload_resp    (io_localMem_r_payload_resp[1:0]         ), //i
-    .io_localMem_r_payload_last    (io_localMem_r_payload_last              ), //i
-    .io_h2dDone                    (dma_io_h2dDone                          ), //o
-    .io_d2hDone                    (dma_io_d2hDone                          ), //o
-    .io_dmaErr                     (dma_io_dmaErr                           ), //o
-    .io_busDevFunc                 (myBdf[15:0]                             ), //i
-    .clk                           (clk                                     ), //i
-    .reset                         (reset                                   )  //i
+    .io_ctrl_aw_valid                 (io_userCtrl_aw_valid                        ), //i
+    .io_ctrl_aw_ready                 (dma_io_ctrl_aw_ready                        ), //o
+    .io_ctrl_aw_payload_addr          (io_userCtrl_aw_payload_addr[31:0]           ), //i
+    .io_ctrl_aw_payload_id            (io_userCtrl_aw_payload_id[3:0]              ), //i
+    .io_ctrl_aw_payload_len           (io_userCtrl_aw_payload_len[7:0]             ), //i
+    .io_ctrl_aw_payload_size          (io_userCtrl_aw_payload_size[2:0]            ), //i
+    .io_ctrl_aw_payload_burst         (io_userCtrl_aw_payload_burst[1:0]           ), //i
+    .io_ctrl_w_valid                  (io_userCtrl_w_valid                         ), //i
+    .io_ctrl_w_ready                  (dma_io_ctrl_w_ready                         ), //o
+    .io_ctrl_w_payload_data           (io_userCtrl_w_payload_data[31:0]            ), //i
+    .io_ctrl_w_payload_last           (io_userCtrl_w_payload_last                  ), //i
+    .io_ctrl_b_valid                  (dma_io_ctrl_b_valid                         ), //o
+    .io_ctrl_b_ready                  (io_userCtrl_b_ready                         ), //i
+    .io_ctrl_b_payload_id             (dma_io_ctrl_b_payload_id[3:0]               ), //o
+    .io_ctrl_b_payload_resp           (dma_io_ctrl_b_payload_resp[1:0]             ), //o
+    .io_ctrl_ar_valid                 (io_userCtrl_ar_valid                        ), //i
+    .io_ctrl_ar_ready                 (dma_io_ctrl_ar_ready                        ), //o
+    .io_ctrl_ar_payload_addr          (io_userCtrl_ar_payload_addr[31:0]           ), //i
+    .io_ctrl_ar_payload_id            (io_userCtrl_ar_payload_id[3:0]              ), //i
+    .io_ctrl_ar_payload_len           (io_userCtrl_ar_payload_len[7:0]             ), //i
+    .io_ctrl_ar_payload_size          (io_userCtrl_ar_payload_size[2:0]            ), //i
+    .io_ctrl_ar_payload_burst         (io_userCtrl_ar_payload_burst[1:0]           ), //i
+    .io_ctrl_r_valid                  (dma_io_ctrl_r_valid                         ), //o
+    .io_ctrl_r_ready                  (io_userCtrl_r_ready                         ), //i
+    .io_ctrl_r_payload_data           (dma_io_ctrl_r_payload_data[31:0]            ), //o
+    .io_ctrl_r_payload_id             (dma_io_ctrl_r_payload_id[3:0]               ), //o
+    .io_ctrl_r_payload_resp           (dma_io_ctrl_r_payload_resp[1:0]             ), //o
+    .io_ctrl_r_payload_last           (dma_io_ctrl_r_payload_last                  ), //o
+    .io_memWrOut_valid                (dma_io_memWrOut_valid                       ), //o
+    .io_memWrOut_ready                (streamArbiter_4_io_inputs_1_ready           ), //i
+    .io_memWrOut_payload_tlpType      (dma_io_memWrOut_payload_tlpType[3:0]        ), //o
+    .io_memWrOut_payload_reqId        (dma_io_memWrOut_payload_reqId[15:0]         ), //o
+    .io_memWrOut_payload_tag          (dma_io_memWrOut_payload_tag[7:0]            ), //o
+    .io_memWrOut_payload_addr         (dma_io_memWrOut_payload_addr[63:0]          ), //o
+    .io_memWrOut_payload_length       (dma_io_memWrOut_payload_length[9:0]         ), //o
+    .io_memWrOut_payload_firstBe      (dma_io_memWrOut_payload_firstBe[3:0]        ), //o
+    .io_memWrOut_payload_lastBe       (dma_io_memWrOut_payload_lastBe[3:0]         ), //o
+    .io_memWrOut_payload_tc           (dma_io_memWrOut_payload_tc[2:0]             ), //o
+    .io_memWrOut_payload_attr         (dma_io_memWrOut_payload_attr[1:0]           ), //o
+    .io_memWrOut_payload_cplId        (dma_io_memWrOut_payload_cplId[15:0]         ), //o
+    .io_memWrOut_payload_cplStatus    (dma_io_memWrOut_payload_cplStatus[2:0]      ), //o
+    .io_memWrOut_payload_cplByteCount (dma_io_memWrOut_payload_cplByteCount[11:0]  ), //o
+    .io_memWrOut_payload_cplLowerAddr (dma_io_memWrOut_payload_cplLowerAddr[6:0]   ), //o
+    .io_memWrOut_payload_data_0       (dma_io_memWrOut_payload_data_0[31:0]        ), //o
+    .io_memWrOut_payload_data_1       (dma_io_memWrOut_payload_data_1[31:0]        ), //o
+    .io_memWrOut_payload_data_2       (dma_io_memWrOut_payload_data_2[31:0]        ), //o
+    .io_memWrOut_payload_data_3       (dma_io_memWrOut_payload_data_3[31:0]        ), //o
+    .io_memWrOut_payload_dataValid    (dma_io_memWrOut_payload_dataValid[2:0]      ), //o
+    .io_memRdOut_valid                (dma_io_memRdOut_valid                       ), //o
+    .io_memRdOut_ready                (txEngine_io_memRdIn_ready                   ), //i
+    .io_memRdOut_payload_tlpType      (dma_io_memRdOut_payload_tlpType[3:0]        ), //o
+    .io_memRdOut_payload_reqId        (dma_io_memRdOut_payload_reqId[15:0]         ), //o
+    .io_memRdOut_payload_tag          (dma_io_memRdOut_payload_tag[7:0]            ), //o
+    .io_memRdOut_payload_addr         (dma_io_memRdOut_payload_addr[63:0]          ), //o
+    .io_memRdOut_payload_length       (dma_io_memRdOut_payload_length[9:0]         ), //o
+    .io_memRdOut_payload_firstBe      (dma_io_memRdOut_payload_firstBe[3:0]        ), //o
+    .io_memRdOut_payload_lastBe       (dma_io_memRdOut_payload_lastBe[3:0]         ), //o
+    .io_memRdOut_payload_tc           (dma_io_memRdOut_payload_tc[2:0]             ), //o
+    .io_memRdOut_payload_attr         (dma_io_memRdOut_payload_attr[1:0]           ), //o
+    .io_memRdOut_payload_cplId        (dma_io_memRdOut_payload_cplId[15:0]         ), //o
+    .io_memRdOut_payload_cplStatus    (dma_io_memRdOut_payload_cplStatus[2:0]      ), //o
+    .io_memRdOut_payload_cplByteCount (dma_io_memRdOut_payload_cplByteCount[11:0]  ), //o
+    .io_memRdOut_payload_cplLowerAddr (dma_io_memRdOut_payload_cplLowerAddr[6:0]   ), //o
+    .io_memRdOut_payload_data_0       (dma_io_memRdOut_payload_data_0[31:0]        ), //o
+    .io_memRdOut_payload_data_1       (dma_io_memRdOut_payload_data_1[31:0]        ), //o
+    .io_memRdOut_payload_data_2       (dma_io_memRdOut_payload_data_2[31:0]        ), //o
+    .io_memRdOut_payload_data_3       (dma_io_memRdOut_payload_data_3[31:0]        ), //o
+    .io_memRdOut_payload_dataValid    (dma_io_memRdOut_payload_dataValid[2:0]      ), //o
+    .io_cplIn_valid                   (rxEngine_io_cplIn_valid                     ), //i
+    .io_cplIn_ready                   (dma_io_cplIn_ready                          ), //o
+    .io_cplIn_payload_tlpType         (rxEngine_io_cplIn_payload_tlpType[3:0]      ), //i
+    .io_cplIn_payload_reqId           (rxEngine_io_cplIn_payload_reqId[15:0]       ), //i
+    .io_cplIn_payload_tag             (rxEngine_io_cplIn_payload_tag[7:0]          ), //i
+    .io_cplIn_payload_addr            (rxEngine_io_cplIn_payload_addr[63:0]        ), //i
+    .io_cplIn_payload_length          (rxEngine_io_cplIn_payload_length[9:0]       ), //i
+    .io_cplIn_payload_firstBe         (rxEngine_io_cplIn_payload_firstBe[3:0]      ), //i
+    .io_cplIn_payload_lastBe          (rxEngine_io_cplIn_payload_lastBe[3:0]       ), //i
+    .io_cplIn_payload_tc              (rxEngine_io_cplIn_payload_tc[2:0]           ), //i
+    .io_cplIn_payload_attr            (rxEngine_io_cplIn_payload_attr[1:0]         ), //i
+    .io_cplIn_payload_cplId           (rxEngine_io_cplIn_payload_cplId[15:0]       ), //i
+    .io_cplIn_payload_cplStatus       (rxEngine_io_cplIn_payload_cplStatus[2:0]    ), //i
+    .io_cplIn_payload_cplByteCount    (rxEngine_io_cplIn_payload_cplByteCount[11:0]), //i
+    .io_cplIn_payload_cplLowerAddr    (rxEngine_io_cplIn_payload_cplLowerAddr[6:0] ), //i
+    .io_cplIn_payload_data_0          (rxEngine_io_cplIn_payload_data_0[31:0]      ), //i
+    .io_cplIn_payload_data_1          (rxEngine_io_cplIn_payload_data_1[31:0]      ), //i
+    .io_cplIn_payload_data_2          (rxEngine_io_cplIn_payload_data_2[31:0]      ), //i
+    .io_cplIn_payload_data_3          (rxEngine_io_cplIn_payload_data_3[31:0]      ), //i
+    .io_cplIn_payload_dataValid       (rxEngine_io_cplIn_payload_dataValid[2:0]    ), //i
+    .io_localMem_aw_valid             (dma_io_localMem_aw_valid                    ), //o
+    .io_localMem_aw_ready             (io_localMem_aw_ready                        ), //i
+    .io_localMem_aw_payload_addr      (dma_io_localMem_aw_payload_addr[31:0]       ), //o
+    .io_localMem_aw_payload_id        (dma_io_localMem_aw_payload_id[3:0]          ), //o
+    .io_localMem_aw_payload_region    (dma_io_localMem_aw_payload_region[3:0]      ), //o
+    .io_localMem_aw_payload_len       (dma_io_localMem_aw_payload_len[7:0]         ), //o
+    .io_localMem_aw_payload_size      (dma_io_localMem_aw_payload_size[2:0]        ), //o
+    .io_localMem_aw_payload_burst     (dma_io_localMem_aw_payload_burst[1:0]       ), //o
+    .io_localMem_aw_payload_lock      (dma_io_localMem_aw_payload_lock             ), //o
+    .io_localMem_aw_payload_cache     (dma_io_localMem_aw_payload_cache[3:0]       ), //o
+    .io_localMem_aw_payload_qos       (dma_io_localMem_aw_payload_qos[3:0]         ), //o
+    .io_localMem_aw_payload_prot      (dma_io_localMem_aw_payload_prot[2:0]        ), //o
+    .io_localMem_w_valid              (dma_io_localMem_w_valid                     ), //o
+    .io_localMem_w_ready              (io_localMem_w_ready                         ), //i
+    .io_localMem_w_payload_data       (dma_io_localMem_w_payload_data[63:0]        ), //o
+    .io_localMem_w_payload_strb       (dma_io_localMem_w_payload_strb[7:0]         ), //o
+    .io_localMem_w_payload_last       (dma_io_localMem_w_payload_last              ), //o
+    .io_localMem_b_valid              (io_localMem_b_valid                         ), //i
+    .io_localMem_b_ready              (dma_io_localMem_b_ready                     ), //o
+    .io_localMem_b_payload_id         (io_localMem_b_payload_id[3:0]               ), //i
+    .io_localMem_b_payload_resp       (io_localMem_b_payload_resp[1:0]             ), //i
+    .io_localMem_ar_valid             (dma_io_localMem_ar_valid                    ), //o
+    .io_localMem_ar_ready             (io_localMem_ar_ready                        ), //i
+    .io_localMem_ar_payload_addr      (dma_io_localMem_ar_payload_addr[31:0]       ), //o
+    .io_localMem_ar_payload_id        (dma_io_localMem_ar_payload_id[3:0]          ), //o
+    .io_localMem_ar_payload_region    (dma_io_localMem_ar_payload_region[3:0]      ), //o
+    .io_localMem_ar_payload_len       (dma_io_localMem_ar_payload_len[7:0]         ), //o
+    .io_localMem_ar_payload_size      (dma_io_localMem_ar_payload_size[2:0]        ), //o
+    .io_localMem_ar_payload_burst     (dma_io_localMem_ar_payload_burst[1:0]       ), //o
+    .io_localMem_ar_payload_lock      (dma_io_localMem_ar_payload_lock             ), //o
+    .io_localMem_ar_payload_cache     (dma_io_localMem_ar_payload_cache[3:0]       ), //o
+    .io_localMem_ar_payload_qos       (dma_io_localMem_ar_payload_qos[3:0]         ), //o
+    .io_localMem_ar_payload_prot      (dma_io_localMem_ar_payload_prot[2:0]        ), //o
+    .io_localMem_r_valid              (io_localMem_r_valid                         ), //i
+    .io_localMem_r_ready              (dma_io_localMem_r_ready                     ), //o
+    .io_localMem_r_payload_data       (io_localMem_r_payload_data[63:0]            ), //i
+    .io_localMem_r_payload_id         (io_localMem_r_payload_id[3:0]               ), //i
+    .io_localMem_r_payload_resp       (io_localMem_r_payload_resp[1:0]             ), //i
+    .io_localMem_r_payload_last       (io_localMem_r_payload_last                  ), //i
+    .io_h2dDone                       (dma_io_h2dDone                              ), //o
+    .io_d2hDone                       (dma_io_d2hDone                              ), //o
+    .io_dmaErr                        (dma_io_dmaErr                               ), //o
+    .io_busDevFunc                    (myBdf[15:0]                                 ), //i
+    .clk                              (clk                                         ), //i
+    .reset                            (reset                                       )  //i
   );
   MsixController msix (
-    .io_intReq                      (io_intReq[31:0]                         ), //i
-    .io_intAck                      (msix_io_intAck[31:0]                    ), //o
-    .io_msgTlpOut_valid             (msix_io_msgTlpOut_valid                 ), //o
-    .io_msgTlpOut_ready             (streamArbiter_3_io_inputs_0_ready       ), //i
-    .io_msgTlpOut_payload_tlpType   (msix_io_msgTlpOut_payload_tlpType[3:0]  ), //o
-    .io_msgTlpOut_payload_reqId     (msix_io_msgTlpOut_payload_reqId[15:0]   ), //o
-    .io_msgTlpOut_payload_tag       (msix_io_msgTlpOut_payload_tag[7:0]      ), //o
-    .io_msgTlpOut_payload_addr      (msix_io_msgTlpOut_payload_addr[63:0]    ), //o
-    .io_msgTlpOut_payload_length    (msix_io_msgTlpOut_payload_length[9:0]   ), //o
-    .io_msgTlpOut_payload_firstBe   (msix_io_msgTlpOut_payload_firstBe[3:0]  ), //o
-    .io_msgTlpOut_payload_lastBe    (msix_io_msgTlpOut_payload_lastBe[3:0]   ), //o
-    .io_msgTlpOut_payload_tc        (msix_io_msgTlpOut_payload_tc[2:0]       ), //o
-    .io_msgTlpOut_payload_attr      (msix_io_msgTlpOut_payload_attr[1:0]     ), //o
-    .io_msgTlpOut_payload_data_0    (msix_io_msgTlpOut_payload_data_0[31:0]  ), //o
-    .io_msgTlpOut_payload_data_1    (msix_io_msgTlpOut_payload_data_1[31:0]  ), //o
-    .io_msgTlpOut_payload_data_2    (msix_io_msgTlpOut_payload_data_2[31:0]  ), //o
-    .io_msgTlpOut_payload_data_3    (msix_io_msgTlpOut_payload_data_3[31:0]  ), //o
-    .io_msgTlpOut_payload_dataValid (msix_io_msgTlpOut_payload_dataValid[2:0]), //o
-    .io_busDevFunc                  (myBdf[15:0]                             ), //i
-    .io_tableAddr                   (msix_io_tableAddr[11:0]                 ), //i
-    .io_tableRdata                  (msix_io_tableRdata[31:0]                ), //o
-    .io_tableWdata                  (rxEngine_io_memReq_payload_data_0[31:0] ), //i
-    .io_tableWen                    (msix_io_tableWen                        ), //i
-    .io_tableBe                     (rxEngine_io_memReq_payload_firstBe[3:0] ), //i
-    .io_msixEnable                  (cfgSpace_io_msixEnable                  ), //i
-    .io_funcMask                    (cfgSpace_io_msixFuncMask                ), //i
-    .clk                            (clk                                     ), //i
-    .reset                          (reset                                   )  //i
-  );
-  StreamArbiter streamArbiter_2 (
-    .io_inputs_0_valid             (cfgSpace_io_cfgResp_valid                       ), //i
-    .io_inputs_0_ready             (streamArbiter_2_io_inputs_0_ready               ), //o
-    .io_inputs_0_payload_tlpType   (cfgSpace_io_cfgResp_payload_tlpType[3:0]        ), //i
-    .io_inputs_0_payload_reqId     (cfgSpace_io_cfgResp_payload_reqId[15:0]         ), //i
-    .io_inputs_0_payload_tag       (cfgSpace_io_cfgResp_payload_tag[7:0]            ), //i
-    .io_inputs_0_payload_addr      (cfgSpace_io_cfgResp_payload_addr[63:0]          ), //i
-    .io_inputs_0_payload_length    (cfgSpace_io_cfgResp_payload_length[9:0]         ), //i
-    .io_inputs_0_payload_firstBe   (cfgSpace_io_cfgResp_payload_firstBe[3:0]        ), //i
-    .io_inputs_0_payload_lastBe    (cfgSpace_io_cfgResp_payload_lastBe[3:0]         ), //i
-    .io_inputs_0_payload_tc        (cfgSpace_io_cfgResp_payload_tc[2:0]             ), //i
-    .io_inputs_0_payload_attr      (cfgSpace_io_cfgResp_payload_attr[1:0]           ), //i
-    .io_inputs_0_payload_data_0    (cfgSpace_io_cfgResp_payload_data_0[31:0]        ), //i
-    .io_inputs_0_payload_data_1    (cfgSpace_io_cfgResp_payload_data_1[31:0]        ), //i
-    .io_inputs_0_payload_data_2    (cfgSpace_io_cfgResp_payload_data_2[31:0]        ), //i
-    .io_inputs_0_payload_data_3    (cfgSpace_io_cfgResp_payload_data_3[31:0]        ), //i
-    .io_inputs_0_payload_dataValid (cfgSpace_io_cfgResp_payload_dataValid[2:0]      ), //i
-    .io_inputs_1_valid             (ioHandler_io_cplOut_valid                       ), //i
-    .io_inputs_1_ready             (streamArbiter_2_io_inputs_1_ready               ), //o
-    .io_inputs_1_payload_tlpType   (ioHandler_io_cplOut_payload_tlpType[3:0]        ), //i
-    .io_inputs_1_payload_reqId     (ioHandler_io_cplOut_payload_reqId[15:0]         ), //i
-    .io_inputs_1_payload_tag       (ioHandler_io_cplOut_payload_tag[7:0]            ), //i
-    .io_inputs_1_payload_addr      (ioHandler_io_cplOut_payload_addr[63:0]          ), //i
-    .io_inputs_1_payload_length    (ioHandler_io_cplOut_payload_length[9:0]         ), //i
-    .io_inputs_1_payload_firstBe   (ioHandler_io_cplOut_payload_firstBe[3:0]        ), //i
-    .io_inputs_1_payload_lastBe    (ioHandler_io_cplOut_payload_lastBe[3:0]         ), //i
-    .io_inputs_1_payload_tc        (ioHandler_io_cplOut_payload_tc[2:0]             ), //i
-    .io_inputs_1_payload_attr      (ioHandler_io_cplOut_payload_attr[1:0]           ), //i
-    .io_inputs_1_payload_data_0    (ioHandler_io_cplOut_payload_data_0[31:0]        ), //i
-    .io_inputs_1_payload_data_1    (ioHandler_io_cplOut_payload_data_1[31:0]        ), //i
-    .io_inputs_1_payload_data_2    (ioHandler_io_cplOut_payload_data_2[31:0]        ), //i
-    .io_inputs_1_payload_data_3    (ioHandler_io_cplOut_payload_data_3[31:0]        ), //i
-    .io_inputs_1_payload_dataValid (ioHandler_io_cplOut_payload_dataValid[2:0]      ), //i
-    .io_output_valid               (streamArbiter_2_io_output_valid                 ), //o
-    .io_output_ready               (cplArb_ready                                    ), //i
-    .io_output_payload_tlpType     (streamArbiter_2_io_output_payload_tlpType[3:0]  ), //o
-    .io_output_payload_reqId       (streamArbiter_2_io_output_payload_reqId[15:0]   ), //o
-    .io_output_payload_tag         (streamArbiter_2_io_output_payload_tag[7:0]      ), //o
-    .io_output_payload_addr        (streamArbiter_2_io_output_payload_addr[63:0]    ), //o
-    .io_output_payload_length      (streamArbiter_2_io_output_payload_length[9:0]   ), //o
-    .io_output_payload_firstBe     (streamArbiter_2_io_output_payload_firstBe[3:0]  ), //o
-    .io_output_payload_lastBe      (streamArbiter_2_io_output_payload_lastBe[3:0]   ), //o
-    .io_output_payload_tc          (streamArbiter_2_io_output_payload_tc[2:0]       ), //o
-    .io_output_payload_attr        (streamArbiter_2_io_output_payload_attr[1:0]     ), //o
-    .io_output_payload_data_0      (streamArbiter_2_io_output_payload_data_0[31:0]  ), //o
-    .io_output_payload_data_1      (streamArbiter_2_io_output_payload_data_1[31:0]  ), //o
-    .io_output_payload_data_2      (streamArbiter_2_io_output_payload_data_2[31:0]  ), //o
-    .io_output_payload_data_3      (streamArbiter_2_io_output_payload_data_3[31:0]  ), //o
-    .io_output_payload_dataValid   (streamArbiter_2_io_output_payload_dataValid[2:0]), //o
-    .io_chosen                     (streamArbiter_2_io_chosen                       ), //o
-    .io_chosenOH                   (streamArbiter_2_io_chosenOH[1:0]                ), //o
-    .clk                           (clk                                             ), //i
-    .reset                         (reset                                           )  //i
+    .io_intReq                         (io_intReq[31:0]                             ), //i
+    .io_intAck                         (msix_io_intAck[31:0]                        ), //o
+    .io_msgTlpOut_valid                (msix_io_msgTlpOut_valid                     ), //o
+    .io_msgTlpOut_ready                (streamArbiter_4_io_inputs_0_ready           ), //i
+    .io_msgTlpOut_payload_tlpType      (msix_io_msgTlpOut_payload_tlpType[3:0]      ), //o
+    .io_msgTlpOut_payload_reqId        (msix_io_msgTlpOut_payload_reqId[15:0]       ), //o
+    .io_msgTlpOut_payload_tag          (msix_io_msgTlpOut_payload_tag[7:0]          ), //o
+    .io_msgTlpOut_payload_addr         (msix_io_msgTlpOut_payload_addr[63:0]        ), //o
+    .io_msgTlpOut_payload_length       (msix_io_msgTlpOut_payload_length[9:0]       ), //o
+    .io_msgTlpOut_payload_firstBe      (msix_io_msgTlpOut_payload_firstBe[3:0]      ), //o
+    .io_msgTlpOut_payload_lastBe       (msix_io_msgTlpOut_payload_lastBe[3:0]       ), //o
+    .io_msgTlpOut_payload_tc           (msix_io_msgTlpOut_payload_tc[2:0]           ), //o
+    .io_msgTlpOut_payload_attr         (msix_io_msgTlpOut_payload_attr[1:0]         ), //o
+    .io_msgTlpOut_payload_cplId        (msix_io_msgTlpOut_payload_cplId[15:0]       ), //o
+    .io_msgTlpOut_payload_cplStatus    (msix_io_msgTlpOut_payload_cplStatus[2:0]    ), //o
+    .io_msgTlpOut_payload_cplByteCount (msix_io_msgTlpOut_payload_cplByteCount[11:0]), //o
+    .io_msgTlpOut_payload_cplLowerAddr (msix_io_msgTlpOut_payload_cplLowerAddr[6:0] ), //o
+    .io_msgTlpOut_payload_data_0       (msix_io_msgTlpOut_payload_data_0[31:0]      ), //o
+    .io_msgTlpOut_payload_data_1       (msix_io_msgTlpOut_payload_data_1[31:0]      ), //o
+    .io_msgTlpOut_payload_data_2       (msix_io_msgTlpOut_payload_data_2[31:0]      ), //o
+    .io_msgTlpOut_payload_data_3       (msix_io_msgTlpOut_payload_data_3[31:0]      ), //o
+    .io_msgTlpOut_payload_dataValid    (msix_io_msgTlpOut_payload_dataValid[2:0]    ), //o
+    .io_busDevFunc                     (myBdf[15:0]                                 ), //i
+    .io_tableAddr                      (msix_io_tableAddr[11:0]                     ), //i
+    .io_tableRdata                     (msix_io_tableRdata[31:0]                    ), //o
+    .io_tableWdata                     (rxEngine_io_memReq_payload_data_0[31:0]     ), //i
+    .io_tableWen                       (msix_io_tableWen                            ), //i
+    .io_tableBe                        (rxEngine_io_memReq_payload_firstBe[3:0]     ), //i
+    .io_msixEnable                     (cfgSpace_io_msixEnable                      ), //i
+    .io_funcMask                       (cfgSpace_io_msixFuncMask                    ), //i
+    .clk                               (clk                                         ), //i
+    .reset                             (reset                                       )  //i
   );
   StreamArbiter streamArbiter_3 (
-    .io_inputs_0_valid             (msix_io_msgTlpOut_valid                         ), //i
-    .io_inputs_0_ready             (streamArbiter_3_io_inputs_0_ready               ), //o
-    .io_inputs_0_payload_tlpType   (msix_io_msgTlpOut_payload_tlpType[3:0]          ), //i
-    .io_inputs_0_payload_reqId     (msix_io_msgTlpOut_payload_reqId[15:0]           ), //i
-    .io_inputs_0_payload_tag       (msix_io_msgTlpOut_payload_tag[7:0]              ), //i
-    .io_inputs_0_payload_addr      (msix_io_msgTlpOut_payload_addr[63:0]            ), //i
-    .io_inputs_0_payload_length    (msix_io_msgTlpOut_payload_length[9:0]           ), //i
-    .io_inputs_0_payload_firstBe   (msix_io_msgTlpOut_payload_firstBe[3:0]          ), //i
-    .io_inputs_0_payload_lastBe    (msix_io_msgTlpOut_payload_lastBe[3:0]           ), //i
-    .io_inputs_0_payload_tc        (msix_io_msgTlpOut_payload_tc[2:0]               ), //i
-    .io_inputs_0_payload_attr      (msix_io_msgTlpOut_payload_attr[1:0]             ), //i
-    .io_inputs_0_payload_data_0    (msix_io_msgTlpOut_payload_data_0[31:0]          ), //i
-    .io_inputs_0_payload_data_1    (msix_io_msgTlpOut_payload_data_1[31:0]          ), //i
-    .io_inputs_0_payload_data_2    (msix_io_msgTlpOut_payload_data_2[31:0]          ), //i
-    .io_inputs_0_payload_data_3    (msix_io_msgTlpOut_payload_data_3[31:0]          ), //i
-    .io_inputs_0_payload_dataValid (msix_io_msgTlpOut_payload_dataValid[2:0]        ), //i
-    .io_inputs_1_valid             (dma_io_memWrOut_valid                           ), //i
-    .io_inputs_1_ready             (streamArbiter_3_io_inputs_1_ready               ), //o
-    .io_inputs_1_payload_tlpType   (dma_io_memWrOut_payload_tlpType[3:0]            ), //i
-    .io_inputs_1_payload_reqId     (dma_io_memWrOut_payload_reqId[15:0]             ), //i
-    .io_inputs_1_payload_tag       (dma_io_memWrOut_payload_tag[7:0]                ), //i
-    .io_inputs_1_payload_addr      (dma_io_memWrOut_payload_addr[63:0]              ), //i
-    .io_inputs_1_payload_length    (dma_io_memWrOut_payload_length[9:0]             ), //i
-    .io_inputs_1_payload_firstBe   (dma_io_memWrOut_payload_firstBe[3:0]            ), //i
-    .io_inputs_1_payload_lastBe    (dma_io_memWrOut_payload_lastBe[3:0]             ), //i
-    .io_inputs_1_payload_tc        (dma_io_memWrOut_payload_tc[2:0]                 ), //i
-    .io_inputs_1_payload_attr      (dma_io_memWrOut_payload_attr[1:0]               ), //i
-    .io_inputs_1_payload_data_0    (dma_io_memWrOut_payload_data_0[31:0]            ), //i
-    .io_inputs_1_payload_data_1    (dma_io_memWrOut_payload_data_1[31:0]            ), //i
-    .io_inputs_1_payload_data_2    (dma_io_memWrOut_payload_data_2[31:0]            ), //i
-    .io_inputs_1_payload_data_3    (dma_io_memWrOut_payload_data_3[31:0]            ), //i
-    .io_inputs_1_payload_dataValid (dma_io_memWrOut_payload_dataValid[2:0]          ), //i
-    .io_output_valid               (streamArbiter_3_io_output_valid                 ), //o
-    .io_output_ready               (memWrArb_ready                                  ), //i
-    .io_output_payload_tlpType     (streamArbiter_3_io_output_payload_tlpType[3:0]  ), //o
-    .io_output_payload_reqId       (streamArbiter_3_io_output_payload_reqId[15:0]   ), //o
-    .io_output_payload_tag         (streamArbiter_3_io_output_payload_tag[7:0]      ), //o
-    .io_output_payload_addr        (streamArbiter_3_io_output_payload_addr[63:0]    ), //o
-    .io_output_payload_length      (streamArbiter_3_io_output_payload_length[9:0]   ), //o
-    .io_output_payload_firstBe     (streamArbiter_3_io_output_payload_firstBe[3:0]  ), //o
-    .io_output_payload_lastBe      (streamArbiter_3_io_output_payload_lastBe[3:0]   ), //o
-    .io_output_payload_tc          (streamArbiter_3_io_output_payload_tc[2:0]       ), //o
-    .io_output_payload_attr        (streamArbiter_3_io_output_payload_attr[1:0]     ), //o
-    .io_output_payload_data_0      (streamArbiter_3_io_output_payload_data_0[31:0]  ), //o
-    .io_output_payload_data_1      (streamArbiter_3_io_output_payload_data_1[31:0]  ), //o
-    .io_output_payload_data_2      (streamArbiter_3_io_output_payload_data_2[31:0]  ), //o
-    .io_output_payload_data_3      (streamArbiter_3_io_output_payload_data_3[31:0]  ), //o
-    .io_output_payload_dataValid   (streamArbiter_3_io_output_payload_dataValid[2:0]), //o
-    .io_chosen                     (streamArbiter_3_io_chosen                       ), //o
-    .io_chosenOH                   (streamArbiter_3_io_chosenOH[1:0]                ), //o
-    .clk                           (clk                                             ), //i
-    .reset                         (reset                                           )  //i
+    .io_inputs_0_valid                (cfgSpace_io_cfgResp_valid                           ), //i
+    .io_inputs_0_ready                (streamArbiter_3_io_inputs_0_ready                   ), //o
+    .io_inputs_0_payload_tlpType      (cfgSpace_io_cfgResp_payload_tlpType[3:0]            ), //i
+    .io_inputs_0_payload_reqId        (cfgSpace_io_cfgResp_payload_reqId[15:0]             ), //i
+    .io_inputs_0_payload_tag          (cfgSpace_io_cfgResp_payload_tag[7:0]                ), //i
+    .io_inputs_0_payload_addr         (cfgSpace_io_cfgResp_payload_addr[63:0]              ), //i
+    .io_inputs_0_payload_length       (cfgSpace_io_cfgResp_payload_length[9:0]             ), //i
+    .io_inputs_0_payload_firstBe      (cfgSpace_io_cfgResp_payload_firstBe[3:0]            ), //i
+    .io_inputs_0_payload_lastBe       (cfgSpace_io_cfgResp_payload_lastBe[3:0]             ), //i
+    .io_inputs_0_payload_tc           (cfgSpace_io_cfgResp_payload_tc[2:0]                 ), //i
+    .io_inputs_0_payload_attr         (cfgSpace_io_cfgResp_payload_attr[1:0]               ), //i
+    .io_inputs_0_payload_cplId        (cfgSpace_io_cfgResp_payload_cplId[15:0]             ), //i
+    .io_inputs_0_payload_cplStatus    (cfgSpace_io_cfgResp_payload_cplStatus[2:0]          ), //i
+    .io_inputs_0_payload_cplByteCount (cfgSpace_io_cfgResp_payload_cplByteCount[11:0]      ), //i
+    .io_inputs_0_payload_cplLowerAddr (cfgSpace_io_cfgResp_payload_cplLowerAddr[6:0]       ), //i
+    .io_inputs_0_payload_data_0       (cfgSpace_io_cfgResp_payload_data_0[31:0]            ), //i
+    .io_inputs_0_payload_data_1       (cfgSpace_io_cfgResp_payload_data_1[31:0]            ), //i
+    .io_inputs_0_payload_data_2       (cfgSpace_io_cfgResp_payload_data_2[31:0]            ), //i
+    .io_inputs_0_payload_data_3       (cfgSpace_io_cfgResp_payload_data_3[31:0]            ), //i
+    .io_inputs_0_payload_dataValid    (cfgSpace_io_cfgResp_payload_dataValid[2:0]          ), //i
+    .io_inputs_1_valid                (ioHandler_io_cplOut_valid                           ), //i
+    .io_inputs_1_ready                (streamArbiter_3_io_inputs_1_ready                   ), //o
+    .io_inputs_1_payload_tlpType      (ioHandler_io_cplOut_payload_tlpType[3:0]            ), //i
+    .io_inputs_1_payload_reqId        (ioHandler_io_cplOut_payload_reqId[15:0]             ), //i
+    .io_inputs_1_payload_tag          (ioHandler_io_cplOut_payload_tag[7:0]                ), //i
+    .io_inputs_1_payload_addr         (ioHandler_io_cplOut_payload_addr[63:0]              ), //i
+    .io_inputs_1_payload_length       (ioHandler_io_cplOut_payload_length[9:0]             ), //i
+    .io_inputs_1_payload_firstBe      (ioHandler_io_cplOut_payload_firstBe[3:0]            ), //i
+    .io_inputs_1_payload_lastBe       (ioHandler_io_cplOut_payload_lastBe[3:0]             ), //i
+    .io_inputs_1_payload_tc           (ioHandler_io_cplOut_payload_tc[2:0]                 ), //i
+    .io_inputs_1_payload_attr         (ioHandler_io_cplOut_payload_attr[1:0]               ), //i
+    .io_inputs_1_payload_cplId        (ioHandler_io_cplOut_payload_cplId[15:0]             ), //i
+    .io_inputs_1_payload_cplStatus    (ioHandler_io_cplOut_payload_cplStatus[2:0]          ), //i
+    .io_inputs_1_payload_cplByteCount (ioHandler_io_cplOut_payload_cplByteCount[11:0]      ), //i
+    .io_inputs_1_payload_cplLowerAddr (ioHandler_io_cplOut_payload_cplLowerAddr[6:0]       ), //i
+    .io_inputs_1_payload_data_0       (ioHandler_io_cplOut_payload_data_0[31:0]            ), //i
+    .io_inputs_1_payload_data_1       (ioHandler_io_cplOut_payload_data_1[31:0]            ), //i
+    .io_inputs_1_payload_data_2       (ioHandler_io_cplOut_payload_data_2[31:0]            ), //i
+    .io_inputs_1_payload_data_3       (ioHandler_io_cplOut_payload_data_3[31:0]            ), //i
+    .io_inputs_1_payload_dataValid    (ioHandler_io_cplOut_payload_dataValid[2:0]          ), //i
+    .io_output_valid                  (streamArbiter_3_io_output_valid                     ), //o
+    .io_output_ready                  (cplArb_ready                                        ), //i
+    .io_output_payload_tlpType        (streamArbiter_3_io_output_payload_tlpType[3:0]      ), //o
+    .io_output_payload_reqId          (streamArbiter_3_io_output_payload_reqId[15:0]       ), //o
+    .io_output_payload_tag            (streamArbiter_3_io_output_payload_tag[7:0]          ), //o
+    .io_output_payload_addr           (streamArbiter_3_io_output_payload_addr[63:0]        ), //o
+    .io_output_payload_length         (streamArbiter_3_io_output_payload_length[9:0]       ), //o
+    .io_output_payload_firstBe        (streamArbiter_3_io_output_payload_firstBe[3:0]      ), //o
+    .io_output_payload_lastBe         (streamArbiter_3_io_output_payload_lastBe[3:0]       ), //o
+    .io_output_payload_tc             (streamArbiter_3_io_output_payload_tc[2:0]           ), //o
+    .io_output_payload_attr           (streamArbiter_3_io_output_payload_attr[1:0]         ), //o
+    .io_output_payload_cplId          (streamArbiter_3_io_output_payload_cplId[15:0]       ), //o
+    .io_output_payload_cplStatus      (streamArbiter_3_io_output_payload_cplStatus[2:0]    ), //o
+    .io_output_payload_cplByteCount   (streamArbiter_3_io_output_payload_cplByteCount[11:0]), //o
+    .io_output_payload_cplLowerAddr   (streamArbiter_3_io_output_payload_cplLowerAddr[6:0] ), //o
+    .io_output_payload_data_0         (streamArbiter_3_io_output_payload_data_0[31:0]      ), //o
+    .io_output_payload_data_1         (streamArbiter_3_io_output_payload_data_1[31:0]      ), //o
+    .io_output_payload_data_2         (streamArbiter_3_io_output_payload_data_2[31:0]      ), //o
+    .io_output_payload_data_3         (streamArbiter_3_io_output_payload_data_3[31:0]      ), //o
+    .io_output_payload_dataValid      (streamArbiter_3_io_output_payload_dataValid[2:0]    ), //o
+    .io_chosen                        (streamArbiter_3_io_chosen                           ), //o
+    .io_chosenOH                      (streamArbiter_3_io_chosenOH[1:0]                    ), //o
+    .clk                              (clk                                                 ), //i
+    .reset                            (reset                                               )  //i
+  );
+  StreamArbiter streamArbiter_4 (
+    .io_inputs_0_valid                (msix_io_msgTlpOut_valid                             ), //i
+    .io_inputs_0_ready                (streamArbiter_4_io_inputs_0_ready                   ), //o
+    .io_inputs_0_payload_tlpType      (msix_io_msgTlpOut_payload_tlpType[3:0]              ), //i
+    .io_inputs_0_payload_reqId        (msix_io_msgTlpOut_payload_reqId[15:0]               ), //i
+    .io_inputs_0_payload_tag          (msix_io_msgTlpOut_payload_tag[7:0]                  ), //i
+    .io_inputs_0_payload_addr         (msix_io_msgTlpOut_payload_addr[63:0]                ), //i
+    .io_inputs_0_payload_length       (msix_io_msgTlpOut_payload_length[9:0]               ), //i
+    .io_inputs_0_payload_firstBe      (msix_io_msgTlpOut_payload_firstBe[3:0]              ), //i
+    .io_inputs_0_payload_lastBe       (msix_io_msgTlpOut_payload_lastBe[3:0]               ), //i
+    .io_inputs_0_payload_tc           (msix_io_msgTlpOut_payload_tc[2:0]                   ), //i
+    .io_inputs_0_payload_attr         (msix_io_msgTlpOut_payload_attr[1:0]                 ), //i
+    .io_inputs_0_payload_cplId        (msix_io_msgTlpOut_payload_cplId[15:0]               ), //i
+    .io_inputs_0_payload_cplStatus    (msix_io_msgTlpOut_payload_cplStatus[2:0]            ), //i
+    .io_inputs_0_payload_cplByteCount (msix_io_msgTlpOut_payload_cplByteCount[11:0]        ), //i
+    .io_inputs_0_payload_cplLowerAddr (msix_io_msgTlpOut_payload_cplLowerAddr[6:0]         ), //i
+    .io_inputs_0_payload_data_0       (msix_io_msgTlpOut_payload_data_0[31:0]              ), //i
+    .io_inputs_0_payload_data_1       (msix_io_msgTlpOut_payload_data_1[31:0]              ), //i
+    .io_inputs_0_payload_data_2       (msix_io_msgTlpOut_payload_data_2[31:0]              ), //i
+    .io_inputs_0_payload_data_3       (msix_io_msgTlpOut_payload_data_3[31:0]              ), //i
+    .io_inputs_0_payload_dataValid    (msix_io_msgTlpOut_payload_dataValid[2:0]            ), //i
+    .io_inputs_1_valid                (dma_io_memWrOut_valid                               ), //i
+    .io_inputs_1_ready                (streamArbiter_4_io_inputs_1_ready                   ), //o
+    .io_inputs_1_payload_tlpType      (dma_io_memWrOut_payload_tlpType[3:0]                ), //i
+    .io_inputs_1_payload_reqId        (dma_io_memWrOut_payload_reqId[15:0]                 ), //i
+    .io_inputs_1_payload_tag          (dma_io_memWrOut_payload_tag[7:0]                    ), //i
+    .io_inputs_1_payload_addr         (dma_io_memWrOut_payload_addr[63:0]                  ), //i
+    .io_inputs_1_payload_length       (dma_io_memWrOut_payload_length[9:0]                 ), //i
+    .io_inputs_1_payload_firstBe      (dma_io_memWrOut_payload_firstBe[3:0]                ), //i
+    .io_inputs_1_payload_lastBe       (dma_io_memWrOut_payload_lastBe[3:0]                 ), //i
+    .io_inputs_1_payload_tc           (dma_io_memWrOut_payload_tc[2:0]                     ), //i
+    .io_inputs_1_payload_attr         (dma_io_memWrOut_payload_attr[1:0]                   ), //i
+    .io_inputs_1_payload_cplId        (dma_io_memWrOut_payload_cplId[15:0]                 ), //i
+    .io_inputs_1_payload_cplStatus    (dma_io_memWrOut_payload_cplStatus[2:0]              ), //i
+    .io_inputs_1_payload_cplByteCount (dma_io_memWrOut_payload_cplByteCount[11:0]          ), //i
+    .io_inputs_1_payload_cplLowerAddr (dma_io_memWrOut_payload_cplLowerAddr[6:0]           ), //i
+    .io_inputs_1_payload_data_0       (dma_io_memWrOut_payload_data_0[31:0]                ), //i
+    .io_inputs_1_payload_data_1       (dma_io_memWrOut_payload_data_1[31:0]                ), //i
+    .io_inputs_1_payload_data_2       (dma_io_memWrOut_payload_data_2[31:0]                ), //i
+    .io_inputs_1_payload_data_3       (dma_io_memWrOut_payload_data_3[31:0]                ), //i
+    .io_inputs_1_payload_dataValid    (dma_io_memWrOut_payload_dataValid[2:0]              ), //i
+    .io_output_valid                  (streamArbiter_4_io_output_valid                     ), //o
+    .io_output_ready                  (memWrArb_ready                                      ), //i
+    .io_output_payload_tlpType        (streamArbiter_4_io_output_payload_tlpType[3:0]      ), //o
+    .io_output_payload_reqId          (streamArbiter_4_io_output_payload_reqId[15:0]       ), //o
+    .io_output_payload_tag            (streamArbiter_4_io_output_payload_tag[7:0]          ), //o
+    .io_output_payload_addr           (streamArbiter_4_io_output_payload_addr[63:0]        ), //o
+    .io_output_payload_length         (streamArbiter_4_io_output_payload_length[9:0]       ), //o
+    .io_output_payload_firstBe        (streamArbiter_4_io_output_payload_firstBe[3:0]      ), //o
+    .io_output_payload_lastBe         (streamArbiter_4_io_output_payload_lastBe[3:0]       ), //o
+    .io_output_payload_tc             (streamArbiter_4_io_output_payload_tc[2:0]           ), //o
+    .io_output_payload_attr           (streamArbiter_4_io_output_payload_attr[1:0]         ), //o
+    .io_output_payload_cplId          (streamArbiter_4_io_output_payload_cplId[15:0]       ), //o
+    .io_output_payload_cplStatus      (streamArbiter_4_io_output_payload_cplStatus[2:0]    ), //o
+    .io_output_payload_cplByteCount   (streamArbiter_4_io_output_payload_cplByteCount[11:0]), //o
+    .io_output_payload_cplLowerAddr   (streamArbiter_4_io_output_payload_cplLowerAddr[6:0] ), //o
+    .io_output_payload_data_0         (streamArbiter_4_io_output_payload_data_0[31:0]      ), //o
+    .io_output_payload_data_1         (streamArbiter_4_io_output_payload_data_1[31:0]      ), //o
+    .io_output_payload_data_2         (streamArbiter_4_io_output_payload_data_2[31:0]      ), //o
+    .io_output_payload_data_3         (streamArbiter_4_io_output_payload_data_3[31:0]      ), //o
+    .io_output_payload_dataValid      (streamArbiter_4_io_output_payload_dataValid[2:0]    ), //o
+    .io_chosen                        (streamArbiter_4_io_chosen                           ), //o
+    .io_chosenOH                      (streamArbiter_4_io_chosenOH[1:0]                    ), //o
+    .clk                              (clk                                                 ), //i
+    .reset                            (reset                                               )  //i
+  );
+  StreamArbiter streamArbiter_5 (
+    .io_inputs_0_valid                (rxEngine_io_ioReq_valid                             ), //i
+    .io_inputs_0_ready                (streamArbiter_5_io_inputs_0_ready                   ), //o
+    .io_inputs_0_payload_tlpType      (rxEngine_io_ioReq_payload_tlpType[3:0]              ), //i
+    .io_inputs_0_payload_reqId        (rxEngine_io_ioReq_payload_reqId[15:0]               ), //i
+    .io_inputs_0_payload_tag          (rxEngine_io_ioReq_payload_tag[7:0]                  ), //i
+    .io_inputs_0_payload_addr         (rxEngine_io_ioReq_payload_addr[63:0]                ), //i
+    .io_inputs_0_payload_length       (rxEngine_io_ioReq_payload_length[9:0]               ), //i
+    .io_inputs_0_payload_firstBe      (rxEngine_io_ioReq_payload_firstBe[3:0]              ), //i
+    .io_inputs_0_payload_lastBe       (rxEngine_io_ioReq_payload_lastBe[3:0]               ), //i
+    .io_inputs_0_payload_tc           (rxEngine_io_ioReq_payload_tc[2:0]                   ), //i
+    .io_inputs_0_payload_attr         (rxEngine_io_ioReq_payload_attr[1:0]                 ), //i
+    .io_inputs_0_payload_cplId        (rxEngine_io_ioReq_payload_cplId[15:0]               ), //i
+    .io_inputs_0_payload_cplStatus    (rxEngine_io_ioReq_payload_cplStatus[2:0]            ), //i
+    .io_inputs_0_payload_cplByteCount (rxEngine_io_ioReq_payload_cplByteCount[11:0]        ), //i
+    .io_inputs_0_payload_cplLowerAddr (rxEngine_io_ioReq_payload_cplLowerAddr[6:0]         ), //i
+    .io_inputs_0_payload_data_0       (rxEngine_io_ioReq_payload_data_0[31:0]              ), //i
+    .io_inputs_0_payload_data_1       (rxEngine_io_ioReq_payload_data_1[31:0]              ), //i
+    .io_inputs_0_payload_data_2       (rxEngine_io_ioReq_payload_data_2[31:0]              ), //i
+    .io_inputs_0_payload_data_3       (rxEngine_io_ioReq_payload_data_3[31:0]              ), //i
+    .io_inputs_0_payload_dataValid    (rxEngine_io_ioReq_payload_dataValid[2:0]            ), //i
+    .io_inputs_1_valid                (bar0MemReq_valid                                    ), //i
+    .io_inputs_1_ready                (streamArbiter_5_io_inputs_1_ready                   ), //o
+    .io_inputs_1_payload_tlpType      (bar0MemReq_payload_tlpType[3:0]                     ), //i
+    .io_inputs_1_payload_reqId        (bar0MemReq_payload_reqId[15:0]                      ), //i
+    .io_inputs_1_payload_tag          (bar0MemReq_payload_tag[7:0]                         ), //i
+    .io_inputs_1_payload_addr         (bar0MemReq_payload_addr[63:0]                       ), //i
+    .io_inputs_1_payload_length       (bar0MemReq_payload_length[9:0]                      ), //i
+    .io_inputs_1_payload_firstBe      (bar0MemReq_payload_firstBe[3:0]                     ), //i
+    .io_inputs_1_payload_lastBe       (bar0MemReq_payload_lastBe[3:0]                      ), //i
+    .io_inputs_1_payload_tc           (bar0MemReq_payload_tc[2:0]                          ), //i
+    .io_inputs_1_payload_attr         (bar0MemReq_payload_attr[1:0]                        ), //i
+    .io_inputs_1_payload_cplId        (bar0MemReq_payload_cplId[15:0]                      ), //i
+    .io_inputs_1_payload_cplStatus    (bar0MemReq_payload_cplStatus[2:0]                   ), //i
+    .io_inputs_1_payload_cplByteCount (bar0MemReq_payload_cplByteCount[11:0]               ), //i
+    .io_inputs_1_payload_cplLowerAddr (bar0MemReq_payload_cplLowerAddr[6:0]                ), //i
+    .io_inputs_1_payload_data_0       (bar0MemReq_payload_data_0[31:0]                     ), //i
+    .io_inputs_1_payload_data_1       (bar0MemReq_payload_data_1[31:0]                     ), //i
+    .io_inputs_1_payload_data_2       (bar0MemReq_payload_data_2[31:0]                     ), //i
+    .io_inputs_1_payload_data_3       (bar0MemReq_payload_data_3[31:0]                     ), //i
+    .io_inputs_1_payload_dataValid    (bar0MemReq_payload_dataValid[2:0]                   ), //i
+    .io_output_valid                  (streamArbiter_5_io_output_valid                     ), //o
+    .io_output_ready                  (userRegReq_ready                                    ), //i
+    .io_output_payload_tlpType        (streamArbiter_5_io_output_payload_tlpType[3:0]      ), //o
+    .io_output_payload_reqId          (streamArbiter_5_io_output_payload_reqId[15:0]       ), //o
+    .io_output_payload_tag            (streamArbiter_5_io_output_payload_tag[7:0]          ), //o
+    .io_output_payload_addr           (streamArbiter_5_io_output_payload_addr[63:0]        ), //o
+    .io_output_payload_length         (streamArbiter_5_io_output_payload_length[9:0]       ), //o
+    .io_output_payload_firstBe        (streamArbiter_5_io_output_payload_firstBe[3:0]      ), //o
+    .io_output_payload_lastBe         (streamArbiter_5_io_output_payload_lastBe[3:0]       ), //o
+    .io_output_payload_tc             (streamArbiter_5_io_output_payload_tc[2:0]           ), //o
+    .io_output_payload_attr           (streamArbiter_5_io_output_payload_attr[1:0]         ), //o
+    .io_output_payload_cplId          (streamArbiter_5_io_output_payload_cplId[15:0]       ), //o
+    .io_output_payload_cplStatus      (streamArbiter_5_io_output_payload_cplStatus[2:0]    ), //o
+    .io_output_payload_cplByteCount   (streamArbiter_5_io_output_payload_cplByteCount[11:0]), //o
+    .io_output_payload_cplLowerAddr   (streamArbiter_5_io_output_payload_cplLowerAddr[6:0] ), //o
+    .io_output_payload_data_0         (streamArbiter_5_io_output_payload_data_0[31:0]      ), //o
+    .io_output_payload_data_1         (streamArbiter_5_io_output_payload_data_1[31:0]      ), //o
+    .io_output_payload_data_2         (streamArbiter_5_io_output_payload_data_2[31:0]      ), //o
+    .io_output_payload_data_3         (streamArbiter_5_io_output_payload_data_3[31:0]      ), //o
+    .io_output_payload_dataValid      (streamArbiter_5_io_output_payload_dataValid[2:0]    ), //o
+    .io_chosen                        (streamArbiter_5_io_chosen                           ), //o
+    .io_chosenOH                      (streamArbiter_5_io_chosenOH[1:0]                    ), //o
+    .clk                              (clk                                                 ), //i
+    .reset                            (reset                                               )  //i
   );
   `ifndef SYNTHESIS
   always @(*) begin
@@ -1204,6 +1475,42 @@ module PcieController (
       default : memWrArb_payload_tlpType_string = "???????";
     endcase
   end
+  always @(*) begin
+    case(bar0MemReq_payload_tlpType)
+      TlpType_MEM_RD : bar0MemReq_payload_tlpType_string = "MEM_RD ";
+      TlpType_MEM_WR : bar0MemReq_payload_tlpType_string = "MEM_WR ";
+      TlpType_IO_RD : bar0MemReq_payload_tlpType_string = "IO_RD  ";
+      TlpType_IO_WR : bar0MemReq_payload_tlpType_string = "IO_WR  ";
+      TlpType_CFG_RD0 : bar0MemReq_payload_tlpType_string = "CFG_RD0";
+      TlpType_CFG_WR0 : bar0MemReq_payload_tlpType_string = "CFG_WR0";
+      TlpType_CFG_RD1 : bar0MemReq_payload_tlpType_string = "CFG_RD1";
+      TlpType_CFG_WR1 : bar0MemReq_payload_tlpType_string = "CFG_WR1";
+      TlpType_CPL : bar0MemReq_payload_tlpType_string = "CPL    ";
+      TlpType_CPL_D : bar0MemReq_payload_tlpType_string = "CPL_D  ";
+      TlpType_MSG : bar0MemReq_payload_tlpType_string = "MSG    ";
+      TlpType_MSG_D : bar0MemReq_payload_tlpType_string = "MSG_D  ";
+      TlpType_INVALID : bar0MemReq_payload_tlpType_string = "INVALID";
+      default : bar0MemReq_payload_tlpType_string = "???????";
+    endcase
+  end
+  always @(*) begin
+    case(userRegReq_payload_tlpType)
+      TlpType_MEM_RD : userRegReq_payload_tlpType_string = "MEM_RD ";
+      TlpType_MEM_WR : userRegReq_payload_tlpType_string = "MEM_WR ";
+      TlpType_IO_RD : userRegReq_payload_tlpType_string = "IO_RD  ";
+      TlpType_IO_WR : userRegReq_payload_tlpType_string = "IO_WR  ";
+      TlpType_CFG_RD0 : userRegReq_payload_tlpType_string = "CFG_RD0";
+      TlpType_CFG_WR0 : userRegReq_payload_tlpType_string = "CFG_WR0";
+      TlpType_CFG_RD1 : userRegReq_payload_tlpType_string = "CFG_RD1";
+      TlpType_CFG_WR1 : userRegReq_payload_tlpType_string = "CFG_WR1";
+      TlpType_CPL : userRegReq_payload_tlpType_string = "CPL    ";
+      TlpType_CPL_D : userRegReq_payload_tlpType_string = "CPL_D  ";
+      TlpType_MSG : userRegReq_payload_tlpType_string = "MSG    ";
+      TlpType_MSG_D : userRegReq_payload_tlpType_string = "MSG_D  ";
+      TlpType_INVALID : userRegReq_payload_tlpType_string = "INVALID";
+      default : userRegReq_payload_tlpType_string = "???????";
+    endcase
+  end
   `endif
 
   assign when_PcieController_l99 = (phy_io_busNum != 8'h00);
@@ -1220,43 +1527,94 @@ module PcieController (
   assign fcMgr_io_init = 1'b0;
   assign fcMgr_io_npdConsumed = 12'h000;
   assign cfgSpace_io_barCheckAddr = (rxEngine_io_memReq_valid ? rxEngine_io_memReq_payload_addr : 64'h0000000000000000);
-  assign cplArb_valid = streamArbiter_2_io_output_valid;
-  assign cplArb_payload_tlpType = streamArbiter_2_io_output_payload_tlpType;
-  assign cplArb_payload_reqId = streamArbiter_2_io_output_payload_reqId;
-  assign cplArb_payload_tag = streamArbiter_2_io_output_payload_tag;
-  assign cplArb_payload_addr = streamArbiter_2_io_output_payload_addr;
-  assign cplArb_payload_length = streamArbiter_2_io_output_payload_length;
-  assign cplArb_payload_firstBe = streamArbiter_2_io_output_payload_firstBe;
-  assign cplArb_payload_lastBe = streamArbiter_2_io_output_payload_lastBe;
-  assign cplArb_payload_tc = streamArbiter_2_io_output_payload_tc;
-  assign cplArb_payload_attr = streamArbiter_2_io_output_payload_attr;
-  assign cplArb_payload_data_0 = streamArbiter_2_io_output_payload_data_0;
-  assign cplArb_payload_data_1 = streamArbiter_2_io_output_payload_data_1;
-  assign cplArb_payload_data_2 = streamArbiter_2_io_output_payload_data_2;
-  assign cplArb_payload_data_3 = streamArbiter_2_io_output_payload_data_3;
-  assign cplArb_payload_dataValid = streamArbiter_2_io_output_payload_dataValid;
+  assign cplArb_valid = streamArbiter_3_io_output_valid;
+  assign cplArb_payload_tlpType = streamArbiter_3_io_output_payload_tlpType;
+  assign cplArb_payload_reqId = streamArbiter_3_io_output_payload_reqId;
+  assign cplArb_payload_tag = streamArbiter_3_io_output_payload_tag;
+  assign cplArb_payload_addr = streamArbiter_3_io_output_payload_addr;
+  assign cplArb_payload_length = streamArbiter_3_io_output_payload_length;
+  assign cplArb_payload_firstBe = streamArbiter_3_io_output_payload_firstBe;
+  assign cplArb_payload_lastBe = streamArbiter_3_io_output_payload_lastBe;
+  assign cplArb_payload_tc = streamArbiter_3_io_output_payload_tc;
+  assign cplArb_payload_attr = streamArbiter_3_io_output_payload_attr;
+  assign cplArb_payload_cplId = streamArbiter_3_io_output_payload_cplId;
+  assign cplArb_payload_cplStatus = streamArbiter_3_io_output_payload_cplStatus;
+  assign cplArb_payload_cplByteCount = streamArbiter_3_io_output_payload_cplByteCount;
+  assign cplArb_payload_cplLowerAddr = streamArbiter_3_io_output_payload_cplLowerAddr;
+  assign cplArb_payload_data_0 = streamArbiter_3_io_output_payload_data_0;
+  assign cplArb_payload_data_1 = streamArbiter_3_io_output_payload_data_1;
+  assign cplArb_payload_data_2 = streamArbiter_3_io_output_payload_data_2;
+  assign cplArb_payload_data_3 = streamArbiter_3_io_output_payload_data_3;
+  assign cplArb_payload_dataValid = streamArbiter_3_io_output_payload_dataValid;
   assign cplArb_ready = txEngine_io_cplIn_ready;
+  assign isBar0Req = (rxEngine_io_memReq_valid && cfgSpace_io_barHit[0]);
   assign isBar1Req = (rxEngine_io_memReq_valid && cfgSpace_io_barHit[1]);
+  assign isBar1Write = (isBar1Req && (rxEngine_io_memReq_payload_tlpType == TlpType_MEM_WR));
   assign msix_io_tableAddr = rxEngine_io_memReq_payload_addr[11 : 0];
-  assign msix_io_tableWen = (isBar1Req && (rxEngine_io_memReq_payload_tlpType == TlpType_MEM_WR));
+  assign toplevel_rxEngine_io_memReq_fire = (rxEngine_io_memReq_valid && rxEngine_io_memReq_ready);
+  assign msix_io_tableWen = (toplevel_rxEngine_io_memReq_fire && isBar1Write);
   assign io_intAck = msix_io_intAck;
-  assign memWrArb_valid = streamArbiter_3_io_output_valid;
-  assign memWrArb_payload_tlpType = streamArbiter_3_io_output_payload_tlpType;
-  assign memWrArb_payload_reqId = streamArbiter_3_io_output_payload_reqId;
-  assign memWrArb_payload_tag = streamArbiter_3_io_output_payload_tag;
-  assign memWrArb_payload_addr = streamArbiter_3_io_output_payload_addr;
-  assign memWrArb_payload_length = streamArbiter_3_io_output_payload_length;
-  assign memWrArb_payload_firstBe = streamArbiter_3_io_output_payload_firstBe;
-  assign memWrArb_payload_lastBe = streamArbiter_3_io_output_payload_lastBe;
-  assign memWrArb_payload_tc = streamArbiter_3_io_output_payload_tc;
-  assign memWrArb_payload_attr = streamArbiter_3_io_output_payload_attr;
-  assign memWrArb_payload_data_0 = streamArbiter_3_io_output_payload_data_0;
-  assign memWrArb_payload_data_1 = streamArbiter_3_io_output_payload_data_1;
-  assign memWrArb_payload_data_2 = streamArbiter_3_io_output_payload_data_2;
-  assign memWrArb_payload_data_3 = streamArbiter_3_io_output_payload_data_3;
-  assign memWrArb_payload_dataValid = streamArbiter_3_io_output_payload_dataValid;
+  assign memWrArb_valid = streamArbiter_4_io_output_valid;
+  assign memWrArb_payload_tlpType = streamArbiter_4_io_output_payload_tlpType;
+  assign memWrArb_payload_reqId = streamArbiter_4_io_output_payload_reqId;
+  assign memWrArb_payload_tag = streamArbiter_4_io_output_payload_tag;
+  assign memWrArb_payload_addr = streamArbiter_4_io_output_payload_addr;
+  assign memWrArb_payload_length = streamArbiter_4_io_output_payload_length;
+  assign memWrArb_payload_firstBe = streamArbiter_4_io_output_payload_firstBe;
+  assign memWrArb_payload_lastBe = streamArbiter_4_io_output_payload_lastBe;
+  assign memWrArb_payload_tc = streamArbiter_4_io_output_payload_tc;
+  assign memWrArb_payload_attr = streamArbiter_4_io_output_payload_attr;
+  assign memWrArb_payload_cplId = streamArbiter_4_io_output_payload_cplId;
+  assign memWrArb_payload_cplStatus = streamArbiter_4_io_output_payload_cplStatus;
+  assign memWrArb_payload_cplByteCount = streamArbiter_4_io_output_payload_cplByteCount;
+  assign memWrArb_payload_cplLowerAddr = streamArbiter_4_io_output_payload_cplLowerAddr;
+  assign memWrArb_payload_data_0 = streamArbiter_4_io_output_payload_data_0;
+  assign memWrArb_payload_data_1 = streamArbiter_4_io_output_payload_data_1;
+  assign memWrArb_payload_data_2 = streamArbiter_4_io_output_payload_data_2;
+  assign memWrArb_payload_data_3 = streamArbiter_4_io_output_payload_data_3;
+  assign memWrArb_payload_dataValid = streamArbiter_4_io_output_payload_dataValid;
   assign memWrArb_ready = txEngine_io_memWrIn_ready;
-  assign rxEngine_io_memReq_ready = 1'b1;
+  assign bar0MemReq_valid = isBar0Req;
+  assign bar0MemReq_payload_tlpType = rxEngine_io_memReq_payload_tlpType;
+  assign bar0MemReq_payload_reqId = rxEngine_io_memReq_payload_reqId;
+  assign bar0MemReq_payload_tag = rxEngine_io_memReq_payload_tag;
+  assign bar0MemReq_payload_addr = rxEngine_io_memReq_payload_addr;
+  assign bar0MemReq_payload_length = rxEngine_io_memReq_payload_length;
+  assign bar0MemReq_payload_firstBe = rxEngine_io_memReq_payload_firstBe;
+  assign bar0MemReq_payload_lastBe = rxEngine_io_memReq_payload_lastBe;
+  assign bar0MemReq_payload_tc = rxEngine_io_memReq_payload_tc;
+  assign bar0MemReq_payload_attr = rxEngine_io_memReq_payload_attr;
+  assign bar0MemReq_payload_cplId = rxEngine_io_memReq_payload_cplId;
+  assign bar0MemReq_payload_cplStatus = rxEngine_io_memReq_payload_cplStatus;
+  assign bar0MemReq_payload_cplByteCount = rxEngine_io_memReq_payload_cplByteCount;
+  assign bar0MemReq_payload_cplLowerAddr = rxEngine_io_memReq_payload_cplLowerAddr;
+  assign bar0MemReq_payload_data_0 = rxEngine_io_memReq_payload_data_0;
+  assign bar0MemReq_payload_data_1 = rxEngine_io_memReq_payload_data_1;
+  assign bar0MemReq_payload_data_2 = rxEngine_io_memReq_payload_data_2;
+  assign bar0MemReq_payload_data_3 = rxEngine_io_memReq_payload_data_3;
+  assign bar0MemReq_payload_dataValid = rxEngine_io_memReq_payload_dataValid;
+  assign rxEngine_io_memReq_ready = (isBar0Req ? bar0MemReq_ready : 1'b1);
+  assign bar0MemReq_ready = streamArbiter_5_io_inputs_1_ready;
+  assign userRegReq_valid = streamArbiter_5_io_output_valid;
+  assign userRegReq_payload_tlpType = streamArbiter_5_io_output_payload_tlpType;
+  assign userRegReq_payload_reqId = streamArbiter_5_io_output_payload_reqId;
+  assign userRegReq_payload_tag = streamArbiter_5_io_output_payload_tag;
+  assign userRegReq_payload_addr = streamArbiter_5_io_output_payload_addr;
+  assign userRegReq_payload_length = streamArbiter_5_io_output_payload_length;
+  assign userRegReq_payload_firstBe = streamArbiter_5_io_output_payload_firstBe;
+  assign userRegReq_payload_lastBe = streamArbiter_5_io_output_payload_lastBe;
+  assign userRegReq_payload_tc = streamArbiter_5_io_output_payload_tc;
+  assign userRegReq_payload_attr = streamArbiter_5_io_output_payload_attr;
+  assign userRegReq_payload_cplId = streamArbiter_5_io_output_payload_cplId;
+  assign userRegReq_payload_cplStatus = streamArbiter_5_io_output_payload_cplStatus;
+  assign userRegReq_payload_cplByteCount = streamArbiter_5_io_output_payload_cplByteCount;
+  assign userRegReq_payload_cplLowerAddr = streamArbiter_5_io_output_payload_cplLowerAddr;
+  assign userRegReq_payload_data_0 = streamArbiter_5_io_output_payload_data_0;
+  assign userRegReq_payload_data_1 = streamArbiter_5_io_output_payload_data_1;
+  assign userRegReq_payload_data_2 = streamArbiter_5_io_output_payload_data_2;
+  assign userRegReq_payload_data_3 = streamArbiter_5_io_output_payload_data_3;
+  assign userRegReq_payload_dataValid = streamArbiter_5_io_output_payload_dataValid;
+  assign userRegReq_ready = ioHandler_io_ioReq_ready;
   assign ioHandler_io_regWidth = 2'b10;
   assign io_ioRegAddr = ioHandler_io_regAddr;
   assign io_ioRegWrData = ioHandler_io_regWrData;
@@ -1317,6 +1675,8 @@ module PcieController (
 
 endmodule
 
+//StreamArbiter_2 replaced by StreamArbiter
+
 //StreamArbiter_1 replaced by StreamArbiter
 
 module StreamArbiter (
@@ -1331,6 +1691,10 @@ module StreamArbiter (
   input  wire [3:0]    io_inputs_0_payload_lastBe,
   input  wire [2:0]    io_inputs_0_payload_tc,
   input  wire [1:0]    io_inputs_0_payload_attr,
+  input  wire [15:0]   io_inputs_0_payload_cplId,
+  input  wire [2:0]    io_inputs_0_payload_cplStatus,
+  input  wire [11:0]   io_inputs_0_payload_cplByteCount,
+  input  wire [6:0]    io_inputs_0_payload_cplLowerAddr,
   input  wire [31:0]   io_inputs_0_payload_data_0,
   input  wire [31:0]   io_inputs_0_payload_data_1,
   input  wire [31:0]   io_inputs_0_payload_data_2,
@@ -1347,6 +1711,10 @@ module StreamArbiter (
   input  wire [3:0]    io_inputs_1_payload_lastBe,
   input  wire [2:0]    io_inputs_1_payload_tc,
   input  wire [1:0]    io_inputs_1_payload_attr,
+  input  wire [15:0]   io_inputs_1_payload_cplId,
+  input  wire [2:0]    io_inputs_1_payload_cplStatus,
+  input  wire [11:0]   io_inputs_1_payload_cplByteCount,
+  input  wire [6:0]    io_inputs_1_payload_cplLowerAddr,
   input  wire [31:0]   io_inputs_1_payload_data_0,
   input  wire [31:0]   io_inputs_1_payload_data_1,
   input  wire [31:0]   io_inputs_1_payload_data_2,
@@ -1363,6 +1731,10 @@ module StreamArbiter (
   output wire [3:0]    io_output_payload_lastBe,
   output wire [2:0]    io_output_payload_tc,
   output wire [1:0]    io_output_payload_attr,
+  output wire [15:0]   io_output_payload_cplId,
+  output wire [2:0]    io_output_payload_cplStatus,
+  output wire [11:0]   io_output_payload_cplByteCount,
+  output wire [6:0]    io_output_payload_cplLowerAddr,
   output wire [31:0]   io_output_payload_data_0,
   output wire [31:0]   io_output_payload_data_1,
   output wire [31:0]   io_output_payload_data_2,
@@ -1510,6 +1882,10 @@ module StreamArbiter (
   assign io_output_payload_lastBe = (maskRouted_0 ? io_inputs_0_payload_lastBe : io_inputs_1_payload_lastBe);
   assign io_output_payload_tc = (maskRouted_0 ? io_inputs_0_payload_tc : io_inputs_1_payload_tc);
   assign io_output_payload_attr = (maskRouted_0 ? io_inputs_0_payload_attr : io_inputs_1_payload_attr);
+  assign io_output_payload_cplId = (maskRouted_0 ? io_inputs_0_payload_cplId : io_inputs_1_payload_cplId);
+  assign io_output_payload_cplStatus = (maskRouted_0 ? io_inputs_0_payload_cplStatus : io_inputs_1_payload_cplStatus);
+  assign io_output_payload_cplByteCount = (maskRouted_0 ? io_inputs_0_payload_cplByteCount : io_inputs_1_payload_cplByteCount);
+  assign io_output_payload_cplLowerAddr = (maskRouted_0 ? io_inputs_0_payload_cplLowerAddr : io_inputs_1_payload_cplLowerAddr);
   assign io_output_payload_data_0 = (maskRouted_0 ? io_inputs_0_payload_data_0 : io_inputs_1_payload_data_0);
   assign io_output_payload_data_1 = (maskRouted_0 ? io_inputs_0_payload_data_1 : io_inputs_1_payload_data_1);
   assign io_output_payload_data_2 = (maskRouted_0 ? io_inputs_0_payload_data_2 : io_inputs_1_payload_data_2);
@@ -1556,6 +1932,10 @@ module MsixController (
   output reg  [3:0]    io_msgTlpOut_payload_lastBe,
   output reg  [2:0]    io_msgTlpOut_payload_tc,
   output reg  [1:0]    io_msgTlpOut_payload_attr,
+  output reg  [15:0]   io_msgTlpOut_payload_cplId,
+  output reg  [2:0]    io_msgTlpOut_payload_cplStatus,
+  output reg  [11:0]   io_msgTlpOut_payload_cplByteCount,
+  output reg  [6:0]    io_msgTlpOut_payload_cplLowerAddr,
   output reg  [31:0]   io_msgTlpOut_payload_data_0,
   output reg  [31:0]   io_msgTlpOut_payload_data_1,
   output reg  [31:0]   io_msgTlpOut_payload_data_2,
@@ -2205,6 +2585,58 @@ module MsixController (
   end
 
   always @(*) begin
+    io_msgTlpOut_payload_cplId = 16'bxxxxxxxxxxxxxxxx;
+    case(irqState_1)
+      IrqState_SCAN : begin
+      end
+      IrqState_SEND_MSG : begin
+        io_msgTlpOut_payload_cplId = 16'h0000;
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
+    io_msgTlpOut_payload_cplStatus = 3'bxxx;
+    case(irqState_1)
+      IrqState_SCAN : begin
+      end
+      IrqState_SEND_MSG : begin
+        io_msgTlpOut_payload_cplStatus = 3'b000;
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
+    io_msgTlpOut_payload_cplByteCount = 12'bxxxxxxxxxxxx;
+    case(irqState_1)
+      IrqState_SCAN : begin
+      end
+      IrqState_SEND_MSG : begin
+        io_msgTlpOut_payload_cplByteCount = 12'h000;
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
+    io_msgTlpOut_payload_cplLowerAddr = 7'bxxxxxxx;
+    case(irqState_1)
+      IrqState_SCAN : begin
+      end
+      IrqState_SEND_MSG : begin
+        io_msgTlpOut_payload_cplLowerAddr = 7'h00;
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
     io_msgTlpOut_payload_data_0 = 32'bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
     case(irqState_1)
       IrqState_SCAN : begin
@@ -2357,6 +2789,10 @@ module DmaEngine (
   output reg  [3:0]    io_memWrOut_payload_lastBe,
   output reg  [2:0]    io_memWrOut_payload_tc,
   output reg  [1:0]    io_memWrOut_payload_attr,
+  output reg  [15:0]   io_memWrOut_payload_cplId,
+  output reg  [2:0]    io_memWrOut_payload_cplStatus,
+  output reg  [11:0]   io_memWrOut_payload_cplByteCount,
+  output reg  [6:0]    io_memWrOut_payload_cplLowerAddr,
   output reg  [31:0]   io_memWrOut_payload_data_0,
   output reg  [31:0]   io_memWrOut_payload_data_1,
   output reg  [31:0]   io_memWrOut_payload_data_2,
@@ -2373,6 +2809,10 @@ module DmaEngine (
   output wire [3:0]    io_memRdOut_payload_lastBe,
   output wire [2:0]    io_memRdOut_payload_tc,
   output wire [1:0]    io_memRdOut_payload_attr,
+  output wire [15:0]   io_memRdOut_payload_cplId,
+  output wire [2:0]    io_memRdOut_payload_cplStatus,
+  output wire [11:0]   io_memRdOut_payload_cplByteCount,
+  output wire [6:0]    io_memRdOut_payload_cplLowerAddr,
   output wire [31:0]   io_memRdOut_payload_data_0,
   output wire [31:0]   io_memRdOut_payload_data_1,
   output wire [31:0]   io_memRdOut_payload_data_2,
@@ -2389,6 +2829,10 @@ module DmaEngine (
   input  wire [3:0]    io_cplIn_payload_lastBe,
   input  wire [2:0]    io_cplIn_payload_tc,
   input  wire [1:0]    io_cplIn_payload_attr,
+  input  wire [15:0]   io_cplIn_payload_cplId,
+  input  wire [2:0]    io_cplIn_payload_cplStatus,
+  input  wire [11:0]   io_cplIn_payload_cplByteCount,
+  input  wire [6:0]    io_cplIn_payload_cplLowerAddr,
   input  wire [31:0]   io_cplIn_payload_data_0,
   input  wire [31:0]   io_cplIn_payload_data_1,
   input  wire [31:0]   io_cplIn_payload_data_2,
@@ -2481,7 +2925,7 @@ module DmaEngine (
   wire       [31:0]   _zz_offset_1;
   wire       [31:0]   _zz_totalBytes_3;
   wire       [33:0]   _zz_totalBytes_4;
-  wire       [15:0]   _zz_when_DmaEngine_l506;
+  wire       [15:0]   _zz_when_DmaEngine_l518;
   reg        [31:0]   ctrlReg;
   reg        [31:0]   statusReg;
   reg        [31:0]   srcAddrLo;
@@ -2551,6 +2995,10 @@ module DmaEngine (
   wire       [3:0]    memWrPkt_lastBe;
   wire       [2:0]    memWrPkt_tc;
   wire       [1:0]    memWrPkt_attr;
+  wire       [15:0]   memWrPkt_cplId;
+  wire       [2:0]    memWrPkt_cplStatus;
+  wire       [11:0]   memWrPkt_cplByteCount;
+  wire       [6:0]    memWrPkt_cplLowerAddr;
   wire       [31:0]   memWrPkt_data_0;
   wire       [31:0]   memWrPkt_data_1;
   wire       [31:0]   memWrPkt_data_2;
@@ -2565,6 +3013,10 @@ module DmaEngine (
   wire       [3:0]    memRdPkt_lastBe;
   wire       [2:0]    memRdPkt_tc;
   wire       [1:0]    memRdPkt_attr;
+  wire       [15:0]   memRdPkt_cplId;
+  wire       [2:0]    memRdPkt_cplStatus;
+  wire       [11:0]   memRdPkt_cplByteCount;
+  wire       [6:0]    memRdPkt_cplLowerAddr;
   wire       [31:0]   memRdPkt_data_0;
   wire       [31:0]   memRdPkt_data_1;
   wire       [31:0]   memRdPkt_data_2;
@@ -2580,28 +3032,28 @@ module DmaEngine (
   wire       [31:0]   descReadData_control;
   wire       [63:0]   descReadData_nextDesc;
   wire       [255:0]  _zz_descReadData_srcAddr_1;
-  wire                when_DmaEngine_l314;
-  wire                when_DmaEngine_l320;
+  wire                when_DmaEngine_l322;
+  wire                when_DmaEngine_l328;
   wire       [31:0]   _zz_remaining;
-  wire                when_DmaEngine_l333;
-  wire                when_DmaEngine_l335;
-  wire                when_DmaEngine_l346;
+  wire                when_DmaEngine_l341;
+  wire                when_DmaEngine_l343;
+  wire                when_DmaEngine_l354;
   wire       [31:0]   _zz_remaining_1;
-  wire                when_DmaEngine_l360;
-  wire                when_DmaEngine_l362;
+  wire                when_DmaEngine_l368;
+  wire                when_DmaEngine_l370;
   wire                io_cplIn_fire;
-  wire                when_DmaEngine_l393;
+  wire                when_DmaEngine_l401;
   wire       [31:0]   _zz_totalBytes;
-  wire                when_DmaEngine_l408;
+  wire                when_DmaEngine_l416;
   reg                 _zz_io_localMem_aw_valid;
   reg                 _zz_io_localMem_w_valid;
   wire                io_localMem_aw_fire;
   wire                io_localMem_w_fire;
-  wire                when_DmaEngine_l429;
-  wire                when_DmaEngine_l432;
+  wire                when_DmaEngine_l437;
+  wire                when_DmaEngine_l440;
   wire       [31:0]   _zz_remaining_2;
-  wire                when_DmaEngine_l486;
-  wire                when_DmaEngine_l506;
+  wire                when_DmaEngine_l498;
+  wire                when_DmaEngine_l518;
   `ifndef SYNTHESIS
   reg [55:0] io_memWrOut_payload_tlpType_string;
   reg [55:0] io_memRdOut_payload_tlpType_string;
@@ -2629,7 +3081,7 @@ module DmaEngine (
   assign _zz_offset_1 = (d2hChunkDw <<< 2);
   assign _zz_totalBytes_4 = ({2'd0,d2hChunkDw} <<< 2'd2);
   assign _zz_totalBytes_3 = _zz_totalBytes_4[31:0];
-  assign _zz_when_DmaEngine_l506 = (descIdx + 16'h0001);
+  assign _zz_when_DmaEngine_l518 = (descIdx + 16'h0001);
   assign _zz_descriptorMem_port0 = descriptorMem[_zz_descReadData_srcAddr];
   `ifndef SYNTHESIS
   always @(*) begin
@@ -2781,6 +3233,10 @@ module DmaEngine (
   assign memWrPkt_tag = tagCtr;
   assign memWrPkt_addr = ({dstAddrHi,dstAddrLo} + _zz_memWrPkt_addr);
   assign memWrPkt_length = d2hChunkDw[9:0];
+  assign memWrPkt_cplId = 16'h0000;
+  assign memWrPkt_cplStatus = 3'b000;
+  assign memWrPkt_cplByteCount = 12'h000;
+  assign memWrPkt_cplLowerAddr = 7'h00;
   assign memWrPkt_dataValid = d2hChunkDw[2:0];
   assign memWrPkt_data_0 = 32'h00000000;
   assign memWrPkt_data_1 = 32'h00000000;
@@ -2795,6 +3251,10 @@ module DmaEngine (
   assign memRdPkt_tag = tagCtr;
   assign memRdPkt_addr = ({srcAddrHi,srcAddrLo} + _zz_memRdPkt_addr);
   assign memRdPkt_length = chunkDw[9:0];
+  assign memRdPkt_cplId = 16'h0000;
+  assign memRdPkt_cplStatus = 3'b000;
+  assign memRdPkt_cplByteCount = 12'h000;
+  assign memRdPkt_cplLowerAddr = 7'h00;
   assign memRdPkt_dataValid = 3'b000;
   assign memRdPkt_data_0 = 32'h00000000;
   assign memRdPkt_data_1 = 32'h00000000;
@@ -3091,6 +3551,122 @@ module DmaEngine (
   end
 
   always @(*) begin
+    io_memWrOut_payload_cplId = memWrPkt_cplId;
+    case(dmaState_1)
+      DmaState_IDLE : begin
+      end
+      DmaState_FETCH_DESC : begin
+      end
+      DmaState_H2D_RD_REQ : begin
+      end
+      DmaState_H2D_WAIT_CPL : begin
+      end
+      DmaState_H2D_WR_LOCAL : begin
+      end
+      DmaState_D2H_RD_LOCAL : begin
+      end
+      DmaState_D2H_WR_PCIE : begin
+        if(io_localMem_r_valid) begin
+          io_memWrOut_payload_cplId = 16'h0000;
+        end
+      end
+      DmaState_NEXT_DESC : begin
+      end
+      DmaState_DONE : begin
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
+    io_memWrOut_payload_cplStatus = memWrPkt_cplStatus;
+    case(dmaState_1)
+      DmaState_IDLE : begin
+      end
+      DmaState_FETCH_DESC : begin
+      end
+      DmaState_H2D_RD_REQ : begin
+      end
+      DmaState_H2D_WAIT_CPL : begin
+      end
+      DmaState_H2D_WR_LOCAL : begin
+      end
+      DmaState_D2H_RD_LOCAL : begin
+      end
+      DmaState_D2H_WR_PCIE : begin
+        if(io_localMem_r_valid) begin
+          io_memWrOut_payload_cplStatus = 3'b000;
+        end
+      end
+      DmaState_NEXT_DESC : begin
+      end
+      DmaState_DONE : begin
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
+    io_memWrOut_payload_cplByteCount = memWrPkt_cplByteCount;
+    case(dmaState_1)
+      DmaState_IDLE : begin
+      end
+      DmaState_FETCH_DESC : begin
+      end
+      DmaState_H2D_RD_REQ : begin
+      end
+      DmaState_H2D_WAIT_CPL : begin
+      end
+      DmaState_H2D_WR_LOCAL : begin
+      end
+      DmaState_D2H_RD_LOCAL : begin
+      end
+      DmaState_D2H_WR_PCIE : begin
+        if(io_localMem_r_valid) begin
+          io_memWrOut_payload_cplByteCount = 12'h000;
+        end
+      end
+      DmaState_NEXT_DESC : begin
+      end
+      DmaState_DONE : begin
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
+    io_memWrOut_payload_cplLowerAddr = memWrPkt_cplLowerAddr;
+    case(dmaState_1)
+      DmaState_IDLE : begin
+      end
+      DmaState_FETCH_DESC : begin
+      end
+      DmaState_H2D_RD_REQ : begin
+      end
+      DmaState_H2D_WAIT_CPL : begin
+      end
+      DmaState_H2D_WR_LOCAL : begin
+      end
+      DmaState_D2H_RD_LOCAL : begin
+      end
+      DmaState_D2H_WR_PCIE : begin
+        if(io_localMem_r_valid) begin
+          io_memWrOut_payload_cplLowerAddr = 7'h00;
+        end
+      end
+      DmaState_NEXT_DESC : begin
+      end
+      DmaState_DONE : begin
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
     io_memWrOut_payload_data_0 = memWrPkt_data_0;
     case(dmaState_1)
       DmaState_IDLE : begin
@@ -3271,6 +3847,10 @@ module DmaEngine (
   assign io_memRdOut_payload_lastBe = memRdPkt_lastBe;
   assign io_memRdOut_payload_tc = memRdPkt_tc;
   assign io_memRdOut_payload_attr = memRdPkt_attr;
+  assign io_memRdOut_payload_cplId = memRdPkt_cplId;
+  assign io_memRdOut_payload_cplStatus = memRdPkt_cplStatus;
+  assign io_memRdOut_payload_cplByteCount = memRdPkt_cplByteCount;
+  assign io_memRdOut_payload_cplLowerAddr = memRdPkt_cplLowerAddr;
   assign io_memRdOut_payload_data_0 = memRdPkt_data_0;
   assign io_memRdOut_payload_data_1 = memRdPkt_data_1;
   assign io_memRdOut_payload_data_2 = memRdPkt_data_2;
@@ -3549,26 +4129,26 @@ module DmaEngine (
   assign descReadData_length = _zz_descReadData_srcAddr_1[159 : 128];
   assign descReadData_control = _zz_descReadData_srcAddr_1[191 : 160];
   assign descReadData_nextDesc = _zz_descReadData_srcAddr_1[255 : 192];
-  assign when_DmaEngine_l314 = (startPulse && (statusReg[1] == 1'b0));
-  assign when_DmaEngine_l320 = (16'h0100 < descCount);
+  assign when_DmaEngine_l322 = (startPulse && (statusReg[1] == 1'b0));
+  assign when_DmaEngine_l328 = (16'h0100 < descCount);
   assign _zz_remaining = {2'd0, _zz__zz_remaining};
-  assign when_DmaEngine_l333 = (_zz_remaining == 32'h00000000);
-  assign when_DmaEngine_l335 = (direction == 1'b0);
-  assign when_DmaEngine_l346 = ((descIdx < descCount) && (descIdx < 16'h0100));
+  assign when_DmaEngine_l341 = (_zz_remaining == 32'h00000000);
+  assign when_DmaEngine_l343 = (direction == 1'b0);
+  assign when_DmaEngine_l354 = ((descIdx < descCount) && (descIdx < 16'h0100));
   assign _zz_remaining_1 = {2'd0, _zz__zz_remaining_1};
-  assign when_DmaEngine_l360 = (_zz_remaining_1 == 32'h00000000);
-  assign when_DmaEngine_l362 = (descReadData_control[1] == 1'b0);
+  assign when_DmaEngine_l368 = (_zz_remaining_1 == 32'h00000000);
+  assign when_DmaEngine_l370 = (descReadData_control[1] == 1'b0);
   assign io_cplIn_fire = (io_cplIn_valid && io_cplIn_ready);
-  assign when_DmaEngine_l393 = ((io_cplIn_fire && (io_cplIn_payload_tag == reqTag)) && waitingCpl);
+  assign when_DmaEngine_l401 = ((io_cplIn_fire && (io_cplIn_payload_tag == reqTag)) && waitingCpl);
   assign _zz_totalBytes = {22'd0, io_cplIn_payload_length};
-  assign when_DmaEngine_l408 = (cplTimeout == 24'h989680);
+  assign when_DmaEngine_l416 = (cplTimeout == 24'h989680);
   assign io_localMem_aw_fire = (io_localMem_aw_valid && io_localMem_aw_ready);
   assign io_localMem_w_fire = (io_localMem_w_valid && io_localMem_w_ready);
-  assign when_DmaEngine_l429 = (_zz_io_localMem_aw_valid && _zz_io_localMem_w_valid);
-  assign when_DmaEngine_l432 = (remaining == 32'h00000000);
+  assign when_DmaEngine_l437 = (_zz_io_localMem_aw_valid && _zz_io_localMem_w_valid);
+  assign when_DmaEngine_l440 = (remaining == 32'h00000000);
   assign _zz_remaining_2 = (remaining - d2hChunkDw);
-  assign when_DmaEngine_l486 = (_zz_remaining_2 == 32'h00000000);
-  assign when_DmaEngine_l506 = (descCount <= _zz_when_DmaEngine_l506);
+  assign when_DmaEngine_l498 = (_zz_remaining_2 == 32'h00000000);
+  assign when_DmaEngine_l518 = (descCount <= _zz_when_DmaEngine_l518);
   always @(posedge clk or posedge reset) begin
     if(reset) begin
       ctrlReg <= 32'h00000000;
@@ -3717,11 +4297,11 @@ module DmaEngine (
       mrrsDw <= mrrsDw;
       case(dmaState_1)
         DmaState_IDLE : begin
-          if(when_DmaEngine_l314) begin
+          if(when_DmaEngine_l322) begin
             totalBytes <= 32'h00000000;
             descIdx <= 16'h0000;
             if(sgMode) begin
-              if(when_DmaEngine_l320) begin
+              if(when_DmaEngine_l328) begin
                 statusReg <= ((statusReg & 32'hfffffff8) | 32'h00000004);
                 dmaState_1 <= DmaState_ERROR;
               end else begin
@@ -3731,10 +4311,10 @@ module DmaEngine (
               remaining <= _zz_remaining;
               offset <= 32'h00000000;
               statusReg <= ((statusReg & 32'hfffffff8) | 32'h00000002);
-              if(when_DmaEngine_l333) begin
+              if(when_DmaEngine_l341) begin
                 dmaState_1 <= DmaState_DONE;
               end else begin
-                if(when_DmaEngine_l335) begin
+                if(when_DmaEngine_l343) begin
                   dmaState_1 <= DmaState_H2D_RD_REQ;
                 end else begin
                   dmaState_1 <= DmaState_D2H_RD_LOCAL;
@@ -3744,7 +4324,7 @@ module DmaEngine (
           end
         end
         DmaState_FETCH_DESC : begin
-          if(when_DmaEngine_l346) begin
+          if(when_DmaEngine_l354) begin
             activeDesc_srcAddr <= descReadData_srcAddr;
             activeDesc_dstAddr <= descReadData_dstAddr;
             activeDesc_length <= descReadData_length;
@@ -3757,10 +4337,10 @@ module DmaEngine (
             srcAddrHi <= descReadData_srcAddr[63 : 32];
             dstAddrLo <= descReadData_dstAddr[31 : 0];
             dstAddrHi <= descReadData_dstAddr[63 : 32];
-            if(when_DmaEngine_l360) begin
+            if(when_DmaEngine_l368) begin
               dmaState_1 <= DmaState_NEXT_DESC;
             end else begin
-              if(when_DmaEngine_l362) begin
+              if(when_DmaEngine_l370) begin
                 dmaState_1 <= DmaState_H2D_RD_REQ;
               end else begin
                 dmaState_1 <= DmaState_D2H_RD_LOCAL;
@@ -3782,7 +4362,7 @@ module DmaEngine (
         end
         DmaState_H2D_WAIT_CPL : begin
           cplTimeout <= (cplTimeout + 24'h000001);
-          if(when_DmaEngine_l393) begin
+          if(when_DmaEngine_l401) begin
             h2dWriteAddr <= (dstAddrLo + offset);
             h2dWriteData <= {io_cplIn_payload_data_1,io_cplIn_payload_data_0};
             h2dWriteStrb <= ((((io_cplIn_payload_dataValid == 3'b000) ? 3'b001 : io_cplIn_payload_dataValid) == 3'b001) ? 8'h0f : 8'hff);
@@ -3792,7 +4372,7 @@ module DmaEngine (
             waitingCpl <= 1'b0;
             dmaState_1 <= DmaState_H2D_WR_LOCAL;
           end else begin
-            if(when_DmaEngine_l408) begin
+            if(when_DmaEngine_l416) begin
               statusReg <= ((statusReg & 32'hfffffff8) | 32'h00000004);
               waitingCpl <= 1'b0;
               dmaState_1 <= DmaState_ERROR;
@@ -3800,8 +4380,8 @@ module DmaEngine (
           end
         end
         DmaState_H2D_WR_LOCAL : begin
-          if(when_DmaEngine_l429) begin
-            if(when_DmaEngine_l432) begin
+          if(when_DmaEngine_l437) begin
+            if(when_DmaEngine_l440) begin
               if(sgMode) begin
                 dmaState_1 <= DmaState_NEXT_DESC;
               end else begin
@@ -3823,7 +4403,7 @@ module DmaEngine (
               offset <= (offset + _zz_offset_1);
               remaining <= _zz_remaining_2;
               totalBytes <= (totalBytes + _zz_totalBytes_3);
-              if(when_DmaEngine_l486) begin
+              if(when_DmaEngine_l498) begin
                 if(sgMode) begin
                   dmaState_1 <= DmaState_NEXT_DESC;
                 end else begin
@@ -3840,7 +4420,7 @@ module DmaEngine (
           descIdx <= (descIdx + 16'h0001);
           descCurrent <= (descIdx + 16'h0001);
           statusReg[3] <= 1'b1;
-          if(when_DmaEngine_l506) begin
+          if(when_DmaEngine_l518) begin
             dmaState_1 <= DmaState_DONE;
           end else begin
             dmaState_1 <= DmaState_FETCH_DESC;
@@ -3869,7 +4449,7 @@ module DmaEngine (
       if(io_localMem_w_fire) begin
         _zz_io_localMem_w_valid <= 1'b1;
       end
-      if(when_DmaEngine_l429) begin
+      if(when_DmaEngine_l437) begin
         _zz_io_localMem_aw_valid <= 1'b0;
         _zz_io_localMem_w_valid <= 1'b0;
       end
@@ -3891,6 +4471,10 @@ module PcieConfigSpaceCtrl (
   input  wire [3:0]    io_cfgReq_payload_lastBe,
   input  wire [2:0]    io_cfgReq_payload_tc,
   input  wire [1:0]    io_cfgReq_payload_attr,
+  input  wire [15:0]   io_cfgReq_payload_cplId,
+  input  wire [2:0]    io_cfgReq_payload_cplStatus,
+  input  wire [11:0]   io_cfgReq_payload_cplByteCount,
+  input  wire [6:0]    io_cfgReq_payload_cplLowerAddr,
   input  wire [31:0]   io_cfgReq_payload_data_0,
   input  wire [31:0]   io_cfgReq_payload_data_1,
   input  wire [31:0]   io_cfgReq_payload_data_2,
@@ -3907,6 +4491,10 @@ module PcieConfigSpaceCtrl (
   output wire [3:0]    io_cfgResp_payload_lastBe,
   output wire [2:0]    io_cfgResp_payload_tc,
   output wire [1:0]    io_cfgResp_payload_attr,
+  output wire [15:0]   io_cfgResp_payload_cplId,
+  output wire [2:0]    io_cfgResp_payload_cplStatus,
+  output wire [11:0]   io_cfgResp_payload_cplByteCount,
+  output wire [6:0]    io_cfgResp_payload_cplLowerAddr,
   output wire [31:0]   io_cfgResp_payload_data_0,
   output wire [31:0]   io_cfgResp_payload_data_1,
   output wire [31:0]   io_cfgResp_payload_data_2,
@@ -3956,6 +4544,7 @@ module PcieConfigSpaceCtrl (
   localparam TlpType_INVALID = 4'd12;
 
   wire       [31:0]   _zz_extConfigMem_port0;
+  wire       [6:0]    _zz__zz_respPkt_cplLowerAddr;
   wire       [9:0]    _zz__zz_respPkt_data_0_8;
   wire       [9:0]    _zz_extConfigMem_port;
   wire       [9:0]    _zz_extConfigMem_port_1;
@@ -4025,6 +4614,10 @@ module PcieConfigSpaceCtrl (
   reg        [3:0]    respPkt_lastBe;
   reg        [2:0]    respPkt_tc;
   reg        [1:0]    respPkt_attr;
+  reg        [15:0]   respPkt_cplId;
+  reg        [2:0]    respPkt_cplStatus;
+  reg        [11:0]   respPkt_cplByteCount;
+  reg        [6:0]    respPkt_cplLowerAddr;
   reg        [31:0]   respPkt_data_0;
   reg        [31:0]   respPkt_data_1;
   reg        [31:0]   respPkt_data_2;
@@ -4036,6 +4629,9 @@ module PcieConfigSpaceCtrl (
   reg        [3:0]    _zz_respPkt_tlpType;
   wire       [15:0]   _zz_respPkt_reqId;
   wire       [7:0]    _zz_respPkt_tag;
+  wire       [15:0]   _zz_respPkt_cplId;
+  reg        [11:0]   _zz_respPkt_cplByteCount;
+  reg        [6:0]    _zz_respPkt_cplLowerAddr;
   reg        [31:0]   _zz_respPkt_data_0;
   reg        [31:0]   _zz_respPkt_data_0_1;
   reg        [31:0]   _zz_respPkt_data_0_2;
@@ -4044,26 +4640,31 @@ module PcieConfigSpaceCtrl (
   reg        [31:0]   _zz_respPkt_data_0_5;
   reg        [31:0]   _zz_respPkt_data_0_6;
   reg        [31:0]   _zz_respPkt_data_0_7;
-  wire                when_ConfigSpaceCtrl_l260;
+  wire                when_ConfigSpaceCtrl_l257;
   wire       [9:0]    _zz_respPkt_data_0_8;
   reg        [31:0]   _zz_regs_command;
   wire                when_ConfigSpaceCtrl_l191;
   wire                when_ConfigSpaceCtrl_l191_1;
   wire                when_ConfigSpaceCtrl_l191_2;
   wire                when_ConfigSpaceCtrl_l191_3;
-  wire                when_ConfigSpaceCtrl_l332;
+  wire                when_ConfigSpaceCtrl_l335;
   reg        [31:0]   _zz_regs_bar_0;
   wire                when_ConfigSpaceCtrl_l191_4;
   wire                when_ConfigSpaceCtrl_l191_5;
   wire                when_ConfigSpaceCtrl_l191_6;
   wire                when_ConfigSpaceCtrl_l191_7;
-  wire                when_ConfigSpaceCtrl_l342;
+  wire                when_ConfigSpaceCtrl_l345;
   reg        [31:0]   _zz_regs_bar_1;
   wire                when_ConfigSpaceCtrl_l191_8;
   wire                when_ConfigSpaceCtrl_l191_9;
   wire                when_ConfigSpaceCtrl_l191_10;
   wire                when_ConfigSpaceCtrl_l191_11;
-  wire                when_ConfigSpaceCtrl_l369;
+  reg        [31:0]   _zz_msixCap_msgCtrl;
+  wire                when_ConfigSpaceCtrl_l191_12;
+  wire                when_ConfigSpaceCtrl_l191_13;
+  wire                when_ConfigSpaceCtrl_l191_14;
+  wire                when_ConfigSpaceCtrl_l191_15;
+  wire                when_ConfigSpaceCtrl_l377;
   `ifndef SYNTHESIS
   reg [55:0] io_cfgReq_payload_tlpType_string;
   reg [55:0] io_cfgResp_payload_tlpType_string;
@@ -4073,6 +4674,7 @@ module PcieConfigSpaceCtrl (
 
   (* ram_style = "distributed" *) reg [31:0] extConfigMem [0:959];
 
+  assign _zz__zz_respPkt_cplLowerAddr = io_cfgReq_payload_addr[6 : 0];
   assign _zz__zz_respPkt_data_0_8 = (switch_ConfigSpaceCtrl_l219 - 10'h040);
   assign _zz_extConfigMem_port_1 = (switch_ConfigSpaceCtrl_l219 - 10'h040);
   assign _zz_extConfigMem_port = _zz_extConfigMem_port_1;
@@ -4176,18 +4778,18 @@ module PcieConfigSpaceCtrl (
             end
             10'h00f : begin
             end
+            10'h010 : begin
+            end
             10'h011 : begin
             end
             10'h012 : begin
             end
-            10'h013 : begin
+            10'h01a : begin
             end
-            10'h01b : begin
-            end
-            10'h01d : begin
+            10'h01c : begin
             end
             default : begin
-              if(when_ConfigSpaceCtrl_l369) begin
+              if(when_ConfigSpaceCtrl_l377) begin
                 _zz_1 = 1'b1;
               end
             end
@@ -4252,6 +4854,10 @@ module PcieConfigSpaceCtrl (
   assign io_cfgResp_payload_lastBe = respPkt_lastBe;
   assign io_cfgResp_payload_tc = respPkt_tc;
   assign io_cfgResp_payload_attr = respPkt_attr;
+  assign io_cfgResp_payload_cplId = respPkt_cplId;
+  assign io_cfgResp_payload_cplStatus = respPkt_cplStatus;
+  assign io_cfgResp_payload_cplByteCount = respPkt_cplByteCount;
+  assign io_cfgResp_payload_cplLowerAddr = respPkt_cplLowerAddr;
   assign io_cfgResp_payload_data_0 = respPkt_data_0;
   assign io_cfgResp_payload_data_1 = respPkt_data_1;
   assign io_cfgResp_payload_data_2 = respPkt_data_2;
@@ -4277,6 +4883,33 @@ module PcieConfigSpaceCtrl (
 
   assign _zz_respPkt_reqId = io_cfgReq_payload_reqId;
   assign _zz_respPkt_tag = io_cfgReq_payload_tag;
+  assign _zz_respPkt_cplId = io_busDevFunc;
+  always @(*) begin
+    _zz_respPkt_cplByteCount = 12'h000;
+    case(io_cfgReq_payload_tlpType)
+      TlpType_CFG_RD0, TlpType_CFG_RD1 : begin
+        _zz_respPkt_cplByteCount = 12'h004;
+      end
+      TlpType_CFG_WR0, TlpType_CFG_WR1 : begin
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  always @(*) begin
+    _zz_respPkt_cplLowerAddr = 7'h00;
+    case(io_cfgReq_payload_tlpType)
+      TlpType_CFG_RD0, TlpType_CFG_RD1 : begin
+        _zz_respPkt_cplLowerAddr = _zz__zz_respPkt_cplLowerAddr;
+      end
+      TlpType_CFG_WR0, TlpType_CFG_WR1 : begin
+      end
+      default : begin
+      end
+    endcase
+  end
+
   always @(*) begin
     _zz_respPkt_data_0 = 32'h00000000;
     case(io_cfgReq_payload_tlpType)
@@ -4342,46 +4975,37 @@ module PcieConfigSpaceCtrl (
         _zz_respPkt_data_0_1 = {{{8'h00,regs_intPin},8'h00},regs_intLine};
       end
       10'h010 : begin
-        _zz_respPkt_data_0_1 = {{16'h0000,msixCap_nextCap},msixCap_capId};
+        _zz_respPkt_data_0_1 = {{msixCap_msgCtrl,msixCap_nextCap},msixCap_capId};
       end
       10'h011 : begin
-        _zz_respPkt_data_0_1 = {msixCap_msgCtrl,16'h0000};
-      end
-      10'h012 : begin
         _zz_respPkt_data_0_1 = {msixCap_tableOff,msixCap_tableBIR};
       end
-      10'h013 : begin
+      10'h012 : begin
         _zz_respPkt_data_0_1 = {msixCap_pbaOff,msixCap_pbaBIR};
       end
       10'h014 : begin
-        _zz_respPkt_data_0_1 = {{16'h0000,pmCap_nextCap},pmCap_capId};
+        _zz_respPkt_data_0_1 = {{pmCap_pmCapReg,pmCap_nextCap},pmCap_capId};
       end
       10'h015 : begin
-        _zz_respPkt_data_0_1 = {pmCap_pmCapReg,16'h0000};
-      end
-      10'h016 : begin
         _zz_respPkt_data_0_1 = {{pmCap_pmData,pmCap_pmBridgeExt},pmCap_pmCtrlStat};
       end
       10'h018 : begin
-        _zz_respPkt_data_0_1 = {{16'h0000,pcieCap_nextCap},pcieCap_capId};
+        _zz_respPkt_data_0_1 = {{pcieCap_pcieCapReg,pcieCap_nextCap},pcieCap_capId};
       end
       10'h019 : begin
-        _zz_respPkt_data_0_1 = {pcieCap_pcieCapReg,16'h0000};
-      end
-      10'h01a : begin
         _zz_respPkt_data_0_1 = pcieCap_devCap;
       end
-      10'h01b : begin
+      10'h01a : begin
         _zz_respPkt_data_0_1 = {pcieCap_devStat,pcieCap_devCtrl};
       end
-      10'h01c : begin
+      10'h01b : begin
         _zz_respPkt_data_0_1 = pcieCap_linkCap;
       end
-      10'h01d : begin
+      10'h01c : begin
         _zz_respPkt_data_0_1 = {pcieCap_linkStat,pcieCap_linkCtrl};
       end
       default : begin
-        if(when_ConfigSpaceCtrl_l260) begin
+        if(when_ConfigSpaceCtrl_l257) begin
           _zz_respPkt_data_0_1 = _zz_extConfigMem_port0;
         end else begin
           _zz_respPkt_data_0_1 = 32'h00000000;
@@ -4432,7 +5056,7 @@ module PcieConfigSpaceCtrl (
     end
   end
 
-  assign when_ConfigSpaceCtrl_l260 = (10'h040 <= switch_ConfigSpaceCtrl_l219);
+  assign when_ConfigSpaceCtrl_l257 = (10'h040 <= switch_ConfigSpaceCtrl_l219);
   assign _zz_respPkt_data_0_8 = _zz__zz_respPkt_data_0_8;
   always @(*) begin
     _zz_regs_command = {regs_status,regs_command};
@@ -4454,7 +5078,7 @@ module PcieConfigSpaceCtrl (
   assign when_ConfigSpaceCtrl_l191_1 = io_cfgReq_payload_firstBe[1];
   assign when_ConfigSpaceCtrl_l191_2 = io_cfgReq_payload_firstBe[2];
   assign when_ConfigSpaceCtrl_l191_3 = io_cfgReq_payload_firstBe[3];
-  assign when_ConfigSpaceCtrl_l332 = ((io_cfgReq_payload_firstBe == 4'b1111) && (io_cfgReq_payload_data_0 == 32'hffffffff));
+  assign when_ConfigSpaceCtrl_l335 = ((io_cfgReq_payload_firstBe == 4'b1111) && (io_cfgReq_payload_data_0 == 32'hffffffff));
   always @(*) begin
     _zz_regs_bar_0 = regs_bar_0;
     if(when_ConfigSpaceCtrl_l191_4) begin
@@ -4475,7 +5099,7 @@ module PcieConfigSpaceCtrl (
   assign when_ConfigSpaceCtrl_l191_5 = io_cfgReq_payload_firstBe[1];
   assign when_ConfigSpaceCtrl_l191_6 = io_cfgReq_payload_firstBe[2];
   assign when_ConfigSpaceCtrl_l191_7 = io_cfgReq_payload_firstBe[3];
-  assign when_ConfigSpaceCtrl_l342 = ((io_cfgReq_payload_firstBe == 4'b1111) && (io_cfgReq_payload_data_0 == 32'hffffffff));
+  assign when_ConfigSpaceCtrl_l345 = ((io_cfgReq_payload_firstBe == 4'b1111) && (io_cfgReq_payload_data_0 == 32'hffffffff));
   always @(*) begin
     _zz_regs_bar_1 = regs_bar_1;
     if(when_ConfigSpaceCtrl_l191_8) begin
@@ -4496,7 +5120,27 @@ module PcieConfigSpaceCtrl (
   assign when_ConfigSpaceCtrl_l191_9 = io_cfgReq_payload_firstBe[1];
   assign when_ConfigSpaceCtrl_l191_10 = io_cfgReq_payload_firstBe[2];
   assign when_ConfigSpaceCtrl_l191_11 = io_cfgReq_payload_firstBe[3];
-  assign when_ConfigSpaceCtrl_l369 = (10'h040 <= switch_ConfigSpaceCtrl_l219);
+  always @(*) begin
+    _zz_msixCap_msgCtrl = {{msixCap_msgCtrl,msixCap_nextCap},msixCap_capId};
+    if(when_ConfigSpaceCtrl_l191_12) begin
+      _zz_msixCap_msgCtrl[7 : 0] = io_cfgReq_payload_data_0[7 : 0];
+    end
+    if(when_ConfigSpaceCtrl_l191_13) begin
+      _zz_msixCap_msgCtrl[15 : 8] = io_cfgReq_payload_data_0[15 : 8];
+    end
+    if(when_ConfigSpaceCtrl_l191_14) begin
+      _zz_msixCap_msgCtrl[23 : 16] = io_cfgReq_payload_data_0[23 : 16];
+    end
+    if(when_ConfigSpaceCtrl_l191_15) begin
+      _zz_msixCap_msgCtrl[31 : 24] = io_cfgReq_payload_data_0[31 : 24];
+    end
+  end
+
+  assign when_ConfigSpaceCtrl_l191_12 = io_cfgReq_payload_firstBe[0];
+  assign when_ConfigSpaceCtrl_l191_13 = io_cfgReq_payload_firstBe[1];
+  assign when_ConfigSpaceCtrl_l191_14 = io_cfgReq_payload_firstBe[2];
+  assign when_ConfigSpaceCtrl_l191_15 = io_cfgReq_payload_firstBe[3];
+  assign when_ConfigSpaceCtrl_l377 = (10'h040 <= switch_ConfigSpaceCtrl_l219);
   always @(posedge clk or posedge reset) begin
     if(reset) begin
       regs_vendorIdReg <= 16'h10ee;
@@ -4525,7 +5169,7 @@ module PcieConfigSpaceCtrl (
       regs_barProbe_4 <= 1'b0;
       regs_barProbe_5 <= 1'b0;
       msixCap_nextCap <= 8'h50;
-      msixCap_msgCtrl <= 16'h0020;
+      msixCap_msgCtrl <= 16'h001f;
       msixCap_tableBIR <= 3'b001;
       msixCap_tableOff <= 29'h00000000;
       msixCap_pbaBIR <= 3'b001;
@@ -4603,7 +5247,7 @@ module PcieConfigSpaceCtrl (
                 regs_cacheLineSize <= io_cfgReq_payload_data_0[7 : 0];
               end
               10'h004 : begin
-                if(when_ConfigSpaceCtrl_l332) begin
+                if(when_ConfigSpaceCtrl_l335) begin
                   regs_barProbe_0 <= 1'b1;
                 end else begin
                   regs_barProbe_0 <= 1'b0;
@@ -4611,7 +5255,7 @@ module PcieConfigSpaceCtrl (
                 end
               end
               10'h005 : begin
-                if(when_ConfigSpaceCtrl_l342) begin
+                if(when_ConfigSpaceCtrl_l345) begin
                   regs_barProbe_1 <= 1'b1;
                 end else begin
                   regs_barProbe_1 <= 1'b0;
@@ -4622,21 +5266,21 @@ module PcieConfigSpaceCtrl (
                 regs_intLine <= io_cfgReq_payload_data_0[7 : 0];
                 regs_intPin <= io_cfgReq_payload_data_0[15 : 8];
               end
-              10'h011 : begin
-                msixCap_msgCtrl <= io_cfgReq_payload_data_0[15 : 0];
+              10'h010 : begin
+                msixCap_msgCtrl <= ((_zz_msixCap_msgCtrl[31 : 16] & 16'hc000) | (msixCap_msgCtrl & 16'h07ff));
               end
-              10'h012 : begin
+              10'h011 : begin
                 msixCap_tableOff <= io_cfgReq_payload_data_0[31 : 3];
                 msixCap_tableBIR <= io_cfgReq_payload_data_0[2 : 0];
               end
-              10'h013 : begin
+              10'h012 : begin
                 msixCap_pbaOff <= io_cfgReq_payload_data_0[31 : 3];
                 msixCap_pbaBIR <= io_cfgReq_payload_data_0[2 : 0];
               end
-              10'h01b : begin
+              10'h01a : begin
                 pcieCap_devCtrl <= io_cfgReq_payload_data_0[15 : 0];
               end
-              10'h01d : begin
+              10'h01c : begin
                 pcieCap_linkCtrl <= io_cfgReq_payload_data_0[15 : 0];
               end
               default : begin
@@ -4663,6 +5307,10 @@ module PcieConfigSpaceCtrl (
           respPkt_lastBe <= 4'b0000;
           respPkt_tc <= 3'b000;
           respPkt_attr <= 2'b00;
+          respPkt_cplId <= _zz_respPkt_cplId;
+          respPkt_cplStatus <= 3'b000;
+          respPkt_cplByteCount <= _zz_respPkt_cplByteCount;
+          respPkt_cplLowerAddr <= _zz_respPkt_cplLowerAddr;
           respPkt_data_0 <= _zz_respPkt_data_0;
           respPkt_data_1 <= 32'h00000000;
           respPkt_data_2 <= 32'h00000000;
@@ -4679,6 +5327,10 @@ module PcieConfigSpaceCtrl (
           respPkt_lastBe <= 4'b0000;
           respPkt_tc <= 3'b000;
           respPkt_attr <= 2'b00;
+          respPkt_cplId <= _zz_respPkt_cplId;
+          respPkt_cplStatus <= 3'b000;
+          respPkt_cplByteCount <= _zz_respPkt_cplByteCount;
+          respPkt_cplLowerAddr <= _zz_respPkt_cplLowerAddr;
           respPkt_data_0 <= _zz_respPkt_data_0;
           respPkt_data_1 <= 32'h00000000;
           respPkt_data_2 <= 32'h00000000;
@@ -4706,6 +5358,10 @@ module IoRequestHandler (
   input  wire [3:0]    io_ioReq_payload_lastBe,
   input  wire [2:0]    io_ioReq_payload_tc,
   input  wire [1:0]    io_ioReq_payload_attr,
+  input  wire [15:0]   io_ioReq_payload_cplId,
+  input  wire [2:0]    io_ioReq_payload_cplStatus,
+  input  wire [11:0]   io_ioReq_payload_cplByteCount,
+  input  wire [6:0]    io_ioReq_payload_cplLowerAddr,
   input  wire [31:0]   io_ioReq_payload_data_0,
   input  wire [31:0]   io_ioReq_payload_data_1,
   input  wire [31:0]   io_ioReq_payload_data_2,
@@ -4722,6 +5378,10 @@ module IoRequestHandler (
   output wire [3:0]    io_cplOut_payload_lastBe,
   output wire [2:0]    io_cplOut_payload_tc,
   output wire [1:0]    io_cplOut_payload_attr,
+  output wire [15:0]   io_cplOut_payload_cplId,
+  output wire [2:0]    io_cplOut_payload_cplStatus,
+  output wire [11:0]   io_cplOut_payload_cplByteCount,
+  output wire [6:0]    io_cplOut_payload_cplLowerAddr,
   output wire [31:0]   io_cplOut_payload_data_0,
   output wire [31:0]   io_cplOut_payload_data_1,
   output wire [31:0]   io_cplOut_payload_data_2,
@@ -4733,6 +5393,7 @@ module IoRequestHandler (
   output reg           io_regWrEn,
   output reg           io_regRdEn,
   input  wire [1:0]    io_regWidth,
+  input  wire [15:0]   io_completerId,
   output reg           io_ioErr,
   input  wire          clk,
   input  wire          reset
@@ -4754,6 +5415,9 @@ module IoRequestHandler (
   localparam IoState_PROCESS_1 = 2'd1;
   localparam IoState_RESPOND = 2'd2;
 
+  wire       [6:0]    _zz_respPkt_cplLowerAddr;
+  wire       [6:0]    _zz_respPkt_cplLowerAddr_1;
+  wire       [6:0]    _zz_respPkt_cplLowerAddr_2;
   reg        [1:0]    state;
   reg        [3:0]    reqPkt_tlpType;
   reg        [15:0]   reqPkt_reqId;
@@ -4764,6 +5428,10 @@ module IoRequestHandler (
   reg        [3:0]    reqPkt_lastBe;
   reg        [2:0]    reqPkt_tc;
   reg        [1:0]    reqPkt_attr;
+  reg        [15:0]   reqPkt_cplId;
+  reg        [2:0]    reqPkt_cplStatus;
+  reg        [11:0]   reqPkt_cplByteCount;
+  reg        [6:0]    reqPkt_cplLowerAddr;
   reg        [31:0]   reqPkt_data_0;
   reg        [31:0]   reqPkt_data_1;
   reg        [31:0]   reqPkt_data_2;
@@ -4778,23 +5446,32 @@ module IoRequestHandler (
   reg        [3:0]    respPkt_lastBe;
   reg        [2:0]    respPkt_tc;
   reg        [1:0]    respPkt_attr;
+  reg        [15:0]   respPkt_cplId;
+  reg        [2:0]    respPkt_cplStatus;
+  reg        [11:0]   respPkt_cplByteCount;
+  reg        [6:0]    respPkt_cplLowerAddr;
   reg        [31:0]   respPkt_data_0;
   reg        [31:0]   respPkt_data_1;
   reg        [31:0]   respPkt_data_2;
   reg        [31:0]   respPkt_data_3;
   reg        [2:0]    respPkt_dataValid;
   wire                io_ioReq_fire;
-  wire                when_TlpRxEngine_l376;
-  wire                when_TlpRxEngine_l384;
+  wire                when_TlpRxEngine_l412;
+  wire       [1:0]    _zz_state;
+  wire                when_TlpRxEngine_l426;
   `ifndef SYNTHESIS
   reg [55:0] io_ioReq_payload_tlpType_string;
   reg [55:0] io_cplOut_payload_tlpType_string;
   reg [71:0] state_string;
   reg [55:0] reqPkt_tlpType_string;
   reg [55:0] respPkt_tlpType_string;
+  reg [71:0] _zz_state_string;
   `endif
 
 
+  assign _zz_respPkt_cplLowerAddr = reqPkt_addr[6 : 0];
+  assign _zz_respPkt_cplLowerAddr_1 = reqPkt_addr[6 : 0];
+  assign _zz_respPkt_cplLowerAddr_2 = reqPkt_addr[6 : 0];
   `ifndef SYNTHESIS
   always @(*) begin
     case(io_ioReq_payload_tlpType)
@@ -4876,6 +5553,14 @@ module IoRequestHandler (
       default : respPkt_tlpType_string = "???????";
     endcase
   end
+  always @(*) begin
+    case(_zz_state)
+      IoState_IDLE : _zz_state_string = "IDLE     ";
+      IoState_PROCESS_1 : _zz_state_string = "PROCESS_1";
+      IoState_RESPOND : _zz_state_string = "RESPOND  ";
+      default : _zz_state_string = "?????????";
+    endcase
+  end
   `endif
 
   always @(*) begin
@@ -4897,8 +5582,8 @@ module IoRequestHandler (
       IoState_IDLE : begin
       end
       IoState_PROCESS_1 : begin
-        if(!when_TlpRxEngine_l376) begin
-          if(when_TlpRxEngine_l384) begin
+        if(!when_TlpRxEngine_l412) begin
+          if(when_TlpRxEngine_l426) begin
             io_regWrData = reqPkt_data_0;
           end
         end
@@ -4914,8 +5599,8 @@ module IoRequestHandler (
       IoState_IDLE : begin
       end
       IoState_PROCESS_1 : begin
-        if(!when_TlpRxEngine_l376) begin
-          if(when_TlpRxEngine_l384) begin
+        if(!when_TlpRxEngine_l412) begin
+          if(when_TlpRxEngine_l426) begin
             io_regWrEn = 1'b1;
           end
         end
@@ -4931,7 +5616,7 @@ module IoRequestHandler (
       IoState_IDLE : begin
       end
       IoState_PROCESS_1 : begin
-        if(when_TlpRxEngine_l376) begin
+        if(when_TlpRxEngine_l412) begin
           io_regRdEn = 1'b1;
         end
       end
@@ -4946,8 +5631,8 @@ module IoRequestHandler (
       IoState_IDLE : begin
       end
       IoState_PROCESS_1 : begin
-        if(!when_TlpRxEngine_l376) begin
-          if(!when_TlpRxEngine_l384) begin
+        if(!when_TlpRxEngine_l412) begin
+          if(!when_TlpRxEngine_l426) begin
             io_ioErr = 1'b1;
           end
         end
@@ -4979,6 +5664,10 @@ module IoRequestHandler (
   assign io_cplOut_payload_lastBe = respPkt_lastBe;
   assign io_cplOut_payload_tc = respPkt_tc;
   assign io_cplOut_payload_attr = respPkt_attr;
+  assign io_cplOut_payload_cplId = respPkt_cplId;
+  assign io_cplOut_payload_cplStatus = respPkt_cplStatus;
+  assign io_cplOut_payload_cplByteCount = respPkt_cplByteCount;
+  assign io_cplOut_payload_cplLowerAddr = respPkt_cplLowerAddr;
   assign io_cplOut_payload_data_0 = respPkt_data_0;
   assign io_cplOut_payload_data_1 = respPkt_data_1;
   assign io_cplOut_payload_data_2 = respPkt_data_2;
@@ -4986,8 +5675,9 @@ module IoRequestHandler (
   assign io_cplOut_payload_dataValid = respPkt_dataValid;
   assign io_ioReq_ready = (state == IoState_IDLE);
   assign io_ioReq_fire = (io_ioReq_valid && io_ioReq_ready);
-  assign when_TlpRxEngine_l376 = (reqPkt_tlpType == TlpType_IO_RD);
-  assign when_TlpRxEngine_l384 = (reqPkt_tlpType == TlpType_IO_WR);
+  assign when_TlpRxEngine_l412 = ((reqPkt_tlpType == TlpType_IO_RD) || (reqPkt_tlpType == TlpType_MEM_RD));
+  assign _zz_state = ((reqPkt_tlpType == TlpType_IO_WR) ? IoState_RESPOND : IoState_IDLE);
+  assign when_TlpRxEngine_l426 = ((reqPkt_tlpType == TlpType_IO_WR) || (reqPkt_tlpType == TlpType_MEM_WR));
   always @(posedge clk or posedge reset) begin
     if(reset) begin
       state <= IoState_IDLE;
@@ -4999,11 +5689,11 @@ module IoRequestHandler (
           end
         end
         IoState_PROCESS_1 : begin
-          if(when_TlpRxEngine_l376) begin
+          if(when_TlpRxEngine_l412) begin
             state <= IoState_RESPOND;
           end else begin
-            if(when_TlpRxEngine_l384) begin
-              state <= IoState_RESPOND;
+            if(when_TlpRxEngine_l426) begin
+              state <= _zz_state;
             end else begin
               state <= IoState_RESPOND;
             end
@@ -5028,6 +5718,10 @@ module IoRequestHandler (
     respPkt_lastBe <= 4'b0000;
     respPkt_tc <= 3'b000;
     respPkt_attr <= 2'b00;
+    respPkt_cplId <= 16'h0000;
+    respPkt_cplStatus <= 3'b000;
+    respPkt_cplByteCount <= 12'h000;
+    respPkt_cplLowerAddr <= 7'h00;
     respPkt_data_0 <= 32'h00000000;
     respPkt_data_1 <= 32'h00000000;
     respPkt_data_2 <= 32'h00000000;
@@ -5045,6 +5739,10 @@ module IoRequestHandler (
           reqPkt_lastBe <= io_ioReq_payload_lastBe;
           reqPkt_tc <= io_ioReq_payload_tc;
           reqPkt_attr <= io_ioReq_payload_attr;
+          reqPkt_cplId <= io_ioReq_payload_cplId;
+          reqPkt_cplStatus <= io_ioReq_payload_cplStatus;
+          reqPkt_cplByteCount <= io_ioReq_payload_cplByteCount;
+          reqPkt_cplLowerAddr <= io_ioReq_payload_cplLowerAddr;
           reqPkt_data_0 <= io_ioReq_payload_data_0;
           reqPkt_data_1 <= io_ioReq_payload_data_1;
           reqPkt_data_2 <= io_ioReq_payload_data_2;
@@ -5053,25 +5751,41 @@ module IoRequestHandler (
         end
       end
       IoState_PROCESS_1 : begin
-        if(when_TlpRxEngine_l376) begin
+        if(when_TlpRxEngine_l412) begin
           respPkt_tlpType <= TlpType_CPL_D;
+          respPkt_reqId <= reqPkt_reqId;
+          respPkt_tag <= reqPkt_tag;
+          respPkt_cplId <= io_completerId;
+          respPkt_cplStatus <= 3'b000;
+          respPkt_cplByteCount <= 12'h004;
+          respPkt_cplLowerAddr <= _zz_respPkt_cplLowerAddr;
           respPkt_length <= 10'h001;
           respPkt_data_0 <= io_regRdData;
           respPkt_dataValid <= 3'b001;
         end else begin
-          if(when_TlpRxEngine_l384) begin
+          if(when_TlpRxEngine_l426) begin
             respPkt_tlpType <= TlpType_CPL;
+            respPkt_reqId <= reqPkt_reqId;
+            respPkt_tag <= reqPkt_tag;
+            respPkt_cplId <= io_completerId;
+            respPkt_cplStatus <= 3'b000;
+            respPkt_cplByteCount <= 12'h000;
+            respPkt_cplLowerAddr <= _zz_respPkt_cplLowerAddr_1;
             respPkt_length <= 10'h000;
             respPkt_dataValid <= 3'b000;
           end else begin
             respPkt_tlpType <= TlpType_CPL;
+            respPkt_reqId <= reqPkt_reqId;
+            respPkt_tag <= reqPkt_tag;
+            respPkt_cplId <= io_completerId;
+            respPkt_cplStatus <= 3'b001;
+            respPkt_cplByteCount <= 12'h000;
+            respPkt_cplLowerAddr <= _zz_respPkt_cplLowerAddr_2;
             respPkt_length <= 10'h000;
             respPkt_dataValid <= 3'b000;
           end
         end
-        respPkt_reqId <= 16'h0000;
-        respPkt_tag <= reqPkt_tag;
-        respPkt_addr <= {48'd0, reqPkt_reqId};
+        respPkt_addr <= 64'h0000000000000000;
         respPkt_firstBe <= reqPkt_firstBe;
         respPkt_lastBe <= reqPkt_lastBe;
         respPkt_tc <= 3'b000;
@@ -5100,6 +5814,10 @@ module TlpRxEngine (
   output wire [3:0]    io_memReq_payload_lastBe,
   output wire [2:0]    io_memReq_payload_tc,
   output wire [1:0]    io_memReq_payload_attr,
+  output wire [15:0]   io_memReq_payload_cplId,
+  output wire [2:0]    io_memReq_payload_cplStatus,
+  output wire [11:0]   io_memReq_payload_cplByteCount,
+  output wire [6:0]    io_memReq_payload_cplLowerAddr,
   output wire [31:0]   io_memReq_payload_data_0,
   output wire [31:0]   io_memReq_payload_data_1,
   output wire [31:0]   io_memReq_payload_data_2,
@@ -5116,6 +5834,10 @@ module TlpRxEngine (
   output wire [3:0]    io_cfgReq_payload_lastBe,
   output wire [2:0]    io_cfgReq_payload_tc,
   output wire [1:0]    io_cfgReq_payload_attr,
+  output wire [15:0]   io_cfgReq_payload_cplId,
+  output wire [2:0]    io_cfgReq_payload_cplStatus,
+  output wire [11:0]   io_cfgReq_payload_cplByteCount,
+  output wire [6:0]    io_cfgReq_payload_cplLowerAddr,
   output wire [31:0]   io_cfgReq_payload_data_0,
   output wire [31:0]   io_cfgReq_payload_data_1,
   output wire [31:0]   io_cfgReq_payload_data_2,
@@ -5132,6 +5854,10 @@ module TlpRxEngine (
   output wire [3:0]    io_cplIn_payload_lastBe,
   output wire [2:0]    io_cplIn_payload_tc,
   output wire [1:0]    io_cplIn_payload_attr,
+  output wire [15:0]   io_cplIn_payload_cplId,
+  output wire [2:0]    io_cplIn_payload_cplStatus,
+  output wire [11:0]   io_cplIn_payload_cplByteCount,
+  output wire [6:0]    io_cplIn_payload_cplLowerAddr,
   output wire [31:0]   io_cplIn_payload_data_0,
   output wire [31:0]   io_cplIn_payload_data_1,
   output wire [31:0]   io_cplIn_payload_data_2,
@@ -5148,6 +5874,10 @@ module TlpRxEngine (
   output wire [3:0]    io_ioReq_payload_lastBe,
   output wire [2:0]    io_ioReq_payload_tc,
   output wire [1:0]    io_ioReq_payload_attr,
+  output wire [15:0]   io_ioReq_payload_cplId,
+  output wire [2:0]    io_ioReq_payload_cplStatus,
+  output wire [11:0]   io_ioReq_payload_cplByteCount,
+  output wire [6:0]    io_ioReq_payload_cplLowerAddr,
   output wire [31:0]   io_ioReq_payload_data_0,
   output wire [31:0]   io_ioReq_payload_data_1,
   output wire [31:0]   io_ioReq_payload_data_2,
@@ -5189,15 +5919,15 @@ module TlpRxEngine (
 
   wire       [1:0]    _zz__zz_1;
   wire       [2:0]    _zz_pkt_dataValid_1;
-  wire       [10:0]   _zz_when_TlpRxEngine_l236;
-  wire       [10:0]   _zz_when_TlpRxEngine_l236_1;
+  wire       [10:0]   _zz_when_TlpRxEngine_l267;
+  wire       [10:0]   _zz_when_TlpRxEngine_l267_1;
   wire       [10:0]   _zz_streamLast;
   wire       [10:0]   _zz_streamLast_1;
   wire       [1:0]    _zz__zz_2;
   wire       [2:0]    _zz_pkt_dataValid_2;
   wire       [10:0]   _zz_pkt_dataValid_3;
-  wire       [10:0]   _zz_when_TlpRxEngine_l283;
-  wire       [9:0]    _zz_when_TlpRxEngine_l283_1;
+  wire       [10:0]   _zz_when_TlpRxEngine_l314;
+  wire       [9:0]    _zz_when_TlpRxEngine_l314_1;
   reg        [2:0]    state;
   reg        [3:0]    pkt_tlpType;
   reg        [15:0]   pkt_reqId;
@@ -5208,6 +5938,10 @@ module TlpRxEngine (
   reg        [3:0]    pkt_lastBe;
   reg        [2:0]    pkt_tc;
   reg        [1:0]    pkt_attr;
+  reg        [15:0]   pkt_cplId;
+  reg        [2:0]    pkt_cplStatus;
+  reg        [11:0]   pkt_cplByteCount;
+  reg        [6:0]    pkt_cplLowerAddr;
   reg        [31:0]   pkt_data_0;
   reg        [31:0]   pkt_data_1;
   reg        [31:0]   pkt_data_2;
@@ -5216,6 +5950,7 @@ module TlpRxEngine (
   reg        [10:0]   dataIdx;
   reg                 is4DW;
   reg                 hasData;
+  reg                 isCpl;
   reg                 parseErrR;
   reg                 overflowR;
   reg                 outValid;
@@ -5229,6 +5964,10 @@ module TlpRxEngine (
   reg        [3:0]    outPkt_lastBe;
   reg        [2:0]    outPkt_tc;
   reg        [1:0]    outPkt_attr;
+  reg        [15:0]   outPkt_cplId;
+  reg        [2:0]    outPkt_cplStatus;
+  reg        [11:0]   outPkt_cplByteCount;
+  reg        [6:0]    outPkt_cplLowerAddr;
   reg        [31:0]   outPkt_data_0;
   reg        [31:0]   outPkt_data_1;
   reg        [31:0]   outPkt_data_2;
@@ -5239,7 +5978,7 @@ module TlpRxEngine (
   reg                 streamLast;
   wire                io_tlpIn_fire;
   wire       [2:0]    _zz_is4DW;
-  wire       [4:0]    switch_TlpRxEngine_l136;
+  wire       [4:0]    switch_TlpRxEngine_l142;
   wire       [9:0]    _zz_pkt_length;
   wire                _zz_hasData;
   reg                 _zz_parseErrR;
@@ -5250,21 +5989,22 @@ module TlpRxEngine (
   wire       [3:0]    _zz_pkt_tlpType_3;
   wire       [3:0]    _zz_pkt_tlpType_4;
   wire       [3:0]    _zz_pkt_tlpType_5;
-  wire                when_TlpRxEngine_l164;
-  wire                when_TlpRxEngine_l195;
-  wire                when_TlpRxEngine_l213;
+  wire                when_TlpRxEngine_l171;
+  wire                when_TlpRxEngine_l208;
+  wire                when_TlpRxEngine_l226;
+  wire                when_TlpRxEngine_l244;
   wire       [10:0]   _zz_pkt_dataValid;
-  wire                when_TlpRxEngine_l231;
+  wire                when_TlpRxEngine_l262;
   wire       [3:0]    _zz_1;
-  wire                when_TlpRxEngine_l236;
-  wire                when_TlpRxEngine_l255;
+  wire                when_TlpRxEngine_l267;
+  wire                when_TlpRxEngine_l286;
   wire       [3:0]    _zz_2;
-  wire                when_TlpRxEngine_l260;
+  wire                when_TlpRxEngine_l291;
   reg        [1:0]    _zz_outChannel;
-  wire                when_TlpRxEngine_l299;
-  wire                when_TlpRxEngine_l301;
-  wire                when_TlpRxEngine_l302;
-  wire                when_TlpRxEngine_l283;
+  wire                when_TlpRxEngine_l330;
+  wire                when_TlpRxEngine_l332;
+  wire                when_TlpRxEngine_l333;
+  wire                when_TlpRxEngine_l314;
   `ifndef SYNTHESIS
   reg [55:0] io_memReq_payload_tlpType_string;
   reg [55:0] io_cfgReq_payload_tlpType_string;
@@ -5284,15 +6024,15 @@ module TlpRxEngine (
 
   assign _zz__zz_1 = dataIdx[1:0];
   assign _zz_pkt_dataValid_1 = _zz_pkt_dataValid[2:0];
-  assign _zz_when_TlpRxEngine_l236 = (((pkt_length == 10'h000) ? 11'h400 : _zz_when_TlpRxEngine_l236_1) - 11'h001);
-  assign _zz_when_TlpRxEngine_l236_1 = {1'd0, pkt_length};
+  assign _zz_when_TlpRxEngine_l267 = (((pkt_length == 10'h000) ? 11'h400 : _zz_when_TlpRxEngine_l267_1) - 11'h001);
+  assign _zz_when_TlpRxEngine_l267_1 = {1'd0, pkt_length};
   assign _zz_streamLast = (((pkt_length == 10'h000) ? 11'h400 : _zz_streamLast_1) - 11'h001);
   assign _zz_streamLast_1 = {1'd0, pkt_length};
   assign _zz__zz_2 = dataIdx[1:0];
   assign _zz_pkt_dataValid_3 = (dataIdx + 11'h001);
   assign _zz_pkt_dataValid_2 = _zz_pkt_dataValid_3[2:0];
-  assign _zz_when_TlpRxEngine_l283_1 = (pkt_length - 10'h001);
-  assign _zz_when_TlpRxEngine_l283 = {1'd0, _zz_when_TlpRxEngine_l283_1};
+  assign _zz_when_TlpRxEngine_l314_1 = (pkt_length - 10'h001);
+  assign _zz_when_TlpRxEngine_l314 = {1'd0, _zz_when_TlpRxEngine_l314_1};
   `ifndef SYNTHESIS
   always @(*) begin
     case(io_memReq_payload_tlpType)
@@ -5541,10 +6281,18 @@ module TlpRxEngine (
       end
       RxState_HDR3 : begin
         if(io_tlpIn_fire) begin
-          if(!is4DW) begin
+          if(isCpl) begin
             if(hasData) begin
-              if(when_TlpRxEngine_l195) begin
+              if(when_TlpRxEngine_l208) begin
                 io_memDataStart = 1'b1;
+              end
+            end
+          end else begin
+            if(!is4DW) begin
+              if(hasData) begin
+                if(when_TlpRxEngine_l226) begin
+                  io_memDataStart = 1'b1;
+                end
               end
             end
           end
@@ -5553,7 +6301,7 @@ module TlpRxEngine (
       RxState_HDR4 : begin
         if(io_tlpIn_fire) begin
           if(hasData) begin
-            if(when_TlpRxEngine_l213) begin
+            if(when_TlpRxEngine_l244) begin
               io_memDataStart = 1'b1;
             end
           end
@@ -5647,6 +6395,10 @@ module TlpRxEngine (
   assign io_memReq_payload_lastBe = outPkt_lastBe;
   assign io_memReq_payload_tc = outPkt_tc;
   assign io_memReq_payload_attr = outPkt_attr;
+  assign io_memReq_payload_cplId = outPkt_cplId;
+  assign io_memReq_payload_cplStatus = outPkt_cplStatus;
+  assign io_memReq_payload_cplByteCount = outPkt_cplByteCount;
+  assign io_memReq_payload_cplLowerAddr = outPkt_cplLowerAddr;
   assign io_memReq_payload_data_0 = outPkt_data_0;
   assign io_memReq_payload_data_1 = outPkt_data_1;
   assign io_memReq_payload_data_2 = outPkt_data_2;
@@ -5661,6 +6413,10 @@ module TlpRxEngine (
   assign io_cfgReq_payload_lastBe = outPkt_lastBe;
   assign io_cfgReq_payload_tc = outPkt_tc;
   assign io_cfgReq_payload_attr = outPkt_attr;
+  assign io_cfgReq_payload_cplId = outPkt_cplId;
+  assign io_cfgReq_payload_cplStatus = outPkt_cplStatus;
+  assign io_cfgReq_payload_cplByteCount = outPkt_cplByteCount;
+  assign io_cfgReq_payload_cplLowerAddr = outPkt_cplLowerAddr;
   assign io_cfgReq_payload_data_0 = outPkt_data_0;
   assign io_cfgReq_payload_data_1 = outPkt_data_1;
   assign io_cfgReq_payload_data_2 = outPkt_data_2;
@@ -5675,6 +6431,10 @@ module TlpRxEngine (
   assign io_cplIn_payload_lastBe = outPkt_lastBe;
   assign io_cplIn_payload_tc = outPkt_tc;
   assign io_cplIn_payload_attr = outPkt_attr;
+  assign io_cplIn_payload_cplId = outPkt_cplId;
+  assign io_cplIn_payload_cplStatus = outPkt_cplStatus;
+  assign io_cplIn_payload_cplByteCount = outPkt_cplByteCount;
+  assign io_cplIn_payload_cplLowerAddr = outPkt_cplLowerAddr;
   assign io_cplIn_payload_data_0 = outPkt_data_0;
   assign io_cplIn_payload_data_1 = outPkt_data_1;
   assign io_cplIn_payload_data_2 = outPkt_data_2;
@@ -5689,6 +6449,10 @@ module TlpRxEngine (
   assign io_ioReq_payload_lastBe = outPkt_lastBe;
   assign io_ioReq_payload_tc = outPkt_tc;
   assign io_ioReq_payload_attr = outPkt_attr;
+  assign io_ioReq_payload_cplId = outPkt_cplId;
+  assign io_ioReq_payload_cplStatus = outPkt_cplStatus;
+  assign io_ioReq_payload_cplByteCount = outPkt_cplByteCount;
+  assign io_ioReq_payload_cplLowerAddr = outPkt_cplLowerAddr;
   assign io_ioReq_payload_data_0 = outPkt_data_0;
   assign io_ioReq_payload_data_1 = outPkt_data_1;
   assign io_ioReq_payload_data_2 = outPkt_data_2;
@@ -5719,12 +6483,12 @@ module TlpRxEngine (
 
   assign io_tlpIn_fire = (io_tlpIn_valid && io_tlpIn_ready);
   assign _zz_is4DW = io_tlpIn_payload[31 : 29];
-  assign switch_TlpRxEngine_l136 = io_tlpIn_payload[28 : 24];
+  assign switch_TlpRxEngine_l142 = io_tlpIn_payload[28 : 24];
   assign _zz_pkt_length = io_tlpIn_payload[9 : 0];
   assign _zz_hasData = _zz_is4DW[1];
   always @(*) begin
     _zz_parseErrR = 1'b0;
-    case(switch_TlpRxEngine_l136)
+    case(switch_TlpRxEngine_l142)
       5'h00 : begin
       end
       5'h02 : begin
@@ -5750,39 +6514,41 @@ module TlpRxEngine (
   assign _zz_pkt_tlpType_3 = (_zz_is4DW[1] ? TlpType_CFG_WR1 : TlpType_CFG_RD1);
   assign _zz_pkt_tlpType_4 = (_zz_is4DW[1] ? TlpType_CPL_D : TlpType_CPL);
   assign _zz_pkt_tlpType_5 = (_zz_is4DW[1] ? TlpType_MSG_D : TlpType_MSG);
-  assign when_TlpRxEngine_l164 = (_zz_parseErrR || _zz_overflowR);
-  assign when_TlpRxEngine_l195 = (10'h004 < pkt_length);
-  assign when_TlpRxEngine_l213 = (10'h004 < pkt_length);
+  assign when_TlpRxEngine_l171 = (_zz_parseErrR || _zz_overflowR);
+  assign when_TlpRxEngine_l208 = (10'h004 < pkt_length);
+  assign when_TlpRxEngine_l226 = (10'h004 < pkt_length);
+  assign when_TlpRxEngine_l244 = (10'h004 < pkt_length);
   assign _zz_pkt_dataValid = (dataIdx + 11'h001);
-  assign when_TlpRxEngine_l231 = (dataIdx < 11'h004);
+  assign when_TlpRxEngine_l262 = (dataIdx < 11'h004);
   assign _zz_1 = ({3'd0,1'b1} <<< _zz__zz_1);
-  assign when_TlpRxEngine_l236 = (dataIdx == _zz_when_TlpRxEngine_l236);
-  assign when_TlpRxEngine_l255 = (dataIdx < 11'h004);
+  assign when_TlpRxEngine_l267 = (dataIdx == _zz_when_TlpRxEngine_l267);
+  assign when_TlpRxEngine_l286 = (dataIdx < 11'h004);
   assign _zz_2 = ({3'd0,1'b1} <<< _zz__zz_2);
-  assign when_TlpRxEngine_l260 = (io_tlpIn_fire && io_memDataOut_ready);
+  assign when_TlpRxEngine_l291 = (io_tlpIn_fire && io_memDataOut_ready);
   always @(*) begin
     _zz_outChannel = 2'b11;
-    if(when_TlpRxEngine_l299) begin
+    if(when_TlpRxEngine_l330) begin
       _zz_outChannel = 2'b00;
     end
-    if(when_TlpRxEngine_l301) begin
+    if(when_TlpRxEngine_l332) begin
       _zz_outChannel = 2'b01;
     end
-    if(when_TlpRxEngine_l302) begin
+    if(when_TlpRxEngine_l333) begin
       _zz_outChannel = 2'b10;
     end
   end
 
-  assign when_TlpRxEngine_l299 = ((pkt_tlpType == TlpType_MEM_RD) || (pkt_tlpType == TlpType_MEM_WR));
-  assign when_TlpRxEngine_l301 = ((((pkt_tlpType == TlpType_CFG_RD0) || (pkt_tlpType == TlpType_CFG_WR0)) || (pkt_tlpType == TlpType_CFG_RD1)) || (pkt_tlpType == TlpType_CFG_WR1));
-  assign when_TlpRxEngine_l302 = ((pkt_tlpType == TlpType_CPL) || (pkt_tlpType == TlpType_CPL_D));
-  assign when_TlpRxEngine_l283 = ((! hasData) || (_zz_when_TlpRxEngine_l283 <= dataIdx));
+  assign when_TlpRxEngine_l330 = ((pkt_tlpType == TlpType_MEM_RD) || (pkt_tlpType == TlpType_MEM_WR));
+  assign when_TlpRxEngine_l332 = ((((pkt_tlpType == TlpType_CFG_RD0) || (pkt_tlpType == TlpType_CFG_WR0)) || (pkt_tlpType == TlpType_CFG_RD1)) || (pkt_tlpType == TlpType_CFG_WR1));
+  assign when_TlpRxEngine_l333 = ((pkt_tlpType == TlpType_CPL) || (pkt_tlpType == TlpType_CPL_D));
+  assign when_TlpRxEngine_l314 = ((! hasData) || (_zz_when_TlpRxEngine_l314 <= dataIdx));
   always @(posedge clk or posedge reset) begin
     if(reset) begin
       state <= RxState_IDLE;
       dataIdx <= 11'h000;
       is4DW <= 1'b0;
       hasData <= 1'b0;
+      isCpl <= 1'b0;
       parseErrR <= 1'b0;
       overflowR <= 1'b0;
       outValid <= 1'b0;
@@ -5819,9 +6585,27 @@ module TlpRxEngine (
           if(io_tlpIn_fire) begin
             hasData <= _zz_hasData;
             is4DW <= _zz_is4DW[0];
+            isCpl <= 1'b0;
+            case(switch_TlpRxEngine_l142)
+              5'h00 : begin
+              end
+              5'h02 : begin
+              end
+              5'h04 : begin
+              end
+              5'h05 : begin
+              end
+              5'h0a : begin
+                isCpl <= 1'b1;
+              end
+              5'h10 : begin
+              end
+              default : begin
+              end
+            endcase
             parseErrR <= _zz_parseErrR;
             overflowR <= _zz_overflowR;
-            if(when_TlpRxEngine_l164) begin
+            if(when_TlpRxEngine_l171) begin
               dataIdx <= 11'h000;
               state <= RxState_DISCARD;
             end else begin
@@ -5836,18 +6620,31 @@ module TlpRxEngine (
         end
         RxState_HDR3 : begin
           if(io_tlpIn_fire) begin
-            if(is4DW) begin
-              state <= RxState_HDR4;
-            end else begin
+            if(isCpl) begin
               if(hasData) begin
                 dataIdx <= 11'h000;
-                if(when_TlpRxEngine_l195) begin
+                if(when_TlpRxEngine_l208) begin
                   state <= RxState_DATA_STREAM;
                 end else begin
                   state <= RxState_DATA;
                 end
               end else begin
                 state <= RxState_EMIT;
+              end
+            end else begin
+              if(is4DW) begin
+                state <= RxState_HDR4;
+              end else begin
+                if(hasData) begin
+                  dataIdx <= 11'h000;
+                  if(when_TlpRxEngine_l226) begin
+                    state <= RxState_DATA_STREAM;
+                  end else begin
+                    state <= RxState_DATA;
+                  end
+                end else begin
+                  state <= RxState_EMIT;
+                end
               end
             end
           end
@@ -5856,7 +6653,7 @@ module TlpRxEngine (
           if(io_tlpIn_fire) begin
             if(hasData) begin
               dataIdx <= 11'h000;
-              if(when_TlpRxEngine_l213) begin
+              if(when_TlpRxEngine_l244) begin
                 state <= RxState_DATA_STREAM;
               end else begin
                 state <= RxState_DATA;
@@ -5868,7 +6665,7 @@ module TlpRxEngine (
         end
         RxState_DATA : begin
           if(io_tlpIn_fire) begin
-            if(when_TlpRxEngine_l236) begin
+            if(when_TlpRxEngine_l267) begin
               state <= RxState_EMIT;
             end else begin
               dataIdx <= _zz_pkt_dataValid;
@@ -5878,7 +6675,7 @@ module TlpRxEngine (
         RxState_DATA_STREAM : begin
           streamValid <= (io_tlpIn_valid && io_memDataOut_ready);
           streamLast <= (dataIdx == _zz_streamLast);
-          if(when_TlpRxEngine_l260) begin
+          if(when_TlpRxEngine_l291) begin
             if(streamLast) begin
               state <= RxState_EMIT;
             end else begin
@@ -5895,7 +6692,7 @@ module TlpRxEngine (
         default : begin
           streamValid <= 1'b0;
           if(io_tlpIn_fire) begin
-            if(when_TlpRxEngine_l283) begin
+            if(when_TlpRxEngine_l314) begin
               state <= RxState_IDLE;
               dataIdx <= 11'h000;
             end else begin
@@ -5914,12 +6711,16 @@ module TlpRxEngine (
           pkt_length <= _zz_pkt_length;
           pkt_tc <= io_tlpIn_payload[22 : 20];
           pkt_attr <= io_tlpIn_payload[13 : 12];
+          pkt_cplId <= 16'h0000;
+          pkt_cplStatus <= 3'b000;
+          pkt_cplByteCount <= 12'h000;
+          pkt_cplLowerAddr <= 7'h00;
           pkt_dataValid <= 3'b000;
           pkt_data_0 <= 32'h00000000;
           pkt_data_1 <= 32'h00000000;
           pkt_data_2 <= 32'h00000000;
           pkt_data_3 <= 32'h00000000;
-          case(switch_TlpRxEngine_l136)
+          case(switch_TlpRxEngine_l142)
             5'h00 : begin
               pkt_tlpType <= _zz_pkt_tlpType;
             end
@@ -5946,19 +6747,34 @@ module TlpRxEngine (
       end
       RxState_HDR2 : begin
         if(io_tlpIn_fire) begin
-          pkt_reqId <= io_tlpIn_payload[31 : 16];
-          pkt_tag <= io_tlpIn_payload[15 : 8];
-          pkt_lastBe <= io_tlpIn_payload[7 : 4];
-          pkt_firstBe <= io_tlpIn_payload[3 : 0];
+          if(isCpl) begin
+            pkt_cplId <= io_tlpIn_payload[31 : 16];
+            pkt_cplStatus <= io_tlpIn_payload[15 : 13];
+            pkt_cplByteCount <= io_tlpIn_payload[11 : 0];
+            pkt_firstBe <= 4'b0000;
+            pkt_lastBe <= 4'b0000;
+          end else begin
+            pkt_reqId <= io_tlpIn_payload[31 : 16];
+            pkt_tag <= io_tlpIn_payload[15 : 8];
+            pkt_lastBe <= io_tlpIn_payload[7 : 4];
+            pkt_firstBe <= io_tlpIn_payload[3 : 0];
+          end
         end
       end
       RxState_HDR3 : begin
         if(io_tlpIn_fire) begin
-          if(is4DW) begin
-            pkt_addr[63 : 32] <= io_tlpIn_payload;
+          if(isCpl) begin
+            pkt_reqId <= io_tlpIn_payload[31 : 16];
+            pkt_tag <= io_tlpIn_payload[15 : 8];
+            pkt_cplLowerAddr <= io_tlpIn_payload[6 : 0];
+            pkt_addr <= 64'h0000000000000000;
           end else begin
-            pkt_addr[31 : 0] <= io_tlpIn_payload;
-            pkt_addr[63 : 32] <= 32'h00000000;
+            if(is4DW) begin
+              pkt_addr[63 : 32] <= io_tlpIn_payload;
+            end else begin
+              pkt_addr[31 : 0] <= io_tlpIn_payload;
+              pkt_addr[63 : 32] <= 32'h00000000;
+            end
           end
         end
       end
@@ -5969,7 +6785,7 @@ module TlpRxEngine (
       end
       RxState_DATA : begin
         if(io_tlpIn_fire) begin
-          if(when_TlpRxEngine_l231) begin
+          if(when_TlpRxEngine_l262) begin
             if(_zz_1[0]) begin
               pkt_data_0 <= io_tlpIn_payload;
             end
@@ -5988,7 +6804,7 @@ module TlpRxEngine (
       end
       RxState_DATA_STREAM : begin
         streamData <= io_tlpIn_payload;
-        if(when_TlpRxEngine_l255) begin
+        if(when_TlpRxEngine_l286) begin
           if(_zz_2[0]) begin
             pkt_data_0 <= io_tlpIn_payload;
           end
@@ -6014,6 +6830,10 @@ module TlpRxEngine (
         outPkt_lastBe <= pkt_lastBe;
         outPkt_tc <= pkt_tc;
         outPkt_attr <= pkt_attr;
+        outPkt_cplId <= pkt_cplId;
+        outPkt_cplStatus <= pkt_cplStatus;
+        outPkt_cplByteCount <= pkt_cplByteCount;
+        outPkt_cplLowerAddr <= pkt_cplLowerAddr;
         outPkt_data_0 <= pkt_data_0;
         outPkt_data_1 <= pkt_data_1;
         outPkt_data_2 <= pkt_data_2;
@@ -6040,6 +6860,10 @@ module TlpTxFifoWrapper (
   input  wire [3:0]    io_memWrIn_payload_lastBe,
   input  wire [2:0]    io_memWrIn_payload_tc,
   input  wire [1:0]    io_memWrIn_payload_attr,
+  input  wire [15:0]   io_memWrIn_payload_cplId,
+  input  wire [2:0]    io_memWrIn_payload_cplStatus,
+  input  wire [11:0]   io_memWrIn_payload_cplByteCount,
+  input  wire [6:0]    io_memWrIn_payload_cplLowerAddr,
   input  wire [31:0]   io_memWrIn_payload_data_0,
   input  wire [31:0]   io_memWrIn_payload_data_1,
   input  wire [31:0]   io_memWrIn_payload_data_2,
@@ -6056,6 +6880,10 @@ module TlpTxFifoWrapper (
   input  wire [3:0]    io_memRdIn_payload_lastBe,
   input  wire [2:0]    io_memRdIn_payload_tc,
   input  wire [1:0]    io_memRdIn_payload_attr,
+  input  wire [15:0]   io_memRdIn_payload_cplId,
+  input  wire [2:0]    io_memRdIn_payload_cplStatus,
+  input  wire [11:0]   io_memRdIn_payload_cplByteCount,
+  input  wire [6:0]    io_memRdIn_payload_cplLowerAddr,
   input  wire [31:0]   io_memRdIn_payload_data_0,
   input  wire [31:0]   io_memRdIn_payload_data_1,
   input  wire [31:0]   io_memRdIn_payload_data_2,
@@ -6072,6 +6900,10 @@ module TlpTxFifoWrapper (
   input  wire [3:0]    io_cplIn_payload_lastBe,
   input  wire [2:0]    io_cplIn_payload_tc,
   input  wire [1:0]    io_cplIn_payload_attr,
+  input  wire [15:0]   io_cplIn_payload_cplId,
+  input  wire [2:0]    io_cplIn_payload_cplStatus,
+  input  wire [11:0]   io_cplIn_payload_cplByteCount,
+  input  wire [6:0]    io_cplIn_payload_cplLowerAddr,
   input  wire [31:0]   io_cplIn_payload_data_0,
   input  wire [31:0]   io_cplIn_payload_data_1,
   input  wire [31:0]   io_cplIn_payload_data_2,
@@ -6122,6 +6954,10 @@ module TlpTxFifoWrapper (
   wire       [3:0]    memWrFifo_io_pop_payload_lastBe;
   wire       [2:0]    memWrFifo_io_pop_payload_tc;
   wire       [1:0]    memWrFifo_io_pop_payload_attr;
+  wire       [15:0]   memWrFifo_io_pop_payload_cplId;
+  wire       [2:0]    memWrFifo_io_pop_payload_cplStatus;
+  wire       [11:0]   memWrFifo_io_pop_payload_cplByteCount;
+  wire       [6:0]    memWrFifo_io_pop_payload_cplLowerAddr;
   wire       [31:0]   memWrFifo_io_pop_payload_data_0;
   wire       [31:0]   memWrFifo_io_pop_payload_data_1;
   wire       [31:0]   memWrFifo_io_pop_payload_data_2;
@@ -6140,6 +6976,10 @@ module TlpTxFifoWrapper (
   wire       [3:0]    memRdFifo_io_pop_payload_lastBe;
   wire       [2:0]    memRdFifo_io_pop_payload_tc;
   wire       [1:0]    memRdFifo_io_pop_payload_attr;
+  wire       [15:0]   memRdFifo_io_pop_payload_cplId;
+  wire       [2:0]    memRdFifo_io_pop_payload_cplStatus;
+  wire       [11:0]   memRdFifo_io_pop_payload_cplByteCount;
+  wire       [6:0]    memRdFifo_io_pop_payload_cplLowerAddr;
   wire       [31:0]   memRdFifo_io_pop_payload_data_0;
   wire       [31:0]   memRdFifo_io_pop_payload_data_1;
   wire       [31:0]   memRdFifo_io_pop_payload_data_2;
@@ -6158,6 +6998,10 @@ module TlpTxFifoWrapper (
   wire       [3:0]    cplFifo_io_pop_payload_lastBe;
   wire       [2:0]    cplFifo_io_pop_payload_tc;
   wire       [1:0]    cplFifo_io_pop_payload_attr;
+  wire       [15:0]   cplFifo_io_pop_payload_cplId;
+  wire       [2:0]    cplFifo_io_pop_payload_cplStatus;
+  wire       [11:0]   cplFifo_io_pop_payload_cplByteCount;
+  wire       [6:0]    cplFifo_io_pop_payload_cplLowerAddr;
   wire       [31:0]   cplFifo_io_pop_payload_data_0;
   wire       [31:0]   cplFifo_io_pop_payload_data_1;
   wire       [31:0]   cplFifo_io_pop_payload_data_2;
@@ -6183,187 +7027,223 @@ module TlpTxFifoWrapper (
 
 
   StreamFifo memWrFifo (
-    .io_push_valid             (io_memWrIn_valid                       ), //i
-    .io_push_ready             (memWrFifo_io_push_ready                ), //o
-    .io_push_payload_tlpType   (io_memWrIn_payload_tlpType[3:0]        ), //i
-    .io_push_payload_reqId     (io_memWrIn_payload_reqId[15:0]         ), //i
-    .io_push_payload_tag       (io_memWrIn_payload_tag[7:0]            ), //i
-    .io_push_payload_addr      (io_memWrIn_payload_addr[63:0]          ), //i
-    .io_push_payload_length    (io_memWrIn_payload_length[9:0]         ), //i
-    .io_push_payload_firstBe   (io_memWrIn_payload_firstBe[3:0]        ), //i
-    .io_push_payload_lastBe    (io_memWrIn_payload_lastBe[3:0]         ), //i
-    .io_push_payload_tc        (io_memWrIn_payload_tc[2:0]             ), //i
-    .io_push_payload_attr      (io_memWrIn_payload_attr[1:0]           ), //i
-    .io_push_payload_data_0    (io_memWrIn_payload_data_0[31:0]        ), //i
-    .io_push_payload_data_1    (io_memWrIn_payload_data_1[31:0]        ), //i
-    .io_push_payload_data_2    (io_memWrIn_payload_data_2[31:0]        ), //i
-    .io_push_payload_data_3    (io_memWrIn_payload_data_3[31:0]        ), //i
-    .io_push_payload_dataValid (io_memWrIn_payload_dataValid[2:0]      ), //i
-    .io_pop_valid              (memWrFifo_io_pop_valid                 ), //o
-    .io_pop_ready              (engine_io_memWrReq_ready               ), //i
-    .io_pop_payload_tlpType    (memWrFifo_io_pop_payload_tlpType[3:0]  ), //o
-    .io_pop_payload_reqId      (memWrFifo_io_pop_payload_reqId[15:0]   ), //o
-    .io_pop_payload_tag        (memWrFifo_io_pop_payload_tag[7:0]      ), //o
-    .io_pop_payload_addr       (memWrFifo_io_pop_payload_addr[63:0]    ), //o
-    .io_pop_payload_length     (memWrFifo_io_pop_payload_length[9:0]   ), //o
-    .io_pop_payload_firstBe    (memWrFifo_io_pop_payload_firstBe[3:0]  ), //o
-    .io_pop_payload_lastBe     (memWrFifo_io_pop_payload_lastBe[3:0]   ), //o
-    .io_pop_payload_tc         (memWrFifo_io_pop_payload_tc[2:0]       ), //o
-    .io_pop_payload_attr       (memWrFifo_io_pop_payload_attr[1:0]     ), //o
-    .io_pop_payload_data_0     (memWrFifo_io_pop_payload_data_0[31:0]  ), //o
-    .io_pop_payload_data_1     (memWrFifo_io_pop_payload_data_1[31:0]  ), //o
-    .io_pop_payload_data_2     (memWrFifo_io_pop_payload_data_2[31:0]  ), //o
-    .io_pop_payload_data_3     (memWrFifo_io_pop_payload_data_3[31:0]  ), //o
-    .io_pop_payload_dataValid  (memWrFifo_io_pop_payload_dataValid[2:0]), //o
-    .io_flush                  (memWrFifo_io_flush                     ), //i
-    .io_occupancy              (memWrFifo_io_occupancy[6:0]            ), //o
-    .io_availability           (memWrFifo_io_availability[6:0]         ), //o
-    .clk                       (clk                                    ), //i
-    .reset                     (reset                                  )  //i
+    .io_push_valid                (io_memWrIn_valid                           ), //i
+    .io_push_ready                (memWrFifo_io_push_ready                    ), //o
+    .io_push_payload_tlpType      (io_memWrIn_payload_tlpType[3:0]            ), //i
+    .io_push_payload_reqId        (io_memWrIn_payload_reqId[15:0]             ), //i
+    .io_push_payload_tag          (io_memWrIn_payload_tag[7:0]                ), //i
+    .io_push_payload_addr         (io_memWrIn_payload_addr[63:0]              ), //i
+    .io_push_payload_length       (io_memWrIn_payload_length[9:0]             ), //i
+    .io_push_payload_firstBe      (io_memWrIn_payload_firstBe[3:0]            ), //i
+    .io_push_payload_lastBe       (io_memWrIn_payload_lastBe[3:0]             ), //i
+    .io_push_payload_tc           (io_memWrIn_payload_tc[2:0]                 ), //i
+    .io_push_payload_attr         (io_memWrIn_payload_attr[1:0]               ), //i
+    .io_push_payload_cplId        (io_memWrIn_payload_cplId[15:0]             ), //i
+    .io_push_payload_cplStatus    (io_memWrIn_payload_cplStatus[2:0]          ), //i
+    .io_push_payload_cplByteCount (io_memWrIn_payload_cplByteCount[11:0]      ), //i
+    .io_push_payload_cplLowerAddr (io_memWrIn_payload_cplLowerAddr[6:0]       ), //i
+    .io_push_payload_data_0       (io_memWrIn_payload_data_0[31:0]            ), //i
+    .io_push_payload_data_1       (io_memWrIn_payload_data_1[31:0]            ), //i
+    .io_push_payload_data_2       (io_memWrIn_payload_data_2[31:0]            ), //i
+    .io_push_payload_data_3       (io_memWrIn_payload_data_3[31:0]            ), //i
+    .io_push_payload_dataValid    (io_memWrIn_payload_dataValid[2:0]          ), //i
+    .io_pop_valid                 (memWrFifo_io_pop_valid                     ), //o
+    .io_pop_ready                 (engine_io_memWrReq_ready                   ), //i
+    .io_pop_payload_tlpType       (memWrFifo_io_pop_payload_tlpType[3:0]      ), //o
+    .io_pop_payload_reqId         (memWrFifo_io_pop_payload_reqId[15:0]       ), //o
+    .io_pop_payload_tag           (memWrFifo_io_pop_payload_tag[7:0]          ), //o
+    .io_pop_payload_addr          (memWrFifo_io_pop_payload_addr[63:0]        ), //o
+    .io_pop_payload_length        (memWrFifo_io_pop_payload_length[9:0]       ), //o
+    .io_pop_payload_firstBe       (memWrFifo_io_pop_payload_firstBe[3:0]      ), //o
+    .io_pop_payload_lastBe        (memWrFifo_io_pop_payload_lastBe[3:0]       ), //o
+    .io_pop_payload_tc            (memWrFifo_io_pop_payload_tc[2:0]           ), //o
+    .io_pop_payload_attr          (memWrFifo_io_pop_payload_attr[1:0]         ), //o
+    .io_pop_payload_cplId         (memWrFifo_io_pop_payload_cplId[15:0]       ), //o
+    .io_pop_payload_cplStatus     (memWrFifo_io_pop_payload_cplStatus[2:0]    ), //o
+    .io_pop_payload_cplByteCount  (memWrFifo_io_pop_payload_cplByteCount[11:0]), //o
+    .io_pop_payload_cplLowerAddr  (memWrFifo_io_pop_payload_cplLowerAddr[6:0] ), //o
+    .io_pop_payload_data_0        (memWrFifo_io_pop_payload_data_0[31:0]      ), //o
+    .io_pop_payload_data_1        (memWrFifo_io_pop_payload_data_1[31:0]      ), //o
+    .io_pop_payload_data_2        (memWrFifo_io_pop_payload_data_2[31:0]      ), //o
+    .io_pop_payload_data_3        (memWrFifo_io_pop_payload_data_3[31:0]      ), //o
+    .io_pop_payload_dataValid     (memWrFifo_io_pop_payload_dataValid[2:0]    ), //o
+    .io_flush                     (memWrFifo_io_flush                         ), //i
+    .io_occupancy                 (memWrFifo_io_occupancy[6:0]                ), //o
+    .io_availability              (memWrFifo_io_availability[6:0]             ), //o
+    .clk                          (clk                                        ), //i
+    .reset                        (reset                                      )  //i
   );
   StreamFifo_1 memRdFifo (
-    .io_push_valid             (io_memRdIn_valid                       ), //i
-    .io_push_ready             (memRdFifo_io_push_ready                ), //o
-    .io_push_payload_tlpType   (io_memRdIn_payload_tlpType[3:0]        ), //i
-    .io_push_payload_reqId     (io_memRdIn_payload_reqId[15:0]         ), //i
-    .io_push_payload_tag       (io_memRdIn_payload_tag[7:0]            ), //i
-    .io_push_payload_addr      (io_memRdIn_payload_addr[63:0]          ), //i
-    .io_push_payload_length    (io_memRdIn_payload_length[9:0]         ), //i
-    .io_push_payload_firstBe   (io_memRdIn_payload_firstBe[3:0]        ), //i
-    .io_push_payload_lastBe    (io_memRdIn_payload_lastBe[3:0]         ), //i
-    .io_push_payload_tc        (io_memRdIn_payload_tc[2:0]             ), //i
-    .io_push_payload_attr      (io_memRdIn_payload_attr[1:0]           ), //i
-    .io_push_payload_data_0    (io_memRdIn_payload_data_0[31:0]        ), //i
-    .io_push_payload_data_1    (io_memRdIn_payload_data_1[31:0]        ), //i
-    .io_push_payload_data_2    (io_memRdIn_payload_data_2[31:0]        ), //i
-    .io_push_payload_data_3    (io_memRdIn_payload_data_3[31:0]        ), //i
-    .io_push_payload_dataValid (io_memRdIn_payload_dataValid[2:0]      ), //i
-    .io_pop_valid              (memRdFifo_io_pop_valid                 ), //o
-    .io_pop_ready              (engine_io_memRdReq_ready               ), //i
-    .io_pop_payload_tlpType    (memRdFifo_io_pop_payload_tlpType[3:0]  ), //o
-    .io_pop_payload_reqId      (memRdFifo_io_pop_payload_reqId[15:0]   ), //o
-    .io_pop_payload_tag        (memRdFifo_io_pop_payload_tag[7:0]      ), //o
-    .io_pop_payload_addr       (memRdFifo_io_pop_payload_addr[63:0]    ), //o
-    .io_pop_payload_length     (memRdFifo_io_pop_payload_length[9:0]   ), //o
-    .io_pop_payload_firstBe    (memRdFifo_io_pop_payload_firstBe[3:0]  ), //o
-    .io_pop_payload_lastBe     (memRdFifo_io_pop_payload_lastBe[3:0]   ), //o
-    .io_pop_payload_tc         (memRdFifo_io_pop_payload_tc[2:0]       ), //o
-    .io_pop_payload_attr       (memRdFifo_io_pop_payload_attr[1:0]     ), //o
-    .io_pop_payload_data_0     (memRdFifo_io_pop_payload_data_0[31:0]  ), //o
-    .io_pop_payload_data_1     (memRdFifo_io_pop_payload_data_1[31:0]  ), //o
-    .io_pop_payload_data_2     (memRdFifo_io_pop_payload_data_2[31:0]  ), //o
-    .io_pop_payload_data_3     (memRdFifo_io_pop_payload_data_3[31:0]  ), //o
-    .io_pop_payload_dataValid  (memRdFifo_io_pop_payload_dataValid[2:0]), //o
-    .io_flush                  (memRdFifo_io_flush                     ), //i
-    .io_occupancy              (memRdFifo_io_occupancy[5:0]            ), //o
-    .io_availability           (memRdFifo_io_availability[5:0]         ), //o
-    .clk                       (clk                                    ), //i
-    .reset                     (reset                                  )  //i
+    .io_push_valid                (io_memRdIn_valid                           ), //i
+    .io_push_ready                (memRdFifo_io_push_ready                    ), //o
+    .io_push_payload_tlpType      (io_memRdIn_payload_tlpType[3:0]            ), //i
+    .io_push_payload_reqId        (io_memRdIn_payload_reqId[15:0]             ), //i
+    .io_push_payload_tag          (io_memRdIn_payload_tag[7:0]                ), //i
+    .io_push_payload_addr         (io_memRdIn_payload_addr[63:0]              ), //i
+    .io_push_payload_length       (io_memRdIn_payload_length[9:0]             ), //i
+    .io_push_payload_firstBe      (io_memRdIn_payload_firstBe[3:0]            ), //i
+    .io_push_payload_lastBe       (io_memRdIn_payload_lastBe[3:0]             ), //i
+    .io_push_payload_tc           (io_memRdIn_payload_tc[2:0]                 ), //i
+    .io_push_payload_attr         (io_memRdIn_payload_attr[1:0]               ), //i
+    .io_push_payload_cplId        (io_memRdIn_payload_cplId[15:0]             ), //i
+    .io_push_payload_cplStatus    (io_memRdIn_payload_cplStatus[2:0]          ), //i
+    .io_push_payload_cplByteCount (io_memRdIn_payload_cplByteCount[11:0]      ), //i
+    .io_push_payload_cplLowerAddr (io_memRdIn_payload_cplLowerAddr[6:0]       ), //i
+    .io_push_payload_data_0       (io_memRdIn_payload_data_0[31:0]            ), //i
+    .io_push_payload_data_1       (io_memRdIn_payload_data_1[31:0]            ), //i
+    .io_push_payload_data_2       (io_memRdIn_payload_data_2[31:0]            ), //i
+    .io_push_payload_data_3       (io_memRdIn_payload_data_3[31:0]            ), //i
+    .io_push_payload_dataValid    (io_memRdIn_payload_dataValid[2:0]          ), //i
+    .io_pop_valid                 (memRdFifo_io_pop_valid                     ), //o
+    .io_pop_ready                 (engine_io_memRdReq_ready                   ), //i
+    .io_pop_payload_tlpType       (memRdFifo_io_pop_payload_tlpType[3:0]      ), //o
+    .io_pop_payload_reqId         (memRdFifo_io_pop_payload_reqId[15:0]       ), //o
+    .io_pop_payload_tag           (memRdFifo_io_pop_payload_tag[7:0]          ), //o
+    .io_pop_payload_addr          (memRdFifo_io_pop_payload_addr[63:0]        ), //o
+    .io_pop_payload_length        (memRdFifo_io_pop_payload_length[9:0]       ), //o
+    .io_pop_payload_firstBe       (memRdFifo_io_pop_payload_firstBe[3:0]      ), //o
+    .io_pop_payload_lastBe        (memRdFifo_io_pop_payload_lastBe[3:0]       ), //o
+    .io_pop_payload_tc            (memRdFifo_io_pop_payload_tc[2:0]           ), //o
+    .io_pop_payload_attr          (memRdFifo_io_pop_payload_attr[1:0]         ), //o
+    .io_pop_payload_cplId         (memRdFifo_io_pop_payload_cplId[15:0]       ), //o
+    .io_pop_payload_cplStatus     (memRdFifo_io_pop_payload_cplStatus[2:0]    ), //o
+    .io_pop_payload_cplByteCount  (memRdFifo_io_pop_payload_cplByteCount[11:0]), //o
+    .io_pop_payload_cplLowerAddr  (memRdFifo_io_pop_payload_cplLowerAddr[6:0] ), //o
+    .io_pop_payload_data_0        (memRdFifo_io_pop_payload_data_0[31:0]      ), //o
+    .io_pop_payload_data_1        (memRdFifo_io_pop_payload_data_1[31:0]      ), //o
+    .io_pop_payload_data_2        (memRdFifo_io_pop_payload_data_2[31:0]      ), //o
+    .io_pop_payload_data_3        (memRdFifo_io_pop_payload_data_3[31:0]      ), //o
+    .io_pop_payload_dataValid     (memRdFifo_io_pop_payload_dataValid[2:0]    ), //o
+    .io_flush                     (memRdFifo_io_flush                         ), //i
+    .io_occupancy                 (memRdFifo_io_occupancy[5:0]                ), //o
+    .io_availability              (memRdFifo_io_availability[5:0]             ), //o
+    .clk                          (clk                                        ), //i
+    .reset                        (reset                                      )  //i
   );
   StreamFifo_1 cplFifo (
-    .io_push_valid             (io_cplIn_valid                       ), //i
-    .io_push_ready             (cplFifo_io_push_ready                ), //o
-    .io_push_payload_tlpType   (io_cplIn_payload_tlpType[3:0]        ), //i
-    .io_push_payload_reqId     (io_cplIn_payload_reqId[15:0]         ), //i
-    .io_push_payload_tag       (io_cplIn_payload_tag[7:0]            ), //i
-    .io_push_payload_addr      (io_cplIn_payload_addr[63:0]          ), //i
-    .io_push_payload_length    (io_cplIn_payload_length[9:0]         ), //i
-    .io_push_payload_firstBe   (io_cplIn_payload_firstBe[3:0]        ), //i
-    .io_push_payload_lastBe    (io_cplIn_payload_lastBe[3:0]         ), //i
-    .io_push_payload_tc        (io_cplIn_payload_tc[2:0]             ), //i
-    .io_push_payload_attr      (io_cplIn_payload_attr[1:0]           ), //i
-    .io_push_payload_data_0    (io_cplIn_payload_data_0[31:0]        ), //i
-    .io_push_payload_data_1    (io_cplIn_payload_data_1[31:0]        ), //i
-    .io_push_payload_data_2    (io_cplIn_payload_data_2[31:0]        ), //i
-    .io_push_payload_data_3    (io_cplIn_payload_data_3[31:0]        ), //i
-    .io_push_payload_dataValid (io_cplIn_payload_dataValid[2:0]      ), //i
-    .io_pop_valid              (cplFifo_io_pop_valid                 ), //o
-    .io_pop_ready              (engine_io_cplReq_ready               ), //i
-    .io_pop_payload_tlpType    (cplFifo_io_pop_payload_tlpType[3:0]  ), //o
-    .io_pop_payload_reqId      (cplFifo_io_pop_payload_reqId[15:0]   ), //o
-    .io_pop_payload_tag        (cplFifo_io_pop_payload_tag[7:0]      ), //o
-    .io_pop_payload_addr       (cplFifo_io_pop_payload_addr[63:0]    ), //o
-    .io_pop_payload_length     (cplFifo_io_pop_payload_length[9:0]   ), //o
-    .io_pop_payload_firstBe    (cplFifo_io_pop_payload_firstBe[3:0]  ), //o
-    .io_pop_payload_lastBe     (cplFifo_io_pop_payload_lastBe[3:0]   ), //o
-    .io_pop_payload_tc         (cplFifo_io_pop_payload_tc[2:0]       ), //o
-    .io_pop_payload_attr       (cplFifo_io_pop_payload_attr[1:0]     ), //o
-    .io_pop_payload_data_0     (cplFifo_io_pop_payload_data_0[31:0]  ), //o
-    .io_pop_payload_data_1     (cplFifo_io_pop_payload_data_1[31:0]  ), //o
-    .io_pop_payload_data_2     (cplFifo_io_pop_payload_data_2[31:0]  ), //o
-    .io_pop_payload_data_3     (cplFifo_io_pop_payload_data_3[31:0]  ), //o
-    .io_pop_payload_dataValid  (cplFifo_io_pop_payload_dataValid[2:0]), //o
-    .io_flush                  (cplFifo_io_flush                     ), //i
-    .io_occupancy              (cplFifo_io_occupancy[5:0]            ), //o
-    .io_availability           (cplFifo_io_availability[5:0]         ), //o
-    .clk                       (clk                                  ), //i
-    .reset                     (reset                                )  //i
+    .io_push_valid                (io_cplIn_valid                           ), //i
+    .io_push_ready                (cplFifo_io_push_ready                    ), //o
+    .io_push_payload_tlpType      (io_cplIn_payload_tlpType[3:0]            ), //i
+    .io_push_payload_reqId        (io_cplIn_payload_reqId[15:0]             ), //i
+    .io_push_payload_tag          (io_cplIn_payload_tag[7:0]                ), //i
+    .io_push_payload_addr         (io_cplIn_payload_addr[63:0]              ), //i
+    .io_push_payload_length       (io_cplIn_payload_length[9:0]             ), //i
+    .io_push_payload_firstBe      (io_cplIn_payload_firstBe[3:0]            ), //i
+    .io_push_payload_lastBe       (io_cplIn_payload_lastBe[3:0]             ), //i
+    .io_push_payload_tc           (io_cplIn_payload_tc[2:0]                 ), //i
+    .io_push_payload_attr         (io_cplIn_payload_attr[1:0]               ), //i
+    .io_push_payload_cplId        (io_cplIn_payload_cplId[15:0]             ), //i
+    .io_push_payload_cplStatus    (io_cplIn_payload_cplStatus[2:0]          ), //i
+    .io_push_payload_cplByteCount (io_cplIn_payload_cplByteCount[11:0]      ), //i
+    .io_push_payload_cplLowerAddr (io_cplIn_payload_cplLowerAddr[6:0]       ), //i
+    .io_push_payload_data_0       (io_cplIn_payload_data_0[31:0]            ), //i
+    .io_push_payload_data_1       (io_cplIn_payload_data_1[31:0]            ), //i
+    .io_push_payload_data_2       (io_cplIn_payload_data_2[31:0]            ), //i
+    .io_push_payload_data_3       (io_cplIn_payload_data_3[31:0]            ), //i
+    .io_push_payload_dataValid    (io_cplIn_payload_dataValid[2:0]          ), //i
+    .io_pop_valid                 (cplFifo_io_pop_valid                     ), //o
+    .io_pop_ready                 (engine_io_cplReq_ready                   ), //i
+    .io_pop_payload_tlpType       (cplFifo_io_pop_payload_tlpType[3:0]      ), //o
+    .io_pop_payload_reqId         (cplFifo_io_pop_payload_reqId[15:0]       ), //o
+    .io_pop_payload_tag           (cplFifo_io_pop_payload_tag[7:0]          ), //o
+    .io_pop_payload_addr          (cplFifo_io_pop_payload_addr[63:0]        ), //o
+    .io_pop_payload_length        (cplFifo_io_pop_payload_length[9:0]       ), //o
+    .io_pop_payload_firstBe       (cplFifo_io_pop_payload_firstBe[3:0]      ), //o
+    .io_pop_payload_lastBe        (cplFifo_io_pop_payload_lastBe[3:0]       ), //o
+    .io_pop_payload_tc            (cplFifo_io_pop_payload_tc[2:0]           ), //o
+    .io_pop_payload_attr          (cplFifo_io_pop_payload_attr[1:0]         ), //o
+    .io_pop_payload_cplId         (cplFifo_io_pop_payload_cplId[15:0]       ), //o
+    .io_pop_payload_cplStatus     (cplFifo_io_pop_payload_cplStatus[2:0]    ), //o
+    .io_pop_payload_cplByteCount  (cplFifo_io_pop_payload_cplByteCount[11:0]), //o
+    .io_pop_payload_cplLowerAddr  (cplFifo_io_pop_payload_cplLowerAddr[6:0] ), //o
+    .io_pop_payload_data_0        (cplFifo_io_pop_payload_data_0[31:0]      ), //o
+    .io_pop_payload_data_1        (cplFifo_io_pop_payload_data_1[31:0]      ), //o
+    .io_pop_payload_data_2        (cplFifo_io_pop_payload_data_2[31:0]      ), //o
+    .io_pop_payload_data_3        (cplFifo_io_pop_payload_data_3[31:0]      ), //o
+    .io_pop_payload_dataValid     (cplFifo_io_pop_payload_dataValid[2:0]    ), //o
+    .io_flush                     (cplFifo_io_flush                         ), //i
+    .io_occupancy                 (cplFifo_io_occupancy[5:0]                ), //o
+    .io_availability              (cplFifo_io_availability[5:0]             ), //o
+    .clk                          (clk                                      ), //i
+    .reset                        (reset                                    )  //i
   );
   TlpTxEngine engine (
-    .io_memWrReq_valid             (memWrFifo_io_pop_valid                 ), //i
-    .io_memWrReq_ready             (engine_io_memWrReq_ready               ), //o
-    .io_memWrReq_payload_tlpType   (memWrFifo_io_pop_payload_tlpType[3:0]  ), //i
-    .io_memWrReq_payload_reqId     (memWrFifo_io_pop_payload_reqId[15:0]   ), //i
-    .io_memWrReq_payload_tag       (memWrFifo_io_pop_payload_tag[7:0]      ), //i
-    .io_memWrReq_payload_addr      (memWrFifo_io_pop_payload_addr[63:0]    ), //i
-    .io_memWrReq_payload_length    (memWrFifo_io_pop_payload_length[9:0]   ), //i
-    .io_memWrReq_payload_firstBe   (memWrFifo_io_pop_payload_firstBe[3:0]  ), //i
-    .io_memWrReq_payload_lastBe    (memWrFifo_io_pop_payload_lastBe[3:0]   ), //i
-    .io_memWrReq_payload_tc        (memWrFifo_io_pop_payload_tc[2:0]       ), //i
-    .io_memWrReq_payload_attr      (memWrFifo_io_pop_payload_attr[1:0]     ), //i
-    .io_memWrReq_payload_data_0    (memWrFifo_io_pop_payload_data_0[31:0]  ), //i
-    .io_memWrReq_payload_data_1    (memWrFifo_io_pop_payload_data_1[31:0]  ), //i
-    .io_memWrReq_payload_data_2    (memWrFifo_io_pop_payload_data_2[31:0]  ), //i
-    .io_memWrReq_payload_data_3    (memWrFifo_io_pop_payload_data_3[31:0]  ), //i
-    .io_memWrReq_payload_dataValid (memWrFifo_io_pop_payload_dataValid[2:0]), //i
-    .io_memRdReq_valid             (memRdFifo_io_pop_valid                 ), //i
-    .io_memRdReq_ready             (engine_io_memRdReq_ready               ), //o
-    .io_memRdReq_payload_tlpType   (memRdFifo_io_pop_payload_tlpType[3:0]  ), //i
-    .io_memRdReq_payload_reqId     (memRdFifo_io_pop_payload_reqId[15:0]   ), //i
-    .io_memRdReq_payload_tag       (memRdFifo_io_pop_payload_tag[7:0]      ), //i
-    .io_memRdReq_payload_addr      (memRdFifo_io_pop_payload_addr[63:0]    ), //i
-    .io_memRdReq_payload_length    (memRdFifo_io_pop_payload_length[9:0]   ), //i
-    .io_memRdReq_payload_firstBe   (memRdFifo_io_pop_payload_firstBe[3:0]  ), //i
-    .io_memRdReq_payload_lastBe    (memRdFifo_io_pop_payload_lastBe[3:0]   ), //i
-    .io_memRdReq_payload_tc        (memRdFifo_io_pop_payload_tc[2:0]       ), //i
-    .io_memRdReq_payload_attr      (memRdFifo_io_pop_payload_attr[1:0]     ), //i
-    .io_memRdReq_payload_data_0    (memRdFifo_io_pop_payload_data_0[31:0]  ), //i
-    .io_memRdReq_payload_data_1    (memRdFifo_io_pop_payload_data_1[31:0]  ), //i
-    .io_memRdReq_payload_data_2    (memRdFifo_io_pop_payload_data_2[31:0]  ), //i
-    .io_memRdReq_payload_data_3    (memRdFifo_io_pop_payload_data_3[31:0]  ), //i
-    .io_memRdReq_payload_dataValid (memRdFifo_io_pop_payload_dataValid[2:0]), //i
-    .io_cplReq_valid               (cplFifo_io_pop_valid                   ), //i
-    .io_cplReq_ready               (engine_io_cplReq_ready                 ), //o
-    .io_cplReq_payload_tlpType     (cplFifo_io_pop_payload_tlpType[3:0]    ), //i
-    .io_cplReq_payload_reqId       (cplFifo_io_pop_payload_reqId[15:0]     ), //i
-    .io_cplReq_payload_tag         (cplFifo_io_pop_payload_tag[7:0]        ), //i
-    .io_cplReq_payload_addr        (cplFifo_io_pop_payload_addr[63:0]      ), //i
-    .io_cplReq_payload_length      (cplFifo_io_pop_payload_length[9:0]     ), //i
-    .io_cplReq_payload_firstBe     (cplFifo_io_pop_payload_firstBe[3:0]    ), //i
-    .io_cplReq_payload_lastBe      (cplFifo_io_pop_payload_lastBe[3:0]     ), //i
-    .io_cplReq_payload_tc          (cplFifo_io_pop_payload_tc[2:0]         ), //i
-    .io_cplReq_payload_attr        (cplFifo_io_pop_payload_attr[1:0]       ), //i
-    .io_cplReq_payload_data_0      (cplFifo_io_pop_payload_data_0[31:0]    ), //i
-    .io_cplReq_payload_data_1      (cplFifo_io_pop_payload_data_1[31:0]    ), //i
-    .io_cplReq_payload_data_2      (cplFifo_io_pop_payload_data_2[31:0]    ), //i
-    .io_cplReq_payload_data_3      (cplFifo_io_pop_payload_data_3[31:0]    ), //i
-    .io_cplReq_payload_dataValid   (cplFifo_io_pop_payload_dataValid[2:0]  ), //i
-    .io_tlpOut_valid               (engine_io_tlpOut_valid                 ), //o
-    .io_tlpOut_ready               (io_tlpOut_ready                        ), //i
-    .io_tlpOut_payload             (engine_io_tlpOut_payload[31:0]         ), //o
-    .io_fcCredits_phCredits        (io_fcCredits_phCredits[7:0]            ), //i
-    .io_fcCredits_pdCredits        (io_fcCredits_pdCredits[11:0]           ), //i
-    .io_fcCredits_nphCredits       (io_fcCredits_nphCredits[7:0]           ), //i
-    .io_fcCredits_npdCredits       (io_fcCredits_npdCredits[11:0]          ), //i
-    .io_fcCredits_cplhCredits      (io_fcCredits_cplhCredits[7:0]          ), //i
-    .io_fcCredits_cpldCredits      (io_fcCredits_cpldCredits[11:0]         ), //i
-    .io_phConsumed                 (engine_io_phConsumed[7:0]              ), //o
-    .io_pdConsumed                 (engine_io_pdConsumed[11:0]             ), //o
-    .io_nphConsumed                (engine_io_nphConsumed[7:0]             ), //o
-    .io_cplhConsumed               (engine_io_cplhConsumed[7:0]            ), //o
-    .io_cpldConsumed               (engine_io_cpldConsumed[11:0]           ), //o
-    .clk                           (clk                                    ), //i
-    .reset                         (reset                                  )  //i
+    .io_memWrReq_valid                (memWrFifo_io_pop_valid                     ), //i
+    .io_memWrReq_ready                (engine_io_memWrReq_ready                   ), //o
+    .io_memWrReq_payload_tlpType      (memWrFifo_io_pop_payload_tlpType[3:0]      ), //i
+    .io_memWrReq_payload_reqId        (memWrFifo_io_pop_payload_reqId[15:0]       ), //i
+    .io_memWrReq_payload_tag          (memWrFifo_io_pop_payload_tag[7:0]          ), //i
+    .io_memWrReq_payload_addr         (memWrFifo_io_pop_payload_addr[63:0]        ), //i
+    .io_memWrReq_payload_length       (memWrFifo_io_pop_payload_length[9:0]       ), //i
+    .io_memWrReq_payload_firstBe      (memWrFifo_io_pop_payload_firstBe[3:0]      ), //i
+    .io_memWrReq_payload_lastBe       (memWrFifo_io_pop_payload_lastBe[3:0]       ), //i
+    .io_memWrReq_payload_tc           (memWrFifo_io_pop_payload_tc[2:0]           ), //i
+    .io_memWrReq_payload_attr         (memWrFifo_io_pop_payload_attr[1:0]         ), //i
+    .io_memWrReq_payload_cplId        (memWrFifo_io_pop_payload_cplId[15:0]       ), //i
+    .io_memWrReq_payload_cplStatus    (memWrFifo_io_pop_payload_cplStatus[2:0]    ), //i
+    .io_memWrReq_payload_cplByteCount (memWrFifo_io_pop_payload_cplByteCount[11:0]), //i
+    .io_memWrReq_payload_cplLowerAddr (memWrFifo_io_pop_payload_cplLowerAddr[6:0] ), //i
+    .io_memWrReq_payload_data_0       (memWrFifo_io_pop_payload_data_0[31:0]      ), //i
+    .io_memWrReq_payload_data_1       (memWrFifo_io_pop_payload_data_1[31:0]      ), //i
+    .io_memWrReq_payload_data_2       (memWrFifo_io_pop_payload_data_2[31:0]      ), //i
+    .io_memWrReq_payload_data_3       (memWrFifo_io_pop_payload_data_3[31:0]      ), //i
+    .io_memWrReq_payload_dataValid    (memWrFifo_io_pop_payload_dataValid[2:0]    ), //i
+    .io_memRdReq_valid                (memRdFifo_io_pop_valid                     ), //i
+    .io_memRdReq_ready                (engine_io_memRdReq_ready                   ), //o
+    .io_memRdReq_payload_tlpType      (memRdFifo_io_pop_payload_tlpType[3:0]      ), //i
+    .io_memRdReq_payload_reqId        (memRdFifo_io_pop_payload_reqId[15:0]       ), //i
+    .io_memRdReq_payload_tag          (memRdFifo_io_pop_payload_tag[7:0]          ), //i
+    .io_memRdReq_payload_addr         (memRdFifo_io_pop_payload_addr[63:0]        ), //i
+    .io_memRdReq_payload_length       (memRdFifo_io_pop_payload_length[9:0]       ), //i
+    .io_memRdReq_payload_firstBe      (memRdFifo_io_pop_payload_firstBe[3:0]      ), //i
+    .io_memRdReq_payload_lastBe       (memRdFifo_io_pop_payload_lastBe[3:0]       ), //i
+    .io_memRdReq_payload_tc           (memRdFifo_io_pop_payload_tc[2:0]           ), //i
+    .io_memRdReq_payload_attr         (memRdFifo_io_pop_payload_attr[1:0]         ), //i
+    .io_memRdReq_payload_cplId        (memRdFifo_io_pop_payload_cplId[15:0]       ), //i
+    .io_memRdReq_payload_cplStatus    (memRdFifo_io_pop_payload_cplStatus[2:0]    ), //i
+    .io_memRdReq_payload_cplByteCount (memRdFifo_io_pop_payload_cplByteCount[11:0]), //i
+    .io_memRdReq_payload_cplLowerAddr (memRdFifo_io_pop_payload_cplLowerAddr[6:0] ), //i
+    .io_memRdReq_payload_data_0       (memRdFifo_io_pop_payload_data_0[31:0]      ), //i
+    .io_memRdReq_payload_data_1       (memRdFifo_io_pop_payload_data_1[31:0]      ), //i
+    .io_memRdReq_payload_data_2       (memRdFifo_io_pop_payload_data_2[31:0]      ), //i
+    .io_memRdReq_payload_data_3       (memRdFifo_io_pop_payload_data_3[31:0]      ), //i
+    .io_memRdReq_payload_dataValid    (memRdFifo_io_pop_payload_dataValid[2:0]    ), //i
+    .io_cplReq_valid                  (cplFifo_io_pop_valid                       ), //i
+    .io_cplReq_ready                  (engine_io_cplReq_ready                     ), //o
+    .io_cplReq_payload_tlpType        (cplFifo_io_pop_payload_tlpType[3:0]        ), //i
+    .io_cplReq_payload_reqId          (cplFifo_io_pop_payload_reqId[15:0]         ), //i
+    .io_cplReq_payload_tag            (cplFifo_io_pop_payload_tag[7:0]            ), //i
+    .io_cplReq_payload_addr           (cplFifo_io_pop_payload_addr[63:0]          ), //i
+    .io_cplReq_payload_length         (cplFifo_io_pop_payload_length[9:0]         ), //i
+    .io_cplReq_payload_firstBe        (cplFifo_io_pop_payload_firstBe[3:0]        ), //i
+    .io_cplReq_payload_lastBe         (cplFifo_io_pop_payload_lastBe[3:0]         ), //i
+    .io_cplReq_payload_tc             (cplFifo_io_pop_payload_tc[2:0]             ), //i
+    .io_cplReq_payload_attr           (cplFifo_io_pop_payload_attr[1:0]           ), //i
+    .io_cplReq_payload_cplId          (cplFifo_io_pop_payload_cplId[15:0]         ), //i
+    .io_cplReq_payload_cplStatus      (cplFifo_io_pop_payload_cplStatus[2:0]      ), //i
+    .io_cplReq_payload_cplByteCount   (cplFifo_io_pop_payload_cplByteCount[11:0]  ), //i
+    .io_cplReq_payload_cplLowerAddr   (cplFifo_io_pop_payload_cplLowerAddr[6:0]   ), //i
+    .io_cplReq_payload_data_0         (cplFifo_io_pop_payload_data_0[31:0]        ), //i
+    .io_cplReq_payload_data_1         (cplFifo_io_pop_payload_data_1[31:0]        ), //i
+    .io_cplReq_payload_data_2         (cplFifo_io_pop_payload_data_2[31:0]        ), //i
+    .io_cplReq_payload_data_3         (cplFifo_io_pop_payload_data_3[31:0]        ), //i
+    .io_cplReq_payload_dataValid      (cplFifo_io_pop_payload_dataValid[2:0]      ), //i
+    .io_tlpOut_valid                  (engine_io_tlpOut_valid                     ), //o
+    .io_tlpOut_ready                  (io_tlpOut_ready                            ), //i
+    .io_tlpOut_payload                (engine_io_tlpOut_payload[31:0]             ), //o
+    .io_fcCredits_phCredits           (io_fcCredits_phCredits[7:0]                ), //i
+    .io_fcCredits_pdCredits           (io_fcCredits_pdCredits[11:0]               ), //i
+    .io_fcCredits_nphCredits          (io_fcCredits_nphCredits[7:0]               ), //i
+    .io_fcCredits_npdCredits          (io_fcCredits_npdCredits[11:0]              ), //i
+    .io_fcCredits_cplhCredits         (io_fcCredits_cplhCredits[7:0]              ), //i
+    .io_fcCredits_cpldCredits         (io_fcCredits_cpldCredits[11:0]             ), //i
+    .io_phConsumed                    (engine_io_phConsumed[7:0]                  ), //o
+    .io_pdConsumed                    (engine_io_pdConsumed[11:0]                 ), //o
+    .io_nphConsumed                   (engine_io_nphConsumed[7:0]                 ), //o
+    .io_cplhConsumed                  (engine_io_cplhConsumed[7:0]                ), //o
+    .io_cpldConsumed                  (engine_io_cpldConsumed[11:0]               ), //o
+    .clk                              (clk                                        ), //i
+    .reset                            (reset                                      )  //i
   );
   `ifndef SYNTHESIS
   always @(*) begin
@@ -7972,6 +8852,10 @@ module TlpTxEngine (
   input  wire [3:0]    io_memWrReq_payload_lastBe,
   input  wire [2:0]    io_memWrReq_payload_tc,
   input  wire [1:0]    io_memWrReq_payload_attr,
+  input  wire [15:0]   io_memWrReq_payload_cplId,
+  input  wire [2:0]    io_memWrReq_payload_cplStatus,
+  input  wire [11:0]   io_memWrReq_payload_cplByteCount,
+  input  wire [6:0]    io_memWrReq_payload_cplLowerAddr,
   input  wire [31:0]   io_memWrReq_payload_data_0,
   input  wire [31:0]   io_memWrReq_payload_data_1,
   input  wire [31:0]   io_memWrReq_payload_data_2,
@@ -7988,6 +8872,10 @@ module TlpTxEngine (
   input  wire [3:0]    io_memRdReq_payload_lastBe,
   input  wire [2:0]    io_memRdReq_payload_tc,
   input  wire [1:0]    io_memRdReq_payload_attr,
+  input  wire [15:0]   io_memRdReq_payload_cplId,
+  input  wire [2:0]    io_memRdReq_payload_cplStatus,
+  input  wire [11:0]   io_memRdReq_payload_cplByteCount,
+  input  wire [6:0]    io_memRdReq_payload_cplLowerAddr,
   input  wire [31:0]   io_memRdReq_payload_data_0,
   input  wire [31:0]   io_memRdReq_payload_data_1,
   input  wire [31:0]   io_memRdReq_payload_data_2,
@@ -8004,6 +8892,10 @@ module TlpTxEngine (
   input  wire [3:0]    io_cplReq_payload_lastBe,
   input  wire [2:0]    io_cplReq_payload_tc,
   input  wire [1:0]    io_cplReq_payload_attr,
+  input  wire [15:0]   io_cplReq_payload_cplId,
+  input  wire [2:0]    io_cplReq_payload_cplStatus,
+  input  wire [11:0]   io_cplReq_payload_cplByteCount,
+  input  wire [6:0]    io_cplReq_payload_cplLowerAddr,
   input  wire [31:0]   io_cplReq_payload_data_0,
   input  wire [31:0]   io_cplReq_payload_data_1,
   input  wire [31:0]   io_cplReq_payload_data_2,
@@ -8054,10 +8946,10 @@ module TlpTxEngine (
   wire       [9:0]    _zz_memWrDataCredits;
   wire       [11:0]   _zz_canSendCpl;
   wire       [11:0]   _zz_canSendMemWr;
-  reg        [31:0]   _zz_io_tlpOut_payload_3;
-  wire       [1:0]    _zz_io_tlpOut_payload_4;
-  wire       [9:0]    _zz_when_TlpTxEngine_l260;
-  wire       [2:0]    _zz_when_TlpTxEngine_l260_1;
+  reg        [31:0]   _zz_io_tlpOut_payload_5;
+  wire       [1:0]    _zz_io_tlpOut_payload_6;
+  wire       [9:0]    _zz_when_TlpTxEngine_l275;
+  wire       [2:0]    _zz_when_TlpTxEngine_l275_1;
   wire       [1:0]    arbState_1;
   reg        [3:0]    activeReq_tlpType;
   reg        [15:0]   activeReq_reqId;
@@ -8068,6 +8960,10 @@ module TlpTxEngine (
   reg        [3:0]    activeReq_lastBe;
   reg        [2:0]    activeReq_tc;
   reg        [1:0]    activeReq_attr;
+  reg        [15:0]   activeReq_cplId;
+  reg        [2:0]    activeReq_cplStatus;
+  reg        [11:0]   activeReq_cplByteCount;
+  reg        [6:0]    activeReq_cplLowerAddr;
   reg        [31:0]   activeReq_data_0;
   reg        [31:0]   activeReq_data_1;
   reg        [31:0]   activeReq_data_2;
@@ -8084,9 +8980,9 @@ module TlpTxEngine (
   reg        [9:0]    dataIdx;
   reg                 needData;
   reg                 is4DW;
-  wire                when_TlpTxEngine_l159;
-  wire                when_TlpTxEngine_l166;
-  wire                when_TlpTxEngine_l173;
+  wire                when_TlpTxEngine_l174;
+  wire                when_TlpTxEngine_l181;
+  wire                when_TlpTxEngine_l188;
   wire                io_cplReq_fire;
   wire                io_memWrReq_fire;
   wire                io_memRdReq_fire;
@@ -8098,10 +8994,14 @@ module TlpTxEngine (
   wire                when_TlpTxEngine_l99;
   wire                when_TlpTxEngine_l101;
   wire                when_TlpTxEngine_l103;
+  reg        [31:0]   _zz_io_tlpOut_payload_3;
+  wire                when_TlpTxEngine_l146;
+  reg        [31:0]   _zz_io_tlpOut_payload_4;
+  wire                when_TlpTxEngine_l157;
   wire       [2:0]    _zz_state;
   wire       [2:0]    _zz_state_1;
   wire       [2:0]    _zz_state_2;
-  wire                when_TlpTxEngine_l260;
+  wire                when_TlpTxEngine_l275;
   `ifndef SYNTHESIS
   reg [55:0] io_memWrReq_payload_tlpType_string;
   reg [55:0] io_memRdReq_payload_tlpType_string;
@@ -8120,15 +9020,15 @@ module TlpTxEngine (
   assign _zz_memWrDataCredits = {7'd0, io_memWrReq_payload_dataValid};
   assign _zz_canSendCpl = {2'd0, cplDataCredits};
   assign _zz_canSendMemWr = {2'd0, memWrDataCredits};
-  assign _zz_io_tlpOut_payload_4 = dataIdx[1:0];
-  assign _zz_when_TlpTxEngine_l260_1 = (((activeReq_dataValid == 3'b000) ? 3'b001 : activeReq_dataValid) - 3'b001);
-  assign _zz_when_TlpTxEngine_l260 = {7'd0, _zz_when_TlpTxEngine_l260_1};
+  assign _zz_io_tlpOut_payload_6 = dataIdx[1:0];
+  assign _zz_when_TlpTxEngine_l275_1 = (((activeReq_dataValid == 3'b000) ? 3'b001 : activeReq_dataValid) - 3'b001);
+  assign _zz_when_TlpTxEngine_l275 = {7'd0, _zz_when_TlpTxEngine_l275_1};
   always @(*) begin
-    case(_zz_io_tlpOut_payload_4)
-      2'b00 : _zz_io_tlpOut_payload_3 = activeReq_data_0;
-      2'b01 : _zz_io_tlpOut_payload_3 = activeReq_data_1;
-      2'b10 : _zz_io_tlpOut_payload_3 = activeReq_data_2;
-      default : _zz_io_tlpOut_payload_3 = activeReq_data_3;
+    case(_zz_io_tlpOut_payload_6)
+      2'b00 : _zz_io_tlpOut_payload_5 = activeReq_data_0;
+      2'b01 : _zz_io_tlpOut_payload_5 = activeReq_data_1;
+      2'b10 : _zz_io_tlpOut_payload_5 = activeReq_data_2;
+      default : _zz_io_tlpOut_payload_5 = activeReq_data_3;
     endcase
   end
 
@@ -8316,16 +9216,16 @@ module TlpTxEngine (
         io_tlpOut_payload = _zz_io_tlpOut_payload_2;
       end
       TxState_HDR2 : begin
-        io_tlpOut_payload = {{{activeReq_reqId,activeReq_tag},activeReq_lastBe},activeReq_firstBe};
+        io_tlpOut_payload = _zz_io_tlpOut_payload_3;
       end
       TxState_HDR3 : begin
-        io_tlpOut_payload = (is4DW ? activeReq_addr[63 : 32] : activeReq_addr[31 : 0]);
+        io_tlpOut_payload = (is4DW ? activeReq_addr[63 : 32] : _zz_io_tlpOut_payload_4);
       end
       TxState_HDR4 : begin
         io_tlpOut_payload = activeReq_addr[31 : 0];
       end
       default : begin
-        io_tlpOut_payload = _zz_io_tlpOut_payload_3;
+        io_tlpOut_payload = _zz_io_tlpOut_payload_5;
       end
     endcase
   end
@@ -8334,11 +9234,11 @@ module TlpTxEngine (
     io_memWrReq_ready = 1'b0;
     case(state)
       TxState_IDLE : begin
-        if(!when_TlpTxEngine_l159) begin
-          if(when_TlpTxEngine_l166) begin
+        if(!when_TlpTxEngine_l174) begin
+          if(when_TlpTxEngine_l181) begin
             io_memWrReq_ready = 1'b1;
           end else begin
-            if(!when_TlpTxEngine_l173) begin
+            if(!when_TlpTxEngine_l188) begin
               if(!canSendCpl) begin
                 if(canSendMemWr) begin
                   io_memWrReq_ready = 1'b1;
@@ -8365,9 +9265,9 @@ module TlpTxEngine (
     io_memRdReq_ready = 1'b0;
     case(state)
       TxState_IDLE : begin
-        if(!when_TlpTxEngine_l159) begin
-          if(!when_TlpTxEngine_l166) begin
-            if(when_TlpTxEngine_l173) begin
+        if(!when_TlpTxEngine_l174) begin
+          if(!when_TlpTxEngine_l181) begin
+            if(when_TlpTxEngine_l188) begin
               io_memRdReq_ready = 1'b1;
             end else begin
               if(!canSendCpl) begin
@@ -8398,11 +9298,11 @@ module TlpTxEngine (
     io_cplReq_ready = 1'b0;
     case(state)
       TxState_IDLE : begin
-        if(when_TlpTxEngine_l159) begin
+        if(when_TlpTxEngine_l174) begin
           io_cplReq_ready = 1'b1;
         end else begin
-          if(!when_TlpTxEngine_l166) begin
-            if(!when_TlpTxEngine_l173) begin
+          if(!when_TlpTxEngine_l181) begin
+            if(!when_TlpTxEngine_l188) begin
               if(canSendCpl) begin
                 io_cplReq_ready = 1'b1;
               end
@@ -8528,9 +9428,9 @@ module TlpTxEngine (
     endcase
   end
 
-  assign when_TlpTxEngine_l159 = ((rrPtr == 2'b00) && canSendCpl);
-  assign when_TlpTxEngine_l166 = ((rrPtr == 2'b01) && canSendMemWr);
-  assign when_TlpTxEngine_l173 = ((rrPtr == 2'b10) && canSendMemRd);
+  assign when_TlpTxEngine_l174 = ((rrPtr == 2'b00) && canSendCpl);
+  assign when_TlpTxEngine_l181 = ((rrPtr == 2'b01) && canSendMemWr);
+  assign when_TlpTxEngine_l188 = ((rrPtr == 2'b10) && canSendMemRd);
   assign io_cplReq_fire = (io_cplReq_valid && io_cplReq_ready);
   assign io_memWrReq_fire = (io_memWrReq_valid && io_memWrReq_ready);
   assign io_memRdReq_fire = (io_memRdReq_valid && io_memRdReq_ready);
@@ -8589,10 +9489,26 @@ module TlpTxEngine (
     _zz_io_tlpOut_payload_2[9 : 0] = activeReq_length;
   end
 
+  always @(*) begin
+    _zz_io_tlpOut_payload_3 = {{{activeReq_reqId,activeReq_tag},activeReq_lastBe},activeReq_firstBe};
+    if(when_TlpTxEngine_l146) begin
+      _zz_io_tlpOut_payload_3 = {{{activeReq_cplId,activeReq_cplStatus},1'b0},activeReq_cplByteCount};
+    end
+  end
+
+  assign when_TlpTxEngine_l146 = ((activeReq_tlpType == TlpType_CPL) || (activeReq_tlpType == TlpType_CPL_D));
+  always @(*) begin
+    _zz_io_tlpOut_payload_4 = activeReq_addr[31 : 0];
+    if(when_TlpTxEngine_l157) begin
+      _zz_io_tlpOut_payload_4 = {{{activeReq_reqId,activeReq_tag},1'b0},activeReq_cplLowerAddr};
+    end
+  end
+
+  assign when_TlpTxEngine_l157 = ((activeReq_tlpType == TlpType_CPL) || (activeReq_tlpType == TlpType_CPL_D));
   assign _zz_state = (needData ? TxState_DATA : TxState_IDLE);
   assign _zz_state_1 = (is4DW ? TxState_HDR4 : _zz_state);
   assign _zz_state_2 = (needData ? TxState_DATA : TxState_IDLE);
-  assign when_TlpTxEngine_l260 = (dataIdx == _zz_when_TlpTxEngine_l260);
+  assign when_TlpTxEngine_l275 = (dataIdx == _zz_when_TlpTxEngine_l275);
   always @(posedge clk or posedge reset) begin
     if(reset) begin
       rrPtr <= 2'b00;
@@ -8603,19 +9519,19 @@ module TlpTxEngine (
     end else begin
       case(state)
         TxState_IDLE : begin
-          if(when_TlpTxEngine_l159) begin
+          if(when_TlpTxEngine_l174) begin
             needData <= (io_cplReq_payload_dataValid != 3'b000);
             is4DW <= (((((io_cplReq_payload_tlpType == TlpType_MEM_RD) || (io_cplReq_payload_tlpType == TlpType_MEM_WR)) || (io_cplReq_payload_tlpType == TlpType_IO_RD)) || (io_cplReq_payload_tlpType == TlpType_IO_WR)) && (io_cplReq_payload_addr[63 : 32] != 32'h00000000));
             state <= TxState_HDR1;
             rrPtr <= 2'b01;
           end else begin
-            if(when_TlpTxEngine_l166) begin
+            if(when_TlpTxEngine_l181) begin
               needData <= (io_memWrReq_payload_dataValid != 3'b000);
               is4DW <= (((((io_memWrReq_payload_tlpType == TlpType_MEM_RD) || (io_memWrReq_payload_tlpType == TlpType_MEM_WR)) || (io_memWrReq_payload_tlpType == TlpType_IO_RD)) || (io_memWrReq_payload_tlpType == TlpType_IO_WR)) && (io_memWrReq_payload_addr[63 : 32] != 32'h00000000));
               state <= TxState_HDR1;
               rrPtr <= 2'b10;
             end else begin
-              if(when_TlpTxEngine_l173) begin
+              if(when_TlpTxEngine_l188) begin
                 needData <= (io_memRdReq_payload_dataValid != 3'b000);
                 is4DW <= (((((io_memRdReq_payload_tlpType == TlpType_MEM_RD) || (io_memRdReq_payload_tlpType == TlpType_MEM_WR)) || (io_memRdReq_payload_tlpType == TlpType_IO_RD)) || (io_memRdReq_payload_tlpType == TlpType_IO_WR)) && (io_memRdReq_payload_addr[63 : 32] != 32'h00000000));
                 state <= TxState_HDR1;
@@ -8670,7 +9586,7 @@ module TlpTxEngine (
         default : begin
           if(io_tlpOut_ready) begin
             dataIdx <= (dataIdx + 10'h001);
-            if(when_TlpTxEngine_l260) begin
+            if(when_TlpTxEngine_l275) begin
               state <= TxState_IDLE;
             end
           end
@@ -8682,7 +9598,7 @@ module TlpTxEngine (
   always @(posedge clk) begin
     case(state)
       TxState_IDLE : begin
-        if(when_TlpTxEngine_l159) begin
+        if(when_TlpTxEngine_l174) begin
           activeReq_tlpType <= io_cplReq_payload_tlpType;
           activeReq_reqId <= io_cplReq_payload_reqId;
           activeReq_tag <= io_cplReq_payload_tag;
@@ -8692,13 +9608,17 @@ module TlpTxEngine (
           activeReq_lastBe <= io_cplReq_payload_lastBe;
           activeReq_tc <= io_cplReq_payload_tc;
           activeReq_attr <= io_cplReq_payload_attr;
+          activeReq_cplId <= io_cplReq_payload_cplId;
+          activeReq_cplStatus <= io_cplReq_payload_cplStatus;
+          activeReq_cplByteCount <= io_cplReq_payload_cplByteCount;
+          activeReq_cplLowerAddr <= io_cplReq_payload_cplLowerAddr;
           activeReq_data_0 <= io_cplReq_payload_data_0;
           activeReq_data_1 <= io_cplReq_payload_data_1;
           activeReq_data_2 <= io_cplReq_payload_data_2;
           activeReq_data_3 <= io_cplReq_payload_data_3;
           activeReq_dataValid <= io_cplReq_payload_dataValid;
         end else begin
-          if(when_TlpTxEngine_l166) begin
+          if(when_TlpTxEngine_l181) begin
             activeReq_tlpType <= io_memWrReq_payload_tlpType;
             activeReq_reqId <= io_memWrReq_payload_reqId;
             activeReq_tag <= io_memWrReq_payload_tag;
@@ -8708,13 +9628,17 @@ module TlpTxEngine (
             activeReq_lastBe <= io_memWrReq_payload_lastBe;
             activeReq_tc <= io_memWrReq_payload_tc;
             activeReq_attr <= io_memWrReq_payload_attr;
+            activeReq_cplId <= io_memWrReq_payload_cplId;
+            activeReq_cplStatus <= io_memWrReq_payload_cplStatus;
+            activeReq_cplByteCount <= io_memWrReq_payload_cplByteCount;
+            activeReq_cplLowerAddr <= io_memWrReq_payload_cplLowerAddr;
             activeReq_data_0 <= io_memWrReq_payload_data_0;
             activeReq_data_1 <= io_memWrReq_payload_data_1;
             activeReq_data_2 <= io_memWrReq_payload_data_2;
             activeReq_data_3 <= io_memWrReq_payload_data_3;
             activeReq_dataValid <= io_memWrReq_payload_dataValid;
           end else begin
-            if(when_TlpTxEngine_l173) begin
+            if(when_TlpTxEngine_l188) begin
               activeReq_tlpType <= io_memRdReq_payload_tlpType;
               activeReq_reqId <= io_memRdReq_payload_reqId;
               activeReq_tag <= io_memRdReq_payload_tag;
@@ -8724,6 +9648,10 @@ module TlpTxEngine (
               activeReq_lastBe <= io_memRdReq_payload_lastBe;
               activeReq_tc <= io_memRdReq_payload_tc;
               activeReq_attr <= io_memRdReq_payload_attr;
+              activeReq_cplId <= io_memRdReq_payload_cplId;
+              activeReq_cplStatus <= io_memRdReq_payload_cplStatus;
+              activeReq_cplByteCount <= io_memRdReq_payload_cplByteCount;
+              activeReq_cplLowerAddr <= io_memRdReq_payload_cplLowerAddr;
               activeReq_data_0 <= io_memRdReq_payload_data_0;
               activeReq_data_1 <= io_memRdReq_payload_data_1;
               activeReq_data_2 <= io_memRdReq_payload_data_2;
@@ -8740,6 +9668,10 @@ module TlpTxEngine (
                 activeReq_lastBe <= io_cplReq_payload_lastBe;
                 activeReq_tc <= io_cplReq_payload_tc;
                 activeReq_attr <= io_cplReq_payload_attr;
+                activeReq_cplId <= io_cplReq_payload_cplId;
+                activeReq_cplStatus <= io_cplReq_payload_cplStatus;
+                activeReq_cplByteCount <= io_cplReq_payload_cplByteCount;
+                activeReq_cplLowerAddr <= io_cplReq_payload_cplLowerAddr;
                 activeReq_data_0 <= io_cplReq_payload_data_0;
                 activeReq_data_1 <= io_cplReq_payload_data_1;
                 activeReq_data_2 <= io_cplReq_payload_data_2;
@@ -8756,6 +9688,10 @@ module TlpTxEngine (
                   activeReq_lastBe <= io_memWrReq_payload_lastBe;
                   activeReq_tc <= io_memWrReq_payload_tc;
                   activeReq_attr <= io_memWrReq_payload_attr;
+                  activeReq_cplId <= io_memWrReq_payload_cplId;
+                  activeReq_cplStatus <= io_memWrReq_payload_cplStatus;
+                  activeReq_cplByteCount <= io_memWrReq_payload_cplByteCount;
+                  activeReq_cplLowerAddr <= io_memWrReq_payload_cplLowerAddr;
                   activeReq_data_0 <= io_memWrReq_payload_data_0;
                   activeReq_data_1 <= io_memWrReq_payload_data_1;
                   activeReq_data_2 <= io_memWrReq_payload_data_2;
@@ -8772,6 +9708,10 @@ module TlpTxEngine (
                     activeReq_lastBe <= io_memRdReq_payload_lastBe;
                     activeReq_tc <= io_memRdReq_payload_tc;
                     activeReq_attr <= io_memRdReq_payload_attr;
+                    activeReq_cplId <= io_memRdReq_payload_cplId;
+                    activeReq_cplStatus <= io_memRdReq_payload_cplStatus;
+                    activeReq_cplByteCount <= io_memRdReq_payload_cplByteCount;
+                    activeReq_cplLowerAddr <= io_memRdReq_payload_cplLowerAddr;
                     activeReq_data_0 <= io_memRdReq_payload_data_0;
                     activeReq_data_1 <= io_memRdReq_payload_data_1;
                     activeReq_data_2 <= io_memRdReq_payload_data_2;
@@ -8814,6 +9754,10 @@ module StreamFifo_1 (
   input  wire [3:0]    io_push_payload_lastBe,
   input  wire [2:0]    io_push_payload_tc,
   input  wire [1:0]    io_push_payload_attr,
+  input  wire [15:0]   io_push_payload_cplId,
+  input  wire [2:0]    io_push_payload_cplStatus,
+  input  wire [11:0]   io_push_payload_cplByteCount,
+  input  wire [6:0]    io_push_payload_cplLowerAddr,
   input  wire [31:0]   io_push_payload_data_0,
   input  wire [31:0]   io_push_payload_data_1,
   input  wire [31:0]   io_push_payload_data_2,
@@ -8830,6 +9774,10 @@ module StreamFifo_1 (
   output wire [3:0]    io_pop_payload_lastBe,
   output wire [2:0]    io_pop_payload_tc,
   output wire [1:0]    io_pop_payload_attr,
+  output wire [15:0]   io_pop_payload_cplId,
+  output wire [2:0]    io_pop_payload_cplStatus,
+  output wire [11:0]   io_pop_payload_cplByteCount,
+  output wire [6:0]    io_pop_payload_cplLowerAddr,
   output wire [31:0]   io_pop_payload_data_0,
   output wire [31:0]   io_pop_payload_data_1,
   output wire [31:0]   io_pop_payload_data_2,
@@ -8855,8 +9803,8 @@ module StreamFifo_1 (
   localparam TlpType_MSG_D = 4'd11;
   localparam TlpType_INVALID = 4'd12;
 
-  reg        [245:0]  _zz_logic_ram_port1;
-  wire       [245:0]  _zz_logic_ram_port;
+  reg        [283:0]  _zz_logic_ram_port1;
+  wire       [283:0]  _zz_logic_ram_port;
   reg                 _zz_1;
   wire                logic_ptr_doPush;
   wire                logic_ptr_doPop;
@@ -8880,6 +9828,10 @@ module StreamFifo_1 (
   wire       [3:0]    logic_push_onRam_write_payload_data_lastBe;
   wire       [2:0]    logic_push_onRam_write_payload_data_tc;
   wire       [1:0]    logic_push_onRam_write_payload_data_attr;
+  wire       [15:0]   logic_push_onRam_write_payload_data_cplId;
+  wire       [2:0]    logic_push_onRam_write_payload_data_cplStatus;
+  wire       [11:0]   logic_push_onRam_write_payload_data_cplByteCount;
+  wire       [6:0]    logic_push_onRam_write_payload_data_cplLowerAddr;
   wire       [31:0]   logic_push_onRam_write_payload_data_data_0;
   wire       [31:0]   logic_push_onRam_write_payload_data_data_1;
   wire       [31:0]   logic_push_onRam_write_payload_data_data_2;
@@ -8906,13 +9858,17 @@ module StreamFifo_1 (
   wire       [3:0]    logic_pop_sync_readPort_rsp_lastBe;
   wire       [2:0]    logic_pop_sync_readPort_rsp_tc;
   wire       [1:0]    logic_pop_sync_readPort_rsp_attr;
+  wire       [15:0]   logic_pop_sync_readPort_rsp_cplId;
+  wire       [2:0]    logic_pop_sync_readPort_rsp_cplStatus;
+  wire       [11:0]   logic_pop_sync_readPort_rsp_cplByteCount;
+  wire       [6:0]    logic_pop_sync_readPort_rsp_cplLowerAddr;
   wire       [31:0]   logic_pop_sync_readPort_rsp_data_0;
   wire       [31:0]   logic_pop_sync_readPort_rsp_data_1;
   wire       [31:0]   logic_pop_sync_readPort_rsp_data_2;
   wire       [31:0]   logic_pop_sync_readPort_rsp_data_3;
   wire       [2:0]    logic_pop_sync_readPort_rsp_dataValid;
   wire       [3:0]    _zz_logic_pop_sync_readPort_rsp_tlpType;
-  wire       [245:0]  _zz_logic_pop_sync_readPort_rsp_reqId;
+  wire       [283:0]  _zz_logic_pop_sync_readPort_rsp_reqId;
   wire       [3:0]    _zz_logic_pop_sync_readPort_rsp_tlpType_1;
   wire       [127:0]  _zz_logic_pop_sync_readPort_rsp_data_0;
   wire                logic_pop_sync_readArbitation_translated_valid;
@@ -8926,6 +9882,10 @@ module StreamFifo_1 (
   wire       [3:0]    logic_pop_sync_readArbitation_translated_payload_lastBe;
   wire       [2:0]    logic_pop_sync_readArbitation_translated_payload_tc;
   wire       [1:0]    logic_pop_sync_readArbitation_translated_payload_attr;
+  wire       [15:0]   logic_pop_sync_readArbitation_translated_payload_cplId;
+  wire       [2:0]    logic_pop_sync_readArbitation_translated_payload_cplStatus;
+  wire       [11:0]   logic_pop_sync_readArbitation_translated_payload_cplByteCount;
+  wire       [6:0]    logic_pop_sync_readArbitation_translated_payload_cplLowerAddr;
   wire       [31:0]   logic_pop_sync_readArbitation_translated_payload_data_0;
   wire       [31:0]   logic_pop_sync_readArbitation_translated_payload_data_1;
   wire       [31:0]   logic_pop_sync_readArbitation_translated_payload_data_2;
@@ -8943,9 +9903,9 @@ module StreamFifo_1 (
   reg [55:0] logic_pop_sync_readArbitation_translated_payload_tlpType_string;
   `endif
 
-  reg [245:0] logic_ram [0:31];
+  reg [283:0] logic_ram [0:31];
 
-  assign _zz_logic_ram_port = {logic_push_onRam_write_payload_data_dataValid,{{logic_push_onRam_write_payload_data_data_3,{logic_push_onRam_write_payload_data_data_2,{logic_push_onRam_write_payload_data_data_1,logic_push_onRam_write_payload_data_data_0}}},{logic_push_onRam_write_payload_data_attr,{logic_push_onRam_write_payload_data_tc,{logic_push_onRam_write_payload_data_lastBe,{logic_push_onRam_write_payload_data_firstBe,{logic_push_onRam_write_payload_data_length,{logic_push_onRam_write_payload_data_addr,{logic_push_onRam_write_payload_data_tag,{logic_push_onRam_write_payload_data_reqId,logic_push_onRam_write_payload_data_tlpType}}}}}}}}}};
+  assign _zz_logic_ram_port = {logic_push_onRam_write_payload_data_dataValid,{{logic_push_onRam_write_payload_data_data_3,{logic_push_onRam_write_payload_data_data_2,{logic_push_onRam_write_payload_data_data_1,logic_push_onRam_write_payload_data_data_0}}},{logic_push_onRam_write_payload_data_cplLowerAddr,{logic_push_onRam_write_payload_data_cplByteCount,{logic_push_onRam_write_payload_data_cplStatus,{logic_push_onRam_write_payload_data_cplId,{logic_push_onRam_write_payload_data_attr,{logic_push_onRam_write_payload_data_tc,{logic_push_onRam_write_payload_data_lastBe,{logic_push_onRam_write_payload_data_firstBe,{logic_push_onRam_write_payload_data_length,{logic_push_onRam_write_payload_data_addr,{logic_push_onRam_write_payload_data_tag,{logic_push_onRam_write_payload_data_reqId,logic_push_onRam_write_payload_data_tlpType}}}}}}}}}}}}}};
   always @(posedge clk) begin
     if(_zz_1) begin
       logic_ram[logic_push_onRam_write_payload_address] <= _zz_logic_ram_port;
@@ -9112,6 +10072,10 @@ module StreamFifo_1 (
   assign logic_push_onRam_write_payload_data_lastBe = io_push_payload_lastBe;
   assign logic_push_onRam_write_payload_data_tc = io_push_payload_tc;
   assign logic_push_onRam_write_payload_data_attr = io_push_payload_attr;
+  assign logic_push_onRam_write_payload_data_cplId = io_push_payload_cplId;
+  assign logic_push_onRam_write_payload_data_cplStatus = io_push_payload_cplStatus;
+  assign logic_push_onRam_write_payload_data_cplByteCount = io_push_payload_cplByteCount;
+  assign logic_push_onRam_write_payload_data_cplLowerAddr = io_push_payload_cplLowerAddr;
   assign logic_push_onRam_write_payload_data_data_0 = io_push_payload_data_0;
   assign logic_push_onRam_write_payload_data_data_1 = io_push_payload_data_1;
   assign logic_push_onRam_write_payload_data_data_2 = io_push_payload_data_2;
@@ -9134,7 +10098,7 @@ module StreamFifo_1 (
   assign _zz_logic_pop_sync_readPort_rsp_reqId = _zz_logic_ram_port1;
   assign _zz_logic_pop_sync_readPort_rsp_tlpType_1 = _zz_logic_pop_sync_readPort_rsp_reqId[3 : 0];
   assign _zz_logic_pop_sync_readPort_rsp_tlpType = _zz_logic_pop_sync_readPort_rsp_tlpType_1;
-  assign _zz_logic_pop_sync_readPort_rsp_data_0 = _zz_logic_pop_sync_readPort_rsp_reqId[242 : 115];
+  assign _zz_logic_pop_sync_readPort_rsp_data_0 = _zz_logic_pop_sync_readPort_rsp_reqId[280 : 153];
   assign logic_pop_sync_readPort_rsp_tlpType = _zz_logic_pop_sync_readPort_rsp_tlpType;
   assign logic_pop_sync_readPort_rsp_reqId = _zz_logic_pop_sync_readPort_rsp_reqId[19 : 4];
   assign logic_pop_sync_readPort_rsp_tag = _zz_logic_pop_sync_readPort_rsp_reqId[27 : 20];
@@ -9144,11 +10108,15 @@ module StreamFifo_1 (
   assign logic_pop_sync_readPort_rsp_lastBe = _zz_logic_pop_sync_readPort_rsp_reqId[109 : 106];
   assign logic_pop_sync_readPort_rsp_tc = _zz_logic_pop_sync_readPort_rsp_reqId[112 : 110];
   assign logic_pop_sync_readPort_rsp_attr = _zz_logic_pop_sync_readPort_rsp_reqId[114 : 113];
+  assign logic_pop_sync_readPort_rsp_cplId = _zz_logic_pop_sync_readPort_rsp_reqId[130 : 115];
+  assign logic_pop_sync_readPort_rsp_cplStatus = _zz_logic_pop_sync_readPort_rsp_reqId[133 : 131];
+  assign logic_pop_sync_readPort_rsp_cplByteCount = _zz_logic_pop_sync_readPort_rsp_reqId[145 : 134];
+  assign logic_pop_sync_readPort_rsp_cplLowerAddr = _zz_logic_pop_sync_readPort_rsp_reqId[152 : 146];
   assign logic_pop_sync_readPort_rsp_data_0 = _zz_logic_pop_sync_readPort_rsp_data_0[31 : 0];
   assign logic_pop_sync_readPort_rsp_data_1 = _zz_logic_pop_sync_readPort_rsp_data_0[63 : 32];
   assign logic_pop_sync_readPort_rsp_data_2 = _zz_logic_pop_sync_readPort_rsp_data_0[95 : 64];
   assign logic_pop_sync_readPort_rsp_data_3 = _zz_logic_pop_sync_readPort_rsp_data_0[127 : 96];
-  assign logic_pop_sync_readPort_rsp_dataValid = _zz_logic_pop_sync_readPort_rsp_reqId[245 : 243];
+  assign logic_pop_sync_readPort_rsp_dataValid = _zz_logic_pop_sync_readPort_rsp_reqId[283 : 281];
   assign logic_pop_sync_readPort_cmd_valid = logic_pop_addressGen_fire;
   assign logic_pop_sync_readPort_cmd_payload = logic_pop_addressGen_payload;
   assign logic_pop_sync_readArbitation_translated_valid = logic_pop_sync_readArbitation_valid;
@@ -9162,6 +10130,10 @@ module StreamFifo_1 (
   assign logic_pop_sync_readArbitation_translated_payload_lastBe = logic_pop_sync_readPort_rsp_lastBe;
   assign logic_pop_sync_readArbitation_translated_payload_tc = logic_pop_sync_readPort_rsp_tc;
   assign logic_pop_sync_readArbitation_translated_payload_attr = logic_pop_sync_readPort_rsp_attr;
+  assign logic_pop_sync_readArbitation_translated_payload_cplId = logic_pop_sync_readPort_rsp_cplId;
+  assign logic_pop_sync_readArbitation_translated_payload_cplStatus = logic_pop_sync_readPort_rsp_cplStatus;
+  assign logic_pop_sync_readArbitation_translated_payload_cplByteCount = logic_pop_sync_readPort_rsp_cplByteCount;
+  assign logic_pop_sync_readArbitation_translated_payload_cplLowerAddr = logic_pop_sync_readPort_rsp_cplLowerAddr;
   assign logic_pop_sync_readArbitation_translated_payload_data_0 = logic_pop_sync_readPort_rsp_data_0;
   assign logic_pop_sync_readArbitation_translated_payload_data_1 = logic_pop_sync_readPort_rsp_data_1;
   assign logic_pop_sync_readArbitation_translated_payload_data_2 = logic_pop_sync_readPort_rsp_data_2;
@@ -9178,6 +10150,10 @@ module StreamFifo_1 (
   assign io_pop_payload_lastBe = logic_pop_sync_readArbitation_translated_payload_lastBe;
   assign io_pop_payload_tc = logic_pop_sync_readArbitation_translated_payload_tc;
   assign io_pop_payload_attr = logic_pop_sync_readArbitation_translated_payload_attr;
+  assign io_pop_payload_cplId = logic_pop_sync_readArbitation_translated_payload_cplId;
+  assign io_pop_payload_cplStatus = logic_pop_sync_readArbitation_translated_payload_cplStatus;
+  assign io_pop_payload_cplByteCount = logic_pop_sync_readArbitation_translated_payload_cplByteCount;
+  assign io_pop_payload_cplLowerAddr = logic_pop_sync_readArbitation_translated_payload_cplLowerAddr;
   assign io_pop_payload_data_0 = logic_pop_sync_readArbitation_translated_payload_data_0;
   assign io_pop_payload_data_1 = logic_pop_sync_readArbitation_translated_payload_data_1;
   assign io_pop_payload_data_2 = logic_pop_sync_readArbitation_translated_payload_data_2;
@@ -9247,6 +10223,10 @@ module StreamFifo (
   input  wire [3:0]    io_push_payload_lastBe,
   input  wire [2:0]    io_push_payload_tc,
   input  wire [1:0]    io_push_payload_attr,
+  input  wire [15:0]   io_push_payload_cplId,
+  input  wire [2:0]    io_push_payload_cplStatus,
+  input  wire [11:0]   io_push_payload_cplByteCount,
+  input  wire [6:0]    io_push_payload_cplLowerAddr,
   input  wire [31:0]   io_push_payload_data_0,
   input  wire [31:0]   io_push_payload_data_1,
   input  wire [31:0]   io_push_payload_data_2,
@@ -9263,6 +10243,10 @@ module StreamFifo (
   output wire [3:0]    io_pop_payload_lastBe,
   output wire [2:0]    io_pop_payload_tc,
   output wire [1:0]    io_pop_payload_attr,
+  output wire [15:0]   io_pop_payload_cplId,
+  output wire [2:0]    io_pop_payload_cplStatus,
+  output wire [11:0]   io_pop_payload_cplByteCount,
+  output wire [6:0]    io_pop_payload_cplLowerAddr,
   output wire [31:0]   io_pop_payload_data_0,
   output wire [31:0]   io_pop_payload_data_1,
   output wire [31:0]   io_pop_payload_data_2,
@@ -9288,8 +10272,8 @@ module StreamFifo (
   localparam TlpType_MSG_D = 4'd11;
   localparam TlpType_INVALID = 4'd12;
 
-  reg        [245:0]  _zz_logic_ram_port1;
-  wire       [245:0]  _zz_logic_ram_port;
+  reg        [283:0]  _zz_logic_ram_port1;
+  wire       [283:0]  _zz_logic_ram_port;
   reg                 _zz_1;
   wire                logic_ptr_doPush;
   wire                logic_ptr_doPop;
@@ -9313,6 +10297,10 @@ module StreamFifo (
   wire       [3:0]    logic_push_onRam_write_payload_data_lastBe;
   wire       [2:0]    logic_push_onRam_write_payload_data_tc;
   wire       [1:0]    logic_push_onRam_write_payload_data_attr;
+  wire       [15:0]   logic_push_onRam_write_payload_data_cplId;
+  wire       [2:0]    logic_push_onRam_write_payload_data_cplStatus;
+  wire       [11:0]   logic_push_onRam_write_payload_data_cplByteCount;
+  wire       [6:0]    logic_push_onRam_write_payload_data_cplLowerAddr;
   wire       [31:0]   logic_push_onRam_write_payload_data_data_0;
   wire       [31:0]   logic_push_onRam_write_payload_data_data_1;
   wire       [31:0]   logic_push_onRam_write_payload_data_data_2;
@@ -9339,13 +10327,17 @@ module StreamFifo (
   wire       [3:0]    logic_pop_sync_readPort_rsp_lastBe;
   wire       [2:0]    logic_pop_sync_readPort_rsp_tc;
   wire       [1:0]    logic_pop_sync_readPort_rsp_attr;
+  wire       [15:0]   logic_pop_sync_readPort_rsp_cplId;
+  wire       [2:0]    logic_pop_sync_readPort_rsp_cplStatus;
+  wire       [11:0]   logic_pop_sync_readPort_rsp_cplByteCount;
+  wire       [6:0]    logic_pop_sync_readPort_rsp_cplLowerAddr;
   wire       [31:0]   logic_pop_sync_readPort_rsp_data_0;
   wire       [31:0]   logic_pop_sync_readPort_rsp_data_1;
   wire       [31:0]   logic_pop_sync_readPort_rsp_data_2;
   wire       [31:0]   logic_pop_sync_readPort_rsp_data_3;
   wire       [2:0]    logic_pop_sync_readPort_rsp_dataValid;
   wire       [3:0]    _zz_logic_pop_sync_readPort_rsp_tlpType;
-  wire       [245:0]  _zz_logic_pop_sync_readPort_rsp_reqId;
+  wire       [283:0]  _zz_logic_pop_sync_readPort_rsp_reqId;
   wire       [3:0]    _zz_logic_pop_sync_readPort_rsp_tlpType_1;
   wire       [127:0]  _zz_logic_pop_sync_readPort_rsp_data_0;
   wire                logic_pop_sync_readArbitation_translated_valid;
@@ -9359,6 +10351,10 @@ module StreamFifo (
   wire       [3:0]    logic_pop_sync_readArbitation_translated_payload_lastBe;
   wire       [2:0]    logic_pop_sync_readArbitation_translated_payload_tc;
   wire       [1:0]    logic_pop_sync_readArbitation_translated_payload_attr;
+  wire       [15:0]   logic_pop_sync_readArbitation_translated_payload_cplId;
+  wire       [2:0]    logic_pop_sync_readArbitation_translated_payload_cplStatus;
+  wire       [11:0]   logic_pop_sync_readArbitation_translated_payload_cplByteCount;
+  wire       [6:0]    logic_pop_sync_readArbitation_translated_payload_cplLowerAddr;
   wire       [31:0]   logic_pop_sync_readArbitation_translated_payload_data_0;
   wire       [31:0]   logic_pop_sync_readArbitation_translated_payload_data_1;
   wire       [31:0]   logic_pop_sync_readArbitation_translated_payload_data_2;
@@ -9376,9 +10372,9 @@ module StreamFifo (
   reg [55:0] logic_pop_sync_readArbitation_translated_payload_tlpType_string;
   `endif
 
-  reg [245:0] logic_ram [0:63];
+  reg [283:0] logic_ram [0:63];
 
-  assign _zz_logic_ram_port = {logic_push_onRam_write_payload_data_dataValid,{{logic_push_onRam_write_payload_data_data_3,{logic_push_onRam_write_payload_data_data_2,{logic_push_onRam_write_payload_data_data_1,logic_push_onRam_write_payload_data_data_0}}},{logic_push_onRam_write_payload_data_attr,{logic_push_onRam_write_payload_data_tc,{logic_push_onRam_write_payload_data_lastBe,{logic_push_onRam_write_payload_data_firstBe,{logic_push_onRam_write_payload_data_length,{logic_push_onRam_write_payload_data_addr,{logic_push_onRam_write_payload_data_tag,{logic_push_onRam_write_payload_data_reqId,logic_push_onRam_write_payload_data_tlpType}}}}}}}}}};
+  assign _zz_logic_ram_port = {logic_push_onRam_write_payload_data_dataValid,{{logic_push_onRam_write_payload_data_data_3,{logic_push_onRam_write_payload_data_data_2,{logic_push_onRam_write_payload_data_data_1,logic_push_onRam_write_payload_data_data_0}}},{logic_push_onRam_write_payload_data_cplLowerAddr,{logic_push_onRam_write_payload_data_cplByteCount,{logic_push_onRam_write_payload_data_cplStatus,{logic_push_onRam_write_payload_data_cplId,{logic_push_onRam_write_payload_data_attr,{logic_push_onRam_write_payload_data_tc,{logic_push_onRam_write_payload_data_lastBe,{logic_push_onRam_write_payload_data_firstBe,{logic_push_onRam_write_payload_data_length,{logic_push_onRam_write_payload_data_addr,{logic_push_onRam_write_payload_data_tag,{logic_push_onRam_write_payload_data_reqId,logic_push_onRam_write_payload_data_tlpType}}}}}}}}}}}}}};
   always @(posedge clk) begin
     if(_zz_1) begin
       logic_ram[logic_push_onRam_write_payload_address] <= _zz_logic_ram_port;
@@ -9545,6 +10541,10 @@ module StreamFifo (
   assign logic_push_onRam_write_payload_data_lastBe = io_push_payload_lastBe;
   assign logic_push_onRam_write_payload_data_tc = io_push_payload_tc;
   assign logic_push_onRam_write_payload_data_attr = io_push_payload_attr;
+  assign logic_push_onRam_write_payload_data_cplId = io_push_payload_cplId;
+  assign logic_push_onRam_write_payload_data_cplStatus = io_push_payload_cplStatus;
+  assign logic_push_onRam_write_payload_data_cplByteCount = io_push_payload_cplByteCount;
+  assign logic_push_onRam_write_payload_data_cplLowerAddr = io_push_payload_cplLowerAddr;
   assign logic_push_onRam_write_payload_data_data_0 = io_push_payload_data_0;
   assign logic_push_onRam_write_payload_data_data_1 = io_push_payload_data_1;
   assign logic_push_onRam_write_payload_data_data_2 = io_push_payload_data_2;
@@ -9567,7 +10567,7 @@ module StreamFifo (
   assign _zz_logic_pop_sync_readPort_rsp_reqId = _zz_logic_ram_port1;
   assign _zz_logic_pop_sync_readPort_rsp_tlpType_1 = _zz_logic_pop_sync_readPort_rsp_reqId[3 : 0];
   assign _zz_logic_pop_sync_readPort_rsp_tlpType = _zz_logic_pop_sync_readPort_rsp_tlpType_1;
-  assign _zz_logic_pop_sync_readPort_rsp_data_0 = _zz_logic_pop_sync_readPort_rsp_reqId[242 : 115];
+  assign _zz_logic_pop_sync_readPort_rsp_data_0 = _zz_logic_pop_sync_readPort_rsp_reqId[280 : 153];
   assign logic_pop_sync_readPort_rsp_tlpType = _zz_logic_pop_sync_readPort_rsp_tlpType;
   assign logic_pop_sync_readPort_rsp_reqId = _zz_logic_pop_sync_readPort_rsp_reqId[19 : 4];
   assign logic_pop_sync_readPort_rsp_tag = _zz_logic_pop_sync_readPort_rsp_reqId[27 : 20];
@@ -9577,11 +10577,15 @@ module StreamFifo (
   assign logic_pop_sync_readPort_rsp_lastBe = _zz_logic_pop_sync_readPort_rsp_reqId[109 : 106];
   assign logic_pop_sync_readPort_rsp_tc = _zz_logic_pop_sync_readPort_rsp_reqId[112 : 110];
   assign logic_pop_sync_readPort_rsp_attr = _zz_logic_pop_sync_readPort_rsp_reqId[114 : 113];
+  assign logic_pop_sync_readPort_rsp_cplId = _zz_logic_pop_sync_readPort_rsp_reqId[130 : 115];
+  assign logic_pop_sync_readPort_rsp_cplStatus = _zz_logic_pop_sync_readPort_rsp_reqId[133 : 131];
+  assign logic_pop_sync_readPort_rsp_cplByteCount = _zz_logic_pop_sync_readPort_rsp_reqId[145 : 134];
+  assign logic_pop_sync_readPort_rsp_cplLowerAddr = _zz_logic_pop_sync_readPort_rsp_reqId[152 : 146];
   assign logic_pop_sync_readPort_rsp_data_0 = _zz_logic_pop_sync_readPort_rsp_data_0[31 : 0];
   assign logic_pop_sync_readPort_rsp_data_1 = _zz_logic_pop_sync_readPort_rsp_data_0[63 : 32];
   assign logic_pop_sync_readPort_rsp_data_2 = _zz_logic_pop_sync_readPort_rsp_data_0[95 : 64];
   assign logic_pop_sync_readPort_rsp_data_3 = _zz_logic_pop_sync_readPort_rsp_data_0[127 : 96];
-  assign logic_pop_sync_readPort_rsp_dataValid = _zz_logic_pop_sync_readPort_rsp_reqId[245 : 243];
+  assign logic_pop_sync_readPort_rsp_dataValid = _zz_logic_pop_sync_readPort_rsp_reqId[283 : 281];
   assign logic_pop_sync_readPort_cmd_valid = logic_pop_addressGen_fire;
   assign logic_pop_sync_readPort_cmd_payload = logic_pop_addressGen_payload;
   assign logic_pop_sync_readArbitation_translated_valid = logic_pop_sync_readArbitation_valid;
@@ -9595,6 +10599,10 @@ module StreamFifo (
   assign logic_pop_sync_readArbitation_translated_payload_lastBe = logic_pop_sync_readPort_rsp_lastBe;
   assign logic_pop_sync_readArbitation_translated_payload_tc = logic_pop_sync_readPort_rsp_tc;
   assign logic_pop_sync_readArbitation_translated_payload_attr = logic_pop_sync_readPort_rsp_attr;
+  assign logic_pop_sync_readArbitation_translated_payload_cplId = logic_pop_sync_readPort_rsp_cplId;
+  assign logic_pop_sync_readArbitation_translated_payload_cplStatus = logic_pop_sync_readPort_rsp_cplStatus;
+  assign logic_pop_sync_readArbitation_translated_payload_cplByteCount = logic_pop_sync_readPort_rsp_cplByteCount;
+  assign logic_pop_sync_readArbitation_translated_payload_cplLowerAddr = logic_pop_sync_readPort_rsp_cplLowerAddr;
   assign logic_pop_sync_readArbitation_translated_payload_data_0 = logic_pop_sync_readPort_rsp_data_0;
   assign logic_pop_sync_readArbitation_translated_payload_data_1 = logic_pop_sync_readPort_rsp_data_1;
   assign logic_pop_sync_readArbitation_translated_payload_data_2 = logic_pop_sync_readPort_rsp_data_2;
@@ -9611,6 +10619,10 @@ module StreamFifo (
   assign io_pop_payload_lastBe = logic_pop_sync_readArbitation_translated_payload_lastBe;
   assign io_pop_payload_tc = logic_pop_sync_readArbitation_translated_payload_tc;
   assign io_pop_payload_attr = logic_pop_sync_readArbitation_translated_payload_attr;
+  assign io_pop_payload_cplId = logic_pop_sync_readArbitation_translated_payload_cplId;
+  assign io_pop_payload_cplStatus = logic_pop_sync_readArbitation_translated_payload_cplStatus;
+  assign io_pop_payload_cplByteCount = logic_pop_sync_readArbitation_translated_payload_cplByteCount;
+  assign io_pop_payload_cplLowerAddr = logic_pop_sync_readArbitation_translated_payload_cplLowerAddr;
   assign io_pop_payload_data_0 = logic_pop_sync_readArbitation_translated_payload_data_0;
   assign io_pop_payload_data_1 = logic_pop_sync_readArbitation_translated_payload_data_1;
   assign io_pop_payload_data_2 = logic_pop_sync_readArbitation_translated_payload_data_2;

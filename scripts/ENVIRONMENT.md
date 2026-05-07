@@ -120,4 +120,4 @@ curl -L https://github.com/com-lihaoyi/mill/releases/download/0.11.0/0.11.0 > ~/
 
 ### Q: 项目路径有要求吗？
 
-A: 项目位于 `/mnt/d/Exercise/Spinalhdl/UartController`，对应的 Windows 路径是 `D:\Exercise\Spinalhdl\UartController`。使用 sbtw.sh 时无需关心路径转换。
+A: 项目位于 `/mnt/d/Exercise/Spinalhdl/PcieController`，对应的 Windows 路径是 `D:\Exercise\Spinalhdl\PcieController`。使用 sbtw.sh 时无需关心路径转换。

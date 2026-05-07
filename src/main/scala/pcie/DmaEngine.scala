@@ -247,6 +247,10 @@ class DmaEngine(maxPayload: Int = 256, maxDescriptors: Int = 256) extends Compon
   memWrPkt.tag       := tagCtr
   memWrPkt.addr      := (dstAddrHi ## dstAddrLo).asUInt + offset
   memWrPkt.length    := d2hChunkDw.resize(10)
+  memWrPkt.cplId     := 0
+  memWrPkt.cplStatus := 0
+  memWrPkt.cplByteCount := 0
+  memWrPkt.cplLowerAddr := 0
   memWrPkt.dataValid := d2hChunkDw.resize(3)
   for(i <- 0 until 4) memWrPkt.data(i) := 0
 
@@ -259,6 +263,10 @@ class DmaEngine(maxPayload: Int = 256, maxDescriptors: Int = 256) extends Compon
   memRdPkt.tag       := tagCtr
   memRdPkt.addr      := (srcAddrHi ## srcAddrLo).asUInt + offset
   memRdPkt.length    := chunkDw.resize(10)
+  memRdPkt.cplId     := 0
+  memRdPkt.cplStatus := 0
+  memRdPkt.cplByteCount := 0
+  memRdPkt.cplLowerAddr := 0
   memRdPkt.dataValid := 0
   for(i <- 0 until 4) memRdPkt.data(i) := 0
 
@@ -468,6 +476,10 @@ class DmaEngine(maxPayload: Int = 256, maxDescriptors: Int = 256) extends Compon
         p.tc      := 0
         p.attr    := 0
         p.length    := chunk.resize(10)
+        p.cplId     := 0
+        p.cplStatus := 0
+        p.cplByteCount := 0
+        p.cplLowerAddr := 0
         p.dataValid := chunk.resize(3)
         p.data(0)   := io.localMem.r.data(31 downto 0)
         p.data(1)   := (chunk > 1) ? io.localMem.r.data(63 downto 32) | B(0, 32 bits)
