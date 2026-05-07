@@ -71,7 +71,8 @@ run_sbt() {
     print_info "执行: sbt $cmd"
     echo "----------------------------------------"
     cd "$PROJECT_DIR"
-    printf "%s\n" "$cmd" | cmd.exe /c "sbt" 2>&1
+    # Use batch mode to avoid SBT server parsing issues with dotted names
+    cmd.exe /c "sbt $cmd" 2>&1
     echo "----------------------------------------"
 }
 

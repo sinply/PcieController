@@ -21,6 +21,8 @@ class PcieConfigSpaceCtrl(
     val barCheckAddr = in UInt(64 bits)
     val busDevFunc = in UInt(16 bits)  // Our BDF from link training
     val cfgRegs   = out(PcieConfigRegs())  // Expose to user logic
+    val msixEnable = out Bool()  // MSI-X Enable (msgCtrl bit 31)
+    val msixFuncMask = out Bool() // MSI-X Function Mask (msgCtrl bit 30)
   }
 
   // -------------------------------------------------------
@@ -164,6 +166,11 @@ class PcieConfigSpaceCtrl(
   io.cfgRegs.capPointer    := regs.capPointer
   io.cfgRegs.intLine       := regs.intLine
   io.cfgRegs.intPin        := regs.intPin
+
+  // MSI-X enable/mask outputs from capability register
+  // msgCtrl is 16 bits: bit 15 = MSI-X Enable, bit 14 = Function Mask
+  io.msixEnable   := msixCap.msgCtrl(15)
+  io.msixFuncMask := msixCap.msgCtrl(14)
 
   // BAR hit detection with memory decode enable gating
   val memDecodeEn = regs.command(1)  // Memory Space Enable bit

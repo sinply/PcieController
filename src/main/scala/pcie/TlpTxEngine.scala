@@ -40,7 +40,7 @@ class TlpTxEngine extends Component {
 
   // Credit checks including data credits for packets with payload
   def hasDataCredits(pkt: TlpStreamPacket): Bool = {
-    val dwCount = Mux(pkt.dataValid === 0, U(1, 10 bits), pkt.dataValid.resize(10))
+    val dwCount = Mux(pkt.dataValid === 0, U(0, 10 bits), pkt.dataValid.resize(10))
     // Check appropriate data credits based on packet type
     val result = Bool()
     when(pkt.tlpType === TlpType.CPL_D) {
@@ -52,8 +52,8 @@ class TlpTxEngine extends Component {
   }
 
   // Grant with credit checking (including data credits for writes)
-  val cplDataCredits = Mux(io.cplReq.payload.dataValid === 0, U(1, 10 bits), io.cplReq.payload.dataValid.resize(10))
-  val memWrDataCredits = Mux(io.memWrReq.payload.dataValid === 0, U(1, 10 bits), io.memWrReq.payload.dataValid.resize(10))
+  val cplDataCredits = Mux(io.cplReq.payload.dataValid === 0, U(0, 10 bits), io.cplReq.payload.dataValid.resize(10))
+  val memWrDataCredits = Mux(io.memWrReq.payload.dataValid === 0, U(0, 10 bits), io.memWrReq.payload.dataValid.resize(10))
   val canSendCpl   = io.cplReq.valid   && io.fcCredits.cplhCredits > 0 &&
                      (io.cplReq.payload.dataValid === 0 || io.fcCredits.cpldCredits >= cplDataCredits)
   val canSendMemWr = io.memWrReq.valid && io.fcCredits.phCredits > 0 &&

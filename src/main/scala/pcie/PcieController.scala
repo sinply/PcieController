@@ -129,6 +129,7 @@ class PcieController(cfg: PcieControllerConfig = PcieControllerConfig()) extends
   // ============================================================
   dlRx.io.frameIn   << phy.io.rxData
   rxEngine.io.tlpIn << dlRx.io.tlpOut
+  rxEngine.io.memDataOut.ready := True  // No downstream consumer; accept all
 
   // ============================================================
   // DLLP Handler - Process ACK/NAK/FC DLLPs
@@ -169,8 +170,12 @@ class PcieController(cfg: PcieControllerConfig = PcieControllerConfig()) extends
   cfgSpace.io.busDevFunc := myBdf
   cfgSpace.io.barCheckAddr := rxEngine.io.memReq.valid ? rxEngine.io.memReq.payload.addr | U(0, 64 bits)
 
-  // Config completions → TX Engine
-  txEngine.io.cplIn   << cfgSpace.io.cfgResp
+  // Config + I/O completions → TX Engine cplIn (both are CPL/CPL_D type)
+  val cplArb = StreamArbiterFactory.roundRobin.onArgs(
+    cfgSpace.io.cfgResp,
+    ioHandler.io.cplOut
+  )
+  txEngine.io.cplIn   << cplArb
 
   // Memory requests → DMA completion handler
   dma.io.cplIn        << rxEngine.io.cplIn
@@ -187,16 +192,15 @@ class PcieController(cfg: PcieControllerConfig = PcieControllerConfig()) extends
   msix.io.tableWen   := isBar1Req && inboundMemReq.payload.tlpType === TlpType.MEM_WR
   msix.io.tableBe    := inboundMemReq.payload.firstBe
   msix.io.busDevFunc := myBdf
-  msix.io.msixEnable := cfgSpace.io.cfgRegs.command(2)
-  msix.io.funcMask   := False
+  msix.io.msixEnable := cfgSpace.io.msixEnable
+  msix.io.funcMask   := cfgSpace.io.msixFuncMask
   msix.io.intReq     := io.intReq
   io.intAck          := msix.io.intAck
 
-  // MSI-X interrupt TLPs → TX Engine
+  // MSI-X interrupt TLPs + DMA writes → TX Engine
   val memWrArb = StreamArbiterFactory.roundRobin.onArgs(
     msix.io.msgTlpOut,
-    dma.io.memWrOut,
-    ioHandler.io.cplOut  // Include I/O completions
+    dma.io.memWrOut
   )
   txEngine.io.memWrIn << memWrArb
 
@@ -208,6 +212,7 @@ class PcieController(cfg: PcieControllerConfig = PcieControllerConfig()) extends
   // ============================================================
   ioHandler.io.ioReq     << rxEngine.io.ioReq
   ioHandler.io.regRdData := io.ioRegRdData
+  ioHandler.io.regWidth  := 2  // Default: DWORD access
 
   io.ioRegAddr           := ioHandler.io.regAddr
   io.ioRegWrData         := ioHandler.io.regWrData

@@ -266,7 +266,7 @@ class DmaEngine(maxPayload: Int = 256, maxDescriptors: Int = 256) extends Compon
   io.memWrOut.payload := memWrPkt
   io.memRdOut.valid   := False
   io.memRdOut.payload := memRdPkt
-  io.cplIn.ready      := True   // Always accept completions to avoid deadlock
+  io.cplIn.ready      := (dmaState === DmaState.H2D_WAIT_CPL && waitingCpl)
   io.h2dDone          := statusReg(0)
   io.d2hDone          := statusReg(0)
   io.dmaErr           := statusReg(2)
@@ -283,7 +283,7 @@ class DmaEngine(maxPayload: Int = 256, maxDescriptors: Int = 256) extends Compon
   io.localMem.ar.cache  := 0
   io.localMem.ar.qos    := 0
   io.localMem.ar.prot   := 0
-  io.localMem.r.ready  := True
+  io.localMem.r.ready  := False  // Controlled per-state
   io.localMem.aw.valid := False
   io.localMem.aw.addr  := 0
   io.localMem.aw.id    := 0
@@ -414,13 +414,21 @@ class DmaEngine(maxPayload: Int = 256, maxDescriptors: Int = 256) extends Compon
     }
 
     is(DmaState.H2D_WR_LOCAL) {
-      io.localMem.aw.valid := True
+      val awDone = Reg(Bool()) init(False)
+      val wDone  = Reg(Bool()) init(False)
+
+      io.localMem.aw.valid := !awDone
       io.localMem.aw.addr  := h2dWriteAddr
-      io.localMem.w.valid  := True
+      io.localMem.w.valid  := !wDone
       io.localMem.w.data   := h2dWriteData
       io.localMem.w.strb   := h2dWriteStrb
 
-      when(io.localMem.aw.ready && io.localMem.w.ready) {
+      when(io.localMem.aw.fire) { awDone := True }
+      when(io.localMem.w.fire)  { wDone := True }
+
+      when(awDone && wDone) {
+        awDone := False
+        wDone := False
         when(remaining === 0) {
           when(sgMode) {
             dmaState := DmaState.NEXT_DESC
@@ -437,7 +445,7 @@ class DmaEngine(maxPayload: Int = 256, maxDescriptors: Int = 256) extends Compon
     is(DmaState.D2H_RD_LOCAL) {
       io.localMem.ar.valid := True
       io.localMem.ar.addr  := (srcAddrLo + offset).resized
-      io.localMem.ar.len   := Mux(d2hChunkDw === 0, U(0, 8 bits), (d2hChunkDw - 1).resize(8))
+      io.localMem.ar.len   := 0  // Single beat per read (64-bit = 2 DWORDs)
 
       when(io.localMem.ar.ready) {
         dmaState := DmaState.D2H_WR_PCIE
@@ -445,6 +453,8 @@ class DmaEngine(maxPayload: Int = 256, maxDescriptors: Int = 256) extends Compon
     }
 
     is(DmaState.D2H_WR_PCIE) {
+      // Always accept AXI read data to avoid combinational loop through arbiter
+      io.localMem.r.ready := True
       when(io.localMem.r.valid) {
         val chunk = d2hChunkDw
         val p = TlpStreamPacket()
